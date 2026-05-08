@@ -18,6 +18,34 @@ app.add_middleware(
 )
 
 # -------------------------
+# Load data + train model ONCE at startup
+# -------------------------
+data = pd.read_csv("data/west_end_office_data.csv")
+
+# Clean numeric columns
+data["year"] = pd.to_numeric(data["year"])
+data["rent_psf"] = pd.to_numeric(data["rent_psf"])
+data["vacancy_rate"] = pd.to_numeric(data["vacancy_rate"])
+data["takeup_sqft"] = pd.to_numeric(data["takeup_sqft"])
+
+# Stable area encoding - will never shift regardless of CSV row order
+AREA_CODES = {area: i for i, area in enumerate(sorted(data["area"].unique()))}
+data["area_code"] = data["area"].map(AREA_CODES)
+
+# Stable quarter encoding
+QUARTER_CODES = {"Q1": 1, "Q2": 2, "Q3": 3, "Q4": 4}
+data["quarter_code"] = data["quarter"].map(QUARTER_CODES)
+
+# Features - added quarter_code for better predictions
+X = data[["year", "quarter_code", "rent_psf", "area_code"]]
+y = data["vacancy_rate"]
+
+model = LinearRegression()
+model.fit(X, y)
+
+data["predicted"] = model.predict(X)
+
+# -------------------------
 # Root
 # -------------------------
 @app.get("/")
@@ -30,32 +58,6 @@ def home():
 @app.get("/predictions")
 def predictions():
 
-    # Load dataset (Railway-safe path)
-    data = pd.read_csv("data/west_end_office_data.csv")
-
-    # Clean numeric safety (prevents crashes if CSV has strings)
-    data["year"] = pd.to_numeric(data["year"])
-    data["rent_psf"] = pd.to_numeric(data["rent_psf"])
-    data["vacancy_rate"] = pd.to_numeric(data["vacancy_rate"])
-    data["takeup_sqft"] = pd.to_numeric(data["takeup_sqft"])
-
-    # Encode categorical area
-    data["area_code"] = data["area"].astype("category").cat.codes
-
-    # -------------------------
-    # Model
-    # -------------------------
-    X = data[["year", "rent_psf", "area_code"]]
-    y = data["vacancy_rate"]
-
-    model = LinearRegression()
-    model.fit(X, y)
-
-    data["predicted"] = model.predict(X)
-
-    # -------------------------
-    # Intelligence Layer
-    # -------------------------
     def get_signal(v):
         if v < 5:
             return "🟢 Attractive"
@@ -66,9 +68,6 @@ def predictions():
     def get_insight(area, v):
         return f"{area} shows current vacancy at {v:.1f}% with AI-adjusted market interpretation."
 
-    # -------------------------
-    # Response builder
-    # -------------------------
     results = []
 
     for _, row in data.iterrows():
@@ -87,7 +86,6 @@ def predictions():
 
     return results
 
-
 # -------------------------
 # Test endpoint
 # -------------------------
@@ -95,6 +93,12 @@ def predictions():
 def test():
     return {"status": "working"}
 
+# -------------------------
+# Area codes endpoint (useful for debugging)
+# -------------------------
+@app.get("/area-codes")
+def area_codes():
+    return AREA_CODES
 
 # -------------------------
 # Railway / local startup
