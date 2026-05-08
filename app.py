@@ -65,9 +65,11 @@ def predictions():
 
     return results
 
-    @app.get("/test")
+
+@app.get("/test")
 def test():
     return {"status": "working"}
+
 
 if __name__ == "__main__":
     import uvicorn
