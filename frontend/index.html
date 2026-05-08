@@ -3,10 +3,12 @@
 <head>
     <title>West End Office Intelligence Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
-        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); }
         .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
         .nav-logo span { color: #3b82f6; }
         .nav-right { display: flex; align-items: center; gap: 12px; }
@@ -21,21 +23,7 @@
         .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
         .selector { background: #0f1929; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: border-color 0.2s; }
         .selector:focus { outline: none; border-color: #3b82f6; }
-        .download-btn {
-            margin-left: 8px;
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-        }
+        .download-btn { margin-left: 8px; background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
         .download-btn:hover { opacity: 0.85; }
         .download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
@@ -52,6 +40,20 @@
         .delta-down { background: rgba(239,68,68,0.1); color: #ef4444; }
         .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
         .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+        /* HEATMAP */
+        .heatmap-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+        .heatmap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .heatmap-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
+        .heatmap-sub { font-size: 12px; color: #475569; margin-top: 4px; }
+        .heatmap-toggles { display: flex; gap: 8px; }
+        .heatmap-toggle { background: #0f1929; border: 1px solid rgba(255,255,255,0.08); color: #64748b; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .heatmap-toggle.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #60a5fa; font-weight: 600; }
+        #map { height: 480px; border-radius: 12px; overflow: hidden; }
+        .heatmap-legend { display: flex; align-items: center; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #64748b; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
         .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
         .chart-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; }
         .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
@@ -89,6 +91,20 @@
         .footer-badges { display: flex; align-items: center; gap: 10px; }
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; letter-spacing: 0.5px; }
         .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.2); color: #7c3aed; font-weight: 600; }
+
+        /* Leaflet popup override */
+        .leaflet-popup-content-wrapper { background: #0f1929; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .leaflet-popup-content { color: #e2e8f0; margin: 16px 20px; }
+        .leaflet-popup-tip { background: #0f1929; }
+        .leaflet-popup-close-button { color: #64748b !important; }
+        .popup-area { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 10px; }
+        .popup-row { display: flex; justify-content: space-between; gap: 24px; font-size: 12px; margin-bottom: 4px; }
+        .popup-label { color: #475569; }
+        .popup-val { color: #e2e8f0; font-weight: 600; }
+        .popup-signal { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .popup-btn { display: block; margin-top: 12px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 8px; font-size: 11px; text-align: center; cursor: pointer; font-weight: 600; }
+        .popup-btn:hover { background: rgba(59,130,246,0.25); }
+
         @media (max-width: 900px) {
             .hero { padding: 40px 20px 24px; }
             .container { padding: 0 20px 40px; }
@@ -97,6 +113,7 @@
             .charts-row { grid-template-columns: 1fr; }
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
             .footer { padding: 24px 20px; }
+            #map { height: 320px; }
         }
     </style>
 </head>
@@ -153,6 +170,27 @@
         <div class="kpi-card">
             <div class="kpi-label">Investment Signal</div>
             <div id="signalBadge" class="signal-badge">—</div>
+        </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="heatmap-card">
+        <div class="heatmap-header">
+            <div>
+                <div class="heatmap-title">Central London Office Heatmap</div>
+                <div class="heatmap-sub">Click any submarket zone for live data · Colour shows market strength</div>
+            </div>
+            <div class="heatmap-toggles">
+                <button class="heatmap-toggle active" id="toggleVacancy" onclick="setMapMode('vacancy')">Vacancy Rate</button>
+                <button class="heatmap-toggle" id="toggleRent" onclick="setMapMode('rent')">Prime Rent</button>
+            </div>
+        </div>
+        <div id="map"></div>
+        <div class="heatmap-legend">
+            <span style="font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;">Vacancy:</span>
+            <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Below 5% — Strong</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> 5–7% — Monitor</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Above 7% — Weakening</div>
         </div>
     </div>
 
@@ -234,8 +272,214 @@
 <script>
 let trendChart, takeupChart, comparisonChart;
 let allData = [];
+let mapInstance = null;
+let mapLayers = {};
+let mapMode = 'vacancy';
 
 const API = 'https://west-end-office-intelligence-production.up.railway.app';
+
+// ── SUBMARKET BOUNDARIES (GeoJSON polygons) ──
+const submarketBoundaries = {
+    "Mayfair": [
+        [51.5141, -0.1555], [51.5168, -0.1489], [51.5175, -0.1434],
+        [51.5130, -0.1398], [51.5093, -0.1420], [51.5075, -0.1480],
+        [51.5088, -0.1543], [51.5120, -0.1570], [51.5141, -0.1555]
+    ],
+    "Soho": [
+        [51.5141, -0.1355], [51.5168, -0.1289], [51.5158, -0.1238],
+        [51.5118, -0.1245], [51.5098, -0.1290], [51.5105, -0.1348],
+        [51.5141, -0.1355]
+    ],
+    "Fitzrovia": [
+        [51.5195, -0.1415], [51.5228, -0.1355], [51.5218, -0.1295],
+        [51.5178, -0.1288], [51.5158, -0.1338], [51.5168, -0.1398],
+        [51.5195, -0.1415]
+    ],
+    "Victoria": [
+        [51.4955, -0.1438], [51.4988, -0.1358], [51.4975, -0.1285],
+        [51.4935, -0.1298], [51.4918, -0.1375], [51.4935, -0.1438],
+        [51.4955, -0.1438]
+    ],
+    "Midtown": [
+        [51.5178, -0.1195], [51.5208, -0.1128], [51.5195, -0.1065],
+        [51.5155, -0.1058], [51.5138, -0.1118], [51.5148, -0.1188],
+        [51.5178, -0.1195]
+    ],
+    "Marylebone": [
+        [51.5228, -0.1555], [51.5258, -0.1478], [51.5248, -0.1405],
+        [51.5205, -0.1398], [51.5188, -0.1468], [51.5198, -0.1548],
+        [51.5228, -0.1555]
+    ],
+    "St James's": [
+        [51.5068, -0.1398], [51.5098, -0.1328], [51.5085, -0.1268],
+        [51.5048, -0.1275], [51.5028, -0.1338], [51.5045, -0.1405],
+        [51.5068, -0.1398]
+    ],
+    "Covent Garden": [
+        [51.5128, -0.1248], [51.5158, -0.1178], [51.5145, -0.1118],
+        [51.5105, -0.1125], [51.5085, -0.1188], [51.5098, -0.1255],
+        [51.5128, -0.1248]
+    ]
+};
+
+function getVacancyColor(vacancy) {
+    if (vacancy < 5) return '#22c55e';
+    if (vacancy < 7) return '#f59e0b';
+    return '#ef4444';
+}
+
+function getRentColor(rent) {
+    if (rent >= 150) return '#22c55e';
+    if (rent >= 100) return '#f59e0b';
+    return '#ef4444';
+}
+
+function setMapMode(mode) {
+    mapMode = mode;
+    document.getElementById('toggleVacancy').classList.toggle('active', mode === 'vacancy');
+    document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
+    updateMapColors();
+
+    // Update legend
+    const legend = document.querySelector('.heatmap-legend');
+    if (mode === 'vacancy') {
+        legend.innerHTML = `
+            <span style="font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;">Vacancy:</span>
+            <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Below 5% — Strong</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> 5–7% — Monitor</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Above 7% — Weakening</div>
+        `;
+    } else {
+        legend.innerHTML = `
+            <span style="font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;">Prime Rent:</span>
+            <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> £150+ psf — Premium</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> £100–150 psf — Mid</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Below £100 psf — Value</div>
+        `;
+    }
+}
+
+function updateMapColors() {
+    if (!allData.length) return;
+    Object.keys(mapLayers).forEach(area => {
+        const areaData = allData.filter(d => d.area === area);
+        if (!areaData.length) return;
+        const latest = areaData[areaData.length - 1];
+        const color = mapMode === 'vacancy'
+            ? getVacancyColor(latest.predicted)
+            : getRentColor(latest.rent_psf);
+        mapLayers[area].setStyle({
+            fillColor: color,
+            color: color,
+        });
+    });
+}
+
+function initMap() {
+    mapInstance = L.map('map', {
+        center: [51.511, -0.133],
+        zoom: 13,
+        zoomControl: true,
+        scrollWheelZoom: false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(mapInstance);
+}
+
+function buildMap() {
+    if (!allData.length || !mapInstance) return;
+
+    // Clear existing layers
+    Object.values(mapLayers).forEach(l => mapInstance.removeLayer(l));
+    mapLayers = {};
+
+    const uniqueAreas = [...new Set(allData.map(d => d.area))];
+
+    uniqueAreas.forEach(area => {
+        const coords = submarketBoundaries[area];
+        if (!coords) return;
+
+        const areaData = allData.filter(d => d.area === area);
+        const latest = areaData[areaData.length - 1];
+        const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
+        const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
+
+        const color = mapMode === 'vacancy'
+            ? getVacancyColor(latest.predicted)
+            : getRentColor(latest.rent_psf);
+
+        const signalText = avgVacancy < 5 ? 'STRONG MARKET' : avgVacancy < 7 ? 'MONITOR' : 'WEAKENING';
+        const signalColor = avgVacancy < 5 ? '#22c55e' : avgVacancy < 7 ? '#f59e0b' : '#ef4444';
+
+        const polygon = L.polygon(coords, {
+            fillColor: color,
+            fillOpacity: 0.45,
+            color: color,
+            weight: 2,
+            opacity: 0.9
+        });
+
+        polygon.bindPopup(`
+            <div class="popup-area">${area}</div>
+            <div class="popup-row">
+                <span class="popup-label">Prime Rent</span>
+                <span class="popup-val">£${latest.rent_psf} psf</span>
+            </div>
+            <div class="popup-row">
+                <span class="popup-label">Forecast Vacancy</span>
+                <span class="popup-val">${parseFloat(latest.predicted).toFixed(1)}%</span>
+            </div>
+            <div class="popup-row">
+                <span class="popup-label">Latest Take-Up</span>
+                <span class="popup-val">${latest.takeup_sqft.toLocaleString()} sq ft</span>
+            </div>
+            <div class="popup-row">
+                <span class="popup-label">Market Health</span>
+                <span class="popup-val">${score}/100</span>
+            </div>
+            <div class="popup-row">
+                <span class="popup-label">Sentiment</span>
+                <span class="popup-val">${latest.sentiment}</span>
+            </div>
+            <span class="popup-signal" style="background:${signalColor}22;color:${signalColor};border:1px solid ${signalColor}44;">${signalText}</span>
+            <div class="popup-btn" onclick="selectArea('${area}')">View Full Analytics →</div>
+        `, { maxWidth: 260 });
+
+        polygon.on('mouseover', function() {
+            this.setStyle({ fillOpacity: 0.7, weight: 3 });
+        });
+        polygon.on('mouseout', function() {
+            this.setStyle({ fillOpacity: 0.45, weight: 2 });
+        });
+
+        polygon.addTo(mapInstance);
+        mapLayers[area] = polygon;
+
+        // Area label
+        const center = polygon.getBounds().getCenter();
+        L.marker(center, {
+            icon: L.divIcon({
+                className: '',
+                html: `<div style="color:white;font-size:10px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;text-align:center;letter-spacing:0.5px;">${area}</div>`,
+                iconAnchor: [30, 8]
+            })
+        }).addTo(mapInstance);
+    });
+}
+
+function selectArea(area) {
+    const selector = document.getElementById("areaSelect");
+    selector.value = area;
+    loadDashboard(area);
+    // Close any open popups
+    mapInstance.closePopup();
+    // Scroll to dashboard
+    document.querySelector('.kpi-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 function sentimentClass(s) { return 'pill-' + s.toLowerCase(); }
 
@@ -269,7 +513,6 @@ async function downloadReport() {
     btn.textContent = "⏳ Generating...";
     btn.style.opacity = "0.7";
     btn.disabled = true;
-
     try {
         const response = await fetch(`${API}/report/${encodeURIComponent(area)}`);
         const blob = await response.blob();
@@ -284,7 +527,6 @@ async function downloadReport() {
     } catch(e) {
         alert("Report generation failed. Please try again.");
     }
-
     btn.textContent = "⬇ Download Report";
     btn.style.opacity = "1";
     btn.disabled = false;
@@ -309,6 +551,10 @@ async function loadDashboard(selectedArea = null) {
         }
 
         if (!selectedArea) selectedArea = selector.value;
+        selector.value = selectedArea;
+
+        // Build map once data is loaded
+        buildMap();
 
         const filtered = allData.filter(d => d.area === selectedArea);
         const latest = filtered[filtered.length - 1];
@@ -335,7 +581,6 @@ async function loadDashboard(selectedArea = null) {
             const rentDelta = document.getElementById("rentDelta");
             rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
             rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
-
             const vacChange = (latest.predicted - prev.predicted).toFixed(2);
             const vacDelta = document.getElementById("vacancyDelta");
             vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange) + '% vs prev quarter';
@@ -364,26 +609,8 @@ async function loadDashboard(selectedArea = null) {
             data: {
                 labels,
                 datasets: [
-                    {
-                        label: 'Forecast Vacancy (%)',
-                        data: filtered.map(d => d.predicted.toFixed(2)),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59,130,246,0.06)',
-                        fill: true, tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#3b82f6',
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Prime Rent (£ psf)',
-                        data: filtered.map(d => d.rent_psf),
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34,197,94,0.04)',
-                        fill: true, tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#22c55e',
-                        yAxisID: 'y1'
-                    }
+                    { label: 'Forecast Vacancy (%)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
+                    { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
                 ]
             },
             options: chartOptions('y', 'y1')
@@ -397,22 +624,12 @@ async function loadDashboard(selectedArea = null) {
                 datasets: [{
                     label: 'Take-Up (sq ft)',
                     data: filtered.map(d => d.takeup_sqft),
-                    backgroundColor: labels.map((_, i) =>
-                        i === labels.length - 1
-                            ? 'rgba(59,130,246,0.8)'
-                            : 'rgba(59,130,246,0.25)'),
+                    backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
                     borderRadius: 6,
                     borderSkipped: false
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
-                scales: {
-                    x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                    y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
         });
 
         const latestByArea = uniqueAreas.map(area => {
@@ -426,20 +643,8 @@ async function loadDashboard(selectedArea = null) {
             data: {
                 labels: latestByArea.map(d => d.area),
                 datasets: [
-                    {
-                        label: 'Prime Rent (£ psf)',
-                        data: latestByArea.map(d => d.rent_psf),
-                        backgroundColor: 'rgba(34,197,94,0.7)',
-                        borderRadius: 6,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Forecast Vacancy (%)',
-                        data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)),
-                        backgroundColor: 'rgba(59,130,246,0.7)',
-                        borderRadius: 6,
-                        yAxisID: 'y1'
-                    }
+                    { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
+                    { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
                 ]
             },
             options: chartOptions('y', 'y1')
@@ -477,6 +682,8 @@ function chartOptions(leftAxis, rightAxis) {
     };
 }
 
+// Init map first, then load data
+initMap();
 loadDashboard();
 document.getElementById("areaSelect").addEventListener("change", e => loadDashboard(e.target.value));
 </script>
