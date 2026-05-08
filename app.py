@@ -5,8 +5,14 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 import os
 import httpx
-from weasyprint import HTML
 from datetime import datetime
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
 
 app = FastAPI()
 
@@ -146,7 +152,7 @@ Write in the style of a Savills or CBRE research note. Be specific, use the data
         return {"commentary": f"Commentary unavailable: {str(e)}"}
 
 # -------------------------
-# PDF Report endpoint
+# PDF Report endpoint (ReportLab)
 # -------------------------
 @app.get("/report/{area}")
 async def generate_report(area: str):
@@ -167,19 +173,15 @@ async def generate_report(area: str):
     sentiment = latest["sentiment"]
     quarters = len(area_data)
 
-    # Signal
     if avg_vacancy < 5:
         signal_text = "STRONG MARKET"
-        signal_color = "#22c55e"
-        signal_bg = "rgba(34,197,94,0.15)"
+        signal_color = colors.HexColor("#22c55e")
     elif avg_vacancy < 7:
         signal_text = "MONITOR"
-        signal_color = "#f59e0b"
-        signal_bg = "rgba(245,158,11,0.15)"
+        signal_color = colors.HexColor("#f59e0b")
     else:
         signal_text = "WEAKENING"
-        signal_color = "#ef4444"
-        signal_bg = "rgba(239,68,68,0.15)"
+        signal_color = colors.HexColor("#ef4444")
 
     # Get AI commentary
     commentary_text = ""
@@ -217,328 +219,212 @@ Write in the style of a Savills or CBRE research note. Be specific, use the data
         except:
             commentary_text = "Commentary unavailable at this time."
 
-    # Build table rows
-    table_rows = ""
-    for _, row in area_data.iterrows():
-        sentiment_colors = {
-            "Tightening": ("#22c55e", "rgba(34,197,94,0.1)"),
-            "Strong": ("#60a5fa", "rgba(59,130,246,0.1)"),
-            "Improving": ("#a855f7", "rgba(168,85,247,0.1)"),
-            "Active": ("#f59e0b", "rgba(245,158,11,0.1)"),
-            "Balanced": ("#94a3b8", "rgba(148,163,184,0.1)"),
-            "Neutral": ("#94a3b8", "rgba(148,163,184,0.1)"),
-        }
-        sc = sentiment_colors.get(row["sentiment"], ("#94a3b8", "rgba(148,163,184,0.1)"))
-        table_rows += f"""
-        <tr>
-            <td><strong>{int(row['year'])} {row['quarter']}</strong></td>
-            <td>£{row['rent_psf']}</td>
-            <td>{row['vacancy_rate']:.1f}%</td>
-            <td>{row['predicted']:.2f}%</td>
-            <td>{int(row['takeup_sqft']):,}</td>
-            <td><span style="background:{sc[1]};color:{sc[0]};padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;">{row['sentiment']}</span></td>
-        </tr>
-        """
+    # ── BUILD PDF ──
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=20*mm,
+        leftMargin=20*mm,
+        topMargin=20*mm,
+        bottomMargin=20*mm
+    )
 
-    # Build rent trend sparkline data
-    rent_values = area_data["rent_psf"].tolist()
-    vac_values = [round(v, 2) for v in area_data["predicted"].tolist()]
-    period_labels = [f"{int(r['year'])} {r['quarter']}" for _, r in area_data.iterrows()]
+    # Colours
+    dark_navy = colors.HexColor("#0f172a")
+    mid_slate = colors.HexColor("#334155")
+    light_slate = colors.HexColor("#64748b")
+    very_light = colors.HexColor("#f8fafc")
+    border_color = colors.HexColor("#e2e8f0")
+    blue = colors.HexColor("#3b82f6")
+    purple = colors.HexColor("#a855f7")
+
+    # Styles
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle("title",
+        fontSize=22, fontName="Helvetica-Bold",
+        textColor=dark_navy, spaceAfter=2)
+
+    subtitle_style = ParagraphStyle("subtitle",
+        fontSize=10, fontName="Helvetica",
+        textColor=light_slate, spaceAfter=0)
+
+    label_style = ParagraphStyle("label",
+        fontSize=8, fontName="Helvetica-Bold",
+        textColor=light_slate, spaceAfter=4,
+        leading=10)
+
+    body_style = ParagraphStyle("body",
+        fontSize=10, fontName="Helvetica",
+        textColor=mid_slate, leading=16,
+        spaceAfter=0)
+
+    small_style = ParagraphStyle("small",
+        fontSize=8, fontName="Helvetica",
+        textColor=light_slate, leading=12)
+
+    section_label_style = ParagraphStyle("section_label",
+        fontSize=8, fontName="Helvetica-Bold",
+        textColor=purple, spaceAfter=6,
+        leading=10)
 
     generated_date = datetime.now().strftime("%d %B %Y")
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="UTF-8">
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: #ffffff;
-            color: #1e293b;
-            font-size: 11px;
-            padding: 40px;
-        }}
+    elements = []
 
-        /* HEADER */
-        .header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #1e293b;
-            margin-bottom: 24px;
-        }}
-        .header-left h1 {{
-            font-size: 22px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.5px;
-        }}
-        .header-left h1 span {{ color: #3b82f6; }}
-        .header-left p {{
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 4px;
-        }}
-        .header-right {{
-            text-align: right;
-        }}
-        .header-right .date {{
-            font-size: 11px;
-            color: #64748b;
-        }}
-        .header-right .powered {{
-            font-size: 10px;
-            color: #a855f7;
-            margin-top: 4px;
-            font-weight: 600;
-        }}
+    # ── HEADER ──
+    header_data = [
+        [
+            Paragraph(f'<font color="#0f172a"><b>West End </b></font><font color="#3b82f6"><b>Office Intelligence</b></font>', ParagraphStyle("h", fontSize=16, fontName="Helvetica-Bold")),
+            Paragraph(f'<font color="#64748b">Generated: {generated_date}</font><br/><font color="#a855f7"><b>✦ Powered by Claude · Anthropic</b></font>', ParagraphStyle("hr", fontSize=9, fontName="Helvetica", alignment=TA_RIGHT, leading=14))
+        ]
+    ]
+    header_table = Table(header_data, colWidths=[110*mm, 60*mm])
+    header_table.setStyle(TableStyle([
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 8),
+    ]))
+    elements.append(header_table)
+    elements.append(HRFlowable(width="100%", thickness=1.5, color=dark_navy, spaceAfter=16))
 
-        /* SUBMARKET TITLE */
-        .submarket-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }}
-        .submarket-title {{
-            font-size: 28px;
-            font-weight: 800;
-            color: #0f172a;
-        }}
-        .submarket-subtitle {{
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
-        }}
-        .signal {{
-            padding: 8px 18px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            background: {signal_bg};
-            color: {signal_color};
-            border: 1px solid {signal_color};
-        }}
+    # ── SUBMARKET TITLE ROW ──
+    title_data = [
+        [
+            Paragraph(f'<b>{area}</b>', ParagraphStyle("at", fontSize=26, fontName="Helvetica-Bold", textColor=dark_navy)),
+            Paragraph(f'<b>{signal_text}</b>', ParagraphStyle("sig", fontSize=11, fontName="Helvetica-Bold", textColor=signal_color, alignment=TA_RIGHT))
+        ]
+    ]
+    title_table = Table(title_data, colWidths=[110*mm, 60*mm])
+    title_table.setStyle(TableStyle([
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+    elements.append(title_table)
+    elements.append(Paragraph(f'Submarket Research Note · {int(first["year"])} {first["quarter"]} — {int(latest["year"])} {latest["quarter"]}', subtitle_style))
+    elements.append(Spacer(1, 14))
 
-        /* KPI ROW */
-        .kpi-row {{
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }}
-        .kpi-box {{
-            flex: 1;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 14px 16px;
-        }}
-        .kpi-box .label {{
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #94a3b8;
-            margin-bottom: 6px;
-        }}
-        .kpi-box .val {{
-            font-size: 22px;
-            font-weight: 800;
-            color: #0f172a;
-        }}
-        .kpi-box .sub {{
-            font-size: 9px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }}
+    # ── KPI ROW ──
+    kpi_data = [
+        [
+            Paragraph("PRIME RENT", label_style),
+            Paragraph("FORECAST VACANCY", label_style),
+            Paragraph("LATEST TAKE-UP", label_style),
+            Paragraph("MARKET HEALTH", label_style),
+            Paragraph("SENTIMENT", label_style),
+        ],
+        [
+            Paragraph(f'<b>£{float(latest["rent_psf"]):.0f}</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
+            Paragraph(f'<b>{avg_vacancy:.1f}%</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
+            Paragraph(f'<b>{latest_takeup:,}</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
+            Paragraph(f'<b>{score}/100</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
+            Paragraph(f'<b>{sentiment}</b>', ParagraphStyle("kv", fontSize=16, fontName="Helvetica-Bold", textColor=dark_navy)),
+        ],
+        [
+            Paragraph("£ per sq ft", small_style),
+            Paragraph("AI-predicted avg", small_style),
+            Paragraph("sq ft leased", small_style),
+            Paragraph("AI-derived score", small_style),
+            Paragraph("Latest quarter", small_style),
+        ]
+    ]
 
-        /* COMMENTARY */
-        .commentary-section {{
-            background: #f8fafc;
-            border-left: 3px solid #a855f7;
-            border-radius: 0 10px 10px 0;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-        }}
-        .commentary-label {{
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #a855f7;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }}
-        .commentary-text {{
-            font-size: 11px;
-            color: #334155;
-            line-height: 1.8;
-        }}
+    col_w = 34*mm
+    kpi_table = Table(kpi_data, colWidths=[col_w]*5, rowHeights=[14, 22, 12])
+    kpi_table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,-1), very_light),
+        ("BOX", (0,0), (0,-1), 0.5, border_color),
+        ("BOX", (1,0), (1,-1), 0.5, border_color),
+        ("BOX", (2,0), (2,-1), 0.5, border_color),
+        ("BOX", (3,0), (3,-1), 0.5, border_color),
+        ("BOX", (4,0), (4,-1), 0.5, border_color),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("RIGHTPADDING", (0,0), (-1,-1), 8),
+        ("TOPPADDING", (0,0), (-1,0), 8),
+        ("BOTTOMPADDING", (0,-1), (-1,-1), 8),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("ROUNDEDCORNERS", [4]),
+    ]))
+    elements.append(kpi_table)
+    elements.append(Spacer(1, 16))
 
-        /* TABLE */
-        .table-section {{ margin-bottom: 24px; }}
-        .section-label {{
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #64748b;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-        }}
-        th {{
-            text-align: left;
-            padding: 8px 10px;
-            background: #f1f5f9;
-            color: #64748b;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            border-bottom: 1px solid #e2e8f0;
-        }}
-        td {{
-            padding: 8px 10px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #334155;
-        }}
-        tr:last-child td {{ border-bottom: none; }}
+    # ── COMMENTARY ──
+    elements.append(Paragraph("✦  AI MARKET COMMENTARY · CLAUDE", section_label_style))
+    commentary_box = Table(
+        [[Paragraph(commentary_text, body_style)]],
+        colWidths=[170*mm]
+    )
+    commentary_box.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,-1), very_light),
+        ("LEFTPADDING", (0,0), (-1,-1), 12),
+        ("RIGHTPADDING", (0,0), (-1,-1), 12),
+        ("TOPPADDING", (0,0), (-1,-1), 12),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 12),
+        ("LINEBEFORE", (0,0), (0,-1), 3, purple),
+    ]))
+    elements.append(commentary_box)
+    elements.append(Spacer(1, 16))
 
-        /* FOOTER */
-        .footer {{
-            border-top: 1px solid #e2e8f0;
-            padding-top: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }}
-        .footer-left {{
-            font-size: 9px;
-            color: #94a3b8;
-        }}
-        .footer-right {{
-            font-size: 9px;
-            color: #94a3b8;
-            text-align: right;
-        }}
-        .footer-right strong {{ color: #64748b; }}
+    # ── DATA TABLE ──
+    elements.append(Paragraph("QUARTERLY DATA BREAKDOWN", section_label_style))
 
-        /* DISCLAIMER */
-        .disclaimer {{
-            font-size: 8px;
-            color: #cbd5e1;
-            margin-top: 8px;
-            line-height: 1.5;
-        }}
-    </style>
-    </head>
-    <body>
+    table_header = ["Period", "Prime Rent", "Vacancy", "Forecast", "Take-Up", "Sentiment"]
+    table_rows = [table_header]
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-left">
-            <h1>West End <span>Office Intelligence</span></h1>
-            <p>Institutional-grade AI-assisted leasing analytics · Central London</p>
-        </div>
-        <div class="header-right">
-            <div class="date">Generated: {generated_date}</div>
-            <div class="powered">✦ Powered by Claude · Anthropic</div>
-        </div>
-    </div>
+    for _, row in area_data.iterrows():
+        table_rows.append([
+            f"{int(row['year'])} {row['quarter']}",
+            f"£{row['rent_psf']}",
+            f"{row['vacancy_rate']:.1f}%",
+            f"{row['predicted']:.2f}%",
+            f"{int(row['takeup_sqft']):,}",
+            str(row['sentiment'])
+        ])
 
-    <!-- SUBMARKET TITLE -->
-    <div class="submarket-header">
-        <div>
-            <div class="submarket-title">{area}</div>
-            <div class="submarket-subtitle">Submarket Research Note · {int(first['year'])} {first['quarter']} — {int(latest['year'])} {latest['quarter']}</div>
-        </div>
-        <div class="signal">{signal_text}</div>
-    </div>
+    col_widths = [28*mm, 28*mm, 26*mm, 26*mm, 30*mm, 32*mm]
+    data_table = Table(table_rows, colWidths=col_widths)
 
-    <!-- KPI ROW -->
-    <div class="kpi-row">
-        <div class="kpi-box">
-            <div class="label">Prime Rent</div>
-            <div class="val">£{float(latest['rent_psf']):.0f}</div>
-            <div class="sub">£ per sq ft</div>
-        </div>
-        <div class="kpi-box">
-            <div class="label">Forecast Vacancy</div>
-            <div class="val">{avg_vacancy:.1f}%</div>
-            <div class="sub">AI-predicted average</div>
-        </div>
-        <div class="kpi-box">
-            <div class="label">Latest Take-Up</div>
-            <div class="val">{latest_takeup:,}</div>
-            <div class="sub">sq ft leased</div>
-        </div>
-        <div class="kpi-box">
-            <div class="label">Market Health</div>
-            <div class="val">{score}/100</div>
-            <div class="sub">AI-derived score</div>
-        </div>
-        <div class="kpi-box">
-            <div class="label">Sentiment</div>
-            <div class="val" style="font-size:16px;">{sentiment}</div>
-            <div class="sub">Latest quarter</div>
-        </div>
-    </div>
+    table_style = [
+        ("BACKGROUND", (0,0), (-1,0), dark_navy),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+        ("FONTSIZE", (0,0), (-1,0), 8),
+        ("FONTSIZE", (0,1), (-1,-1), 9),
+        ("FONTNAME", (0,1), (-1,-1), "Helvetica"),
+        ("TEXTCOLOR", (0,1), (-1,-1), mid_slate),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, very_light]),
+        ("GRID", (0,0), (-1,-1), 0.3, border_color),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("RIGHTPADDING", (0,0), (-1,-1), 8),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+    ]
+    data_table.setStyle(TableStyle(table_style))
+    elements.append(data_table)
+    elements.append(Spacer(1, 20))
 
-    <!-- COMMENTARY -->
-    <div class="commentary-section">
-        <div class="commentary-label">✦ AI Market Commentary · Claude</div>
-        <div class="commentary-text">{commentary_text}</div>
-    </div>
+    # ── FOOTER ──
+    elements.append(HRFlowable(width="100%", thickness=0.5, color=border_color, spaceAfter=10))
+    footer_data = [[
+        Paragraph(f'<b>West End Office Intelligence Platform</b><br/><font color="#94a3b8">Built by Dominic Mayne · Confidential Research Note · © {datetime.now().year}</font>', ParagraphStyle("fl", fontSize=8, fontName="Helvetica", textColor=mid_slate, leading=12)),
+        Paragraph(f'<font color="#a855f7"><b>✦ Powered by Claude · Anthropic</b></font><br/><font color="#94a3b8">AI-Assisted Analytics</font>', ParagraphStyle("fr", fontSize=8, fontName="Helvetica", alignment=TA_RIGHT, leading=12))
+    ]]
+    footer_table = Table(footer_data, colWidths=[110*mm, 60*mm])
+    footer_table.setStyle(TableStyle([
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+    ]))
+    elements.append(footer_table)
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(
+        "This report has been generated using AI-assisted analytics and should be used for informational purposes only. Data sources include published market reports from Savills, CBRE, Colliers, BNP Paribas Real Estate and Avison Young. West End Office Intelligence Platform accepts no liability for decisions made based on this report.",
+        ParagraphStyle("disc", fontSize=7, fontName="Helvetica", textColor=colors.HexColor("#cbd5e1"), leading=10)
+    ))
 
-    <!-- DATA TABLE -->
-    <div class="table-section">
-        <div class="section-label">Quarterly Data Breakdown</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Period</th>
-                    <th>Prime Rent (£ psf)</th>
-                    <th>Vacancy Rate</th>
-                    <th>Forecast Vacancy</th>
-                    <th>Take-Up (sq ft)</th>
-                    <th>Sentiment</th>
-                </tr>
-            </thead>
-            <tbody>
-                {table_rows}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-        <div class="footer-left">
-            <strong>West End Office Intelligence Platform</strong><br>
-            Built by Dominic Mayne · Confidential Research Note · © {datetime.now().year}
-        </div>
-        <div class="footer-right">
-            <strong>AI-Assisted Analytics</strong><br>
-            Powered by Claude · Anthropic
-        </div>
-    </div>
-
-    <div class="disclaimer">
-        This report has been generated using AI-assisted analytics and should be used for informational purposes only.
-        Data sources include published market reports from Savills, CBRE, Colliers, BNP Paribas Real Estate and Avison Young.
-        West End Office Intelligence Platform accepts no liability for decisions made based on this report.
-    </div>
-
-    </body>
-    </html>
-    """
-
+    # Build PDF
     try:
-        pdf_bytes = HTML(string=html_content).write_pdf()
+        doc.build(elements)
+        pdf_bytes = buffer.getvalue()
         filename = f"West_End_Office_{area.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d')}.pdf"
         return Response(
             content=pdf_bytes,
