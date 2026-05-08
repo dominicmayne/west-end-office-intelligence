@@ -1,410 +1,715 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
     <title>West End Office Intelligence Platform</title>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: Inter, Arial, sans-serif;
-            background: #07111f;
+            font-family: 'Inter', Arial, sans-serif;
+            background: #060d18;
             color: #e5e7eb;
-            margin: 0;
-            padding: 32px;
+            min-height: 100vh;
         }
 
-        .container {
+        /* ── NAV ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(6,13,24,0.95);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .nav-logo {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .nav-logo span { color: #3b82f6; }
+        .nav-tag {
+            font-size: 11px;
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(59,130,246,0.25);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 60px 40px 40px;
             max-width: 1400px;
             margin: auto;
         }
-
-        .header {
-            margin-bottom: 40px;
+        .hero-eyebrow {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #3b82f6;
+            margin-bottom: 16px;
+        }
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: #64748b;
+            font-size: 15px;
+            max-width: 600px;
+            line-height: 1.8;
         }
 
-        .header h1 {
-            font-size: 46px;
-            margin-bottom: 12px;
+        /* ── CONTAINER ── */
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 0 40px 60px;
         }
 
-        .header p {
-            opacity: 0.7;
-            line-height: 1.7;
-            max-width: 900px;
-        }
-
-        .topbar {
+        /* ── CONTROLS ── */
+        .controls {
             display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
         }
-
-        .selector {
-            background: #111827;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 14px 18px;
-            border-radius: 14px;
-            font-size: 14px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: linear-gradient(145deg, #111827, #1f2937);
-            padding: 24px;
-            border-radius: 22px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        }
-
-        .label {
+        .controls-label {
             font-size: 12px;
-            opacity: 0.6;
+            color: #475569;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+        }
+        .selector {
+            background: #0f1929;
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .selector:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .last-updated {
+            margin-left: auto;
+            font-size: 12px;
+            color: #334155;
         }
 
-        .value {
-            font-size: 34px;
+        /* ── KPI GRID ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: #0b1527;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .kpi-card:hover {
+            border-color: rgba(59,130,246,0.3);
+            transform: translateY(-2px);
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .kpi-card:hover::before { opacity: 1; }
+        .kpi-label {
+            font-size: 11px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 14px;
+        }
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #f1f5f9;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .kpi-sub {
+            font-size: 12px;
+            color: #334155;
+        }
+        .kpi-delta {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .delta-up { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .delta-down { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .delta-flat { background: rgba(148,163,184,0.1); color: #94a3b8; }
+
+        /* Signal badge */
+        .signal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
             font-weight: 700;
+            margin-top: 6px;
+        }
+        .signal-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
         }
 
-        .sub {
-            margin-top: 8px;
-            opacity: 0.7;
+        /* ── CHARTS ROW ── */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .chart-card {
+            background: #0b1527;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 28px;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        .chart-sub {
+            font-size: 12px;
+            color: #475569;
+            margin-top: 4px;
+        }
+        canvas { max-height: 320px; }
+
+        /* ── FULL WIDTH CHART ── */
+        .chart-full {
+            background: #0b1527;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        /* ── INSIGHT PANEL ── */
+        .insight-panel {
+            background: #0b1527;
+            border: 1px solid rgba(59,130,246,0.15);
+            border-left: 3px solid #3b82f6;
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .insight-icon {
+            width: 40px; height: 40px;
+            background: rgba(59,130,246,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .insight-label {
+            font-size: 11px;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+        .insight-text {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.9;
+        }
+
+        /* ── DATA TABLE ── */
+        .table-card {
+            background: #0b1527;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 28px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 13px;
         }
-
-        .signal-badge {
+        th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #475569;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #cbd5e1;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .sentiment-pill {
             display: inline-block;
-            padding: 12px 18px;
+            padding: 3px 10px;
             border-radius: 999px;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .chart-card {
-            background: linear-gradient(145deg, #111827, #1e293b);
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 11px;
             font-weight: 600;
         }
+        .pill-tightening { background: rgba(34,197,94,0.12); color: #22c55e; }
+        .pill-strong     { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .pill-improving  { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .pill-active     { background: rgba(245,158,11,0.12); color: #f59e0b; }
+        .pill-balanced   { background: rgba(148,163,184,0.12); color: #94a3b8; }
+        .pill-neutral    { background: rgba(148,163,184,0.12); color: #94a3b8; }
 
-        .insight {
-            background: linear-gradient(145deg, #111827, #1e293b);
-            padding: 28px;
-            border-left: 5px solid #3b82f6;
-            border-radius: 20px;
-            line-height: 1.9;
-            color: #d1d5db;
-            font-size: 15px;
+        /* ── LOADING ── */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #334155;
+            font-size: 14px;
         }
 
-        canvas {
-            max-height: 450px;
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .hero { padding: 40px 20px 24px; }
+            .container { padding: 0 20px 40px; }
+            .nav { padding: 16px 20px; }
+            .hero h1 { font-size: 28px; }
+            .charts-row { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
     </style>
-
 </head>
-
 <body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-logo">West End <span>Office Intelligence</span></div>
+    <div class="nav-tag">Live Market Data</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-eyebrow">Central London · Submarket Analytics</div>
+    <h1>West End Office<br>Intelligence Platform</h1>
+    <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
+</div>
 
 <div class="container">
 
-    <div class="header">
-
-        <h1>London West End Office Intelligence</h1>
-
-        <p>
-            Institutional-grade AI-assisted leasing analytics and vacancy forecasting
-            across Central London office submarkets.
-        </p>
-
-    </div>
-
-    <div class="topbar">
-
+    <!-- CONTROLS -->
+    <div class="controls">
+        <span class="controls-label">Submarket</span>
         <select id="areaSelect" class="selector"></select>
-
+        <div class="last-updated" id="lastUpdated"></div>
     </div>
 
-    <div class="grid">
-
-        <div class="card">
-            <div class="label">Average Vacancy</div>
-            <div class="value" id="avgVacancy">-</div>
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Prime Rent</div>
+            <div class="kpi-value" id="primeRent">—</div>
+            <div class="kpi-sub">£ per sq ft (latest quarter)</div>
+            <div class="kpi-delta delta-up" id="rentDelta"></div>
         </div>
-
-        <div class="card">
-            <div class="label">Prime Rent</div>
-            <div class="value" id="primeRent">-</div>
-            <div class="sub">£ per sq ft</div>
+        <div class="kpi-card">
+            <div class="kpi-label">Forecast Vacancy</div>
+            <div class="kpi-value" id="avgVacancy">—</div>
+            <div class="kpi-sub">AI-predicted average</div>
+            <div class="kpi-delta" id="vacancyDelta"></div>
         </div>
-
-        <div class="card">
-            <div class="label">Leasing Momentum</div>
-            <div class="value" id="takeup">-</div>
-            <div class="sub">sq ft take-up</div>
+        <div class="kpi-card">
+            <div class="kpi-label">Latest Take-Up</div>
+            <div class="kpi-value" id="takeup">—</div>
+            <div class="kpi-sub">sq ft leased (latest quarter)</div>
         </div>
-
-        <div class="card">
-            <div class="label">Market Health Score</div>
-            <div class="value" id="healthScore">-</div>
-            <div class="sub">AI-derived market strength</div>
+        <div class="kpi-card">
+            <div class="kpi-label">Market Health</div>
+            <div class="kpi-value" id="healthScore">—</div>
+            <div class="kpi-sub">out of 100</div>
         </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Investment Signal</div>
+            <div id="signalBadge" class="signal-badge">—</div>
+        </div>
+    </div>
 
-        <div class="card">
-            <div class="label">Investment Signal</div>
-            <div id="signalBadge" class="signal-badge">
-                Loading...
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Vacancy vs Prime Rent</div>
+                    <div class="chart-sub">Forecast vacancy overlaid with prime rent trend</div>
+                </div>
+            </div>
+            <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Take-Up Momentum</div>
+                    <div class="chart-sub">Quarterly leasing volume (sq ft)</div>
+                </div>
+            </div>
+            <canvas id="takeupChart"></canvas>
+        </div>
+    </div>
+
+    <!-- SUBMARKET COMPARISON -->
+    <div class="chart-full">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title">Submarket Comparison — Latest Quarter</div>
+                <div class="chart-sub">Prime rent and vacancy across all tracked submarkets</div>
             </div>
         </div>
-
+        <canvas id="comparisonChart" style="max-height:260px;"></canvas>
     </div>
 
-    <div class="chart-card">
-
-        <div class="section-title">
-            Vacancy vs Prime Rent Trend
+    <!-- INSIGHT -->
+    <div class="insight-panel">
+        <div class="insight-icon">💡</div>
+        <div>
+            <div class="insight-label">AI Market Commentary</div>
+            <div class="insight-text" id="insight">Loading market commentary...</div>
         </div>
-
-        <canvas id="chart"></canvas>
-
     </div>
 
-    <div class="insight" id="insight">
-
-        Loading market commentary...
-
+    <!-- DATA TABLE -->
+    <div class="table-card">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title">Quarterly Data Breakdown</div>
+                <div class="chart-sub">All data points for selected submarket</div>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Prime Rent (£ psf)</th>
+                    <th>Vacancy Rate</th>
+                    <th>Forecast Vacancy</th>
+                    <th>Take-Up (sq ft)</th>
+                    <th>Sentiment</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable"></tbody>
+        </table>
     </div>
 
 </div>
 
 <script>
+let trendChart, takeupChart, comparisonChart;
+let allData = [];
 
-let chart;
+function sentimentClass(s) {
+    return 'pill-' + s.toLowerCase();
+}
+
+function animateValue(el, end, suffix = '', decimals = 0) {
+    const start = 0;
+    const duration = 800;
+    const startTime = performance.now();
+    function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = (start + (end - start) * ease).toFixed(decimals);
+        el.textContent = suffix + current;
+        if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
 
 async function loadDashboard(selectedArea = null) {
+    try {
+        const response = await fetch('https://west-end-office-intelligence-production.up.railway.app/predictions');
+        allData = await response.json();
 
-    const response =
-        await fetch('https://west-end-office-intelligence-production.up.railway.app/predictions');
+        const uniqueAreas = [...new Set(allData.map(d => d.area))];
+        const selector = document.getElementById("areaSelect");
 
-    const data = await response.json();
+        if (selector.options.length === 0) {
+            uniqueAreas.forEach(area => {
+                const opt = document.createElement("option");
+                opt.value = area;
+                opt.textContent = area;
+                selector.appendChild(opt);
+            });
+            selectedArea = uniqueAreas[0];
+        }
 
-    const uniqueAreas =
-        [...new Set(data.map(d => d.area))];
+        if (!selectedArea) selectedArea = selector.value;
 
-    const selector =
-        document.getElementById("areaSelect");
+        const filtered = allData.filter(d => d.area === selectedArea);
+        const latest = filtered[filtered.length - 1];
+        const prev = filtered[filtered.length - 2];
 
-    if (selector.options.length === 0) {
+        // Last updated
+        document.getElementById("lastUpdated").textContent =
+            `Last updated: ${latest.year} ${latest.quarter}`;
 
-        uniqueAreas.forEach(area => {
+        // KPIs with animation
+        animateValue(document.getElementById("primeRent"), latest.rent_psf, '£', 0);
 
-            const option =
-                document.createElement("option");
+        const avgVacancy = (filtered.reduce((a,b) => a + b.predicted, 0) / filtered.length);
+        animateValue(document.getElementById("avgVacancy"), avgVacancy, '', 2);
+        document.getElementById("avgVacancy").textContent += '%';
 
-            option.value = area;
-            option.textContent = area;
+        document.getElementById("takeup").textContent =
+            latest.takeup_sqft.toLocaleString();
 
-            selector.appendChild(option);
+        const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
+        animateValue(document.getElementById("healthScore"), score, '', 0);
+        document.getElementById("healthScore").textContent += '/100';
 
+        // Rent delta
+        if (prev) {
+            const rentChange = latest.rent_psf - prev.rent_psf;
+            const rentDelta = document.getElementById("rentDelta");
+            rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
+            rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
+        }
+
+        // Vacancy delta
+        if (prev) {
+            const vacChange = (latest.predicted - prev.predicted).toFixed(2);
+            const vacDelta = document.getElementById("vacancyDelta");
+            vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange) + '% vs prev quarter';
+            vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
+        }
+
+        // Signal badge
+        const badge = document.getElementById("signalBadge");
+        if (avgVacancy < 5) {
+            badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET';
+            badge.style.background = 'rgba(34,197,94,0.1)';
+            badge.style.color = '#22c55e';
+        } else if (avgVacancy < 7) {
+            badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR';
+            badge.style.background = 'rgba(250,204,21,0.1)';
+            badge.style.color = '#facc15';
+        } else {
+            badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING';
+            badge.style.background = 'rgba(239,68,68,0.1)';
+            badge.style.color = '#ef4444';
+        }
+
+        // Insight
+        const rentTrend = latest.rent_psf > (filtered[0]?.rent_psf || 0) ? 'upward' : 'stable';
+        document.getElementById("insight").textContent =
+            `${selectedArea} currently demonstrates ${latest.sentiment.toLowerCase()} leasing conditions across the tracked period. ` +
+            `Prime rents are on an ${rentTrend} trajectory, reaching £${latest.rent_psf} psf in ${latest.year} ${latest.quarter}. ` +
+            `Forecast vacancy averages ${avgVacancy.toFixed(2)}% with the AI model signalling a ${avgVacancy < 5 ? 'supply-constrained, landlord-favourable' : avgVacancy < 7 ? 'balanced' : 'tenant-favourable'} market. ` +
+            `Recent take-up of ${latest.takeup_sqft.toLocaleString()} sq ft confirms continued occupier activity in this submarket. ` +
+            `Market Health Score stands at ${score}/100, reflecting ${score >= 70 ? 'strong fundamentals and limited availability' : score >= 50 ? 'moderate conditions with improving momentum' : 'elevated vacancy requiring monitoring'}.`;
+
+        // Labels for charts
+        const labels = filtered.map(d => `${d.year} ${d.quarter}`);
+
+        // ── TREND CHART ──
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Forecast Vacancy (%)',
+                        data: filtered.map(d => d.predicted.toFixed(2)),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.06)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3b82f6',
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Prime Rent (£ psf)',
+                        data: filtered.map(d => d.rent_psf),
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34,197,94,0.04)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#22c55e',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: chartOptions('y', 'y1')
         });
 
-        selectedArea = uniqueAreas[0];
-    }
-
-    if (!selectedArea) {
-        selectedArea = selector.value;
-    }
-
-    const filtered =
-        data.filter(d => d.area === selectedArea);
-
-    const labels =
-        filtered.map(d => `${d.year} ${d.quarter}`);
-
-    const predictions =
-        filtered.map(d => d.predicted);
-
-    const rents =
-        filtered.map(d => d.rent_psf);
-
-    const latest =
-        filtered[filtered.length - 1];
-
-    const avgVacancy =
-        (predictions.reduce((a,b)=>a+b,0)/predictions.length)
-        .toFixed(2);
-
-    document.getElementById("avgVacancy").innerText =
-        avgVacancy + "%";
-
-    document.getElementById("primeRent").innerText =
-        "£" + latest.rent_psf;
-
-    document.getElementById("takeup").innerText =
-        latest.takeup_sqft.toLocaleString();
-
-    const score =
-        Math.max(0, Math.min(100,
-        Math.round(100 - (avgVacancy * 10))));
-
-    document.getElementById("healthScore").innerText =
-        score + "/100";
-
-    const badge =
-        document.getElementById("signalBadge");
-
-    if (avgVacancy < 5) {
-
-        badge.innerText = "STRONG MARKET";
-        badge.style.background = "rgba(34,197,94,0.15)";
-        badge.style.color = "#22c55e";
-
-    } else if (avgVacancy < 7) {
-
-        badge.innerText = "MONITOR";
-        badge.style.background = "rgba(250,204,21,0.15)";
-        badge.style.color = "#facc15";
-
-    } else {
-
-        badge.innerText = "WEAKENING";
-        badge.style.background = "rgba(239,68,68,0.15)";
-        badge.style.color = "#ef4444";
-
-    }
-
-    document.getElementById("insight").innerText =
-
-        `${selectedArea} currently demonstrates ${latest.sentiment.toLowerCase()} leasing conditions. ` +
-
-        `Prime rents are currently averaging £${latest.rent_psf} psf with vacancy levels forecast at ${avgVacancy}%. ` +
-
-        `Recent take-up volumes of ${latest.takeup_sqft.toLocaleString()} sq ft suggest continuing occupier demand resilience within the submarket. ` +
-
-        `AI-assisted forecasting indicates that ${selectedArea} remains strategically significant within the broader Central London office market.`;
-
-    if (chart) {
-        chart.destroy();
-    }
-
-    chart = new Chart(
-        document.getElementById('chart'),
-        {
-
-        type: 'line',
-
-        data: {
-
-            labels: labels,
-
-            datasets: [
-
-                {
-                    label: 'Vacancy Forecast (%)',
-                    data: predictions,
-                    borderColor: '#3b82f6',
-                    tension: 0.35,
-                    yAxisID: 'y'
-                },
-
-                {
-                    label: 'Prime Rent (£ psf)',
-                    data: rents,
-                    borderColor: '#22c55e',
-                    tension: 0.35,
-                    yAxisID: 'y1'
-                }
-
-            ]
-        },
-
-        options: {
-
-            responsive: true,
-
-            interaction: {
-                mode: 'index',
-                intersect: false
+        // ── TAKE-UP CHART ──
+        if (takeupChart) takeupChart.destroy();
+        takeupChart = new Chart(document.getElementById('takeupChart'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Take-Up (sq ft)',
+                    data: filtered.map(d => d.takeup_sqft),
+                    backgroundColor: labels.map((_, i) =>
+                        i === labels.length - 1
+                            ? 'rgba(59,130,246,0.8)'
+                            : 'rgba(59,130,246,0.25)'),
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
             },
-
-            scales: {
-
-                y: {
-                    type: 'linear',
-                    position: 'left',
-                    ticks: {
-                        color: '#9ca3af'
-                    },
-                    grid: {
-                        color: 'rgba(255,255,255,0.05)'
-                    }
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#64748b', font: { size: 11 } } }
                 },
-
-                y1: {
-                    type: 'linear',
-                    position: 'right',
-                    ticks: {
-                        color: '#9ca3af'
-                    },
-                    grid: {
-                        drawOnChartArea: false
-                    }
-                },
-
-                x: {
-                    ticks: {
-                        color: '#9ca3af'
-                    },
-                    grid: {
-                        color: 'rgba(255,255,255,0.05)'
-                    }
-                }
-            },
-
-            plugins: {
-
-                legend: {
-
-                    labels: {
-                        color: '#e5e7eb'
-                    }
+                scales: {
+                    x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                    y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
                 }
             }
+        });
+
+        // ── COMPARISON CHART ──
+        const latestByArea = uniqueAreas.map(area => {
+            const areaData = allData.filter(d => d.area === area);
+            return areaData[areaData.length - 1];
+        });
+
+        if (comparisonChart) comparisonChart.destroy();
+        comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: latestByArea.map(d => d.area),
+                datasets: [
+                    {
+                        label: 'Prime Rent (£ psf)',
+                        data: latestByArea.map(d => d.rent_psf),
+                        backgroundColor: 'rgba(34,197,94,0.7)',
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Vacancy (%)',
+                        data: latestByArea.map(d => d.predicted.toFixed(2)),
+                        backgroundColor: 'rgba(59,130,246,0.7)',
+                        borderRadius: 6,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: chartOptions('y', 'y1')
+        });
+
+        // ── DATA TABLE ──
+        const tbody = document.getElementById("dataTable");
+        tbody.innerHTML = '';
+        filtered.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${row.year} ${row.quarter}</strong></td>
+                <td>£${row.rent_psf}</td>
+                <td>${row.vacancy?.toFixed(1) ?? row.predicted?.toFixed(1)}%</td>
+                <td>${parseFloat(row.predicted).toFixed(2)}%</td>
+                <td>${row.takeup_sqft.toLocaleString()}</td>
+                <td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${row.sentiment}</span></td>
+                <td>${row.signal}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch(e) {
+        document.getElementById("insight").textContent =
+            "Unable to load market data. Please check the API connection.";
+        console.error(e);
+    }
+}
+
+function chartOptions(leftAxis, rightAxis) {
+    return {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { labels: { color: '#64748b', font: { size: 11 } } }
+        },
+        scales: {
+            [leftAxis]: {
+                type: 'linear', position: 'left',
+                ticks: { color: '#475569' },
+                grid: { color: 'rgba(255,255,255,0.03)' }
+            },
+            [rightAxis]: {
+                type: 'linear', position: 'right',
+                ticks: { color: '#475569' },
+                grid: { drawOnChartArea: false }
+            },
+            x: {
+                ticks: { color: '#475569' },
+                grid: { color: 'rgba(255,255,255,0.03)' }
+            }
         }
-    });
+    };
 }
 
 loadDashboard();
-
 document.getElementById("areaSelect")
-.addEventListener("change", (e) => {
-
-    loadDashboard(e.target.value);
-
-});
-
+    .addEventListener("change", e => loadDashboard(e.target.value));
 </script>
 
 </body>
-
 </html>
