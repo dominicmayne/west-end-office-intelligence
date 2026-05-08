@@ -2,39 +2,46 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+import uvicorn
+import os
 
 app = FastAPI()
 
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Root endpoint
 @app.get("/")
 def home():
     return {"status": "API running"}
 
+# Predictions endpoint
 @app.get("/predictions")
 def predictions():
 
-    data = pd.read_csv("../data/west_end_office_data.csv")
+    # Load data
+    data = pd.read_csv("data/west_end_office_data.csv")
 
+    # Encode areas
     data["area_code"] = data["area"].astype("category").cat.codes
 
+    # Model setup
     X = data[["year", "rent_psf", "area_code"]]
     y = data["vacancy_rate"]
 
     model = LinearRegression()
     model.fit(X, y)
 
+    # Predictions
     data["predicted"] = model.predict(X)
 
-    # -----------------------------
-    # 🔥 NEW: Intelligence layer
-    # -----------------------------
-
+    # Intelligence layer
     def get_signal(v):
         if v < 5:
             return "🟢 Attractive"
@@ -51,12 +58,13 @@ def predictions():
         else:
             return f"{area} shows balanced leasing conditions (vacancy {v:.1f}%)"
 
+    # Build response
     results = []
 
     for _, row in data.iterrows():
         results.append({
             "area": row["area"],
-            "year": row["year"],
+            "year": int(row["year"]),
             "vacancy": float(row["vacancy_rate"]),
             "predicted": float(row["predicted"]),
             "signal": get_signal(row["predicted"]),
@@ -65,12 +73,12 @@ def predictions():
 
     return results
 
-
+# Test endpoint
 @app.get("/test")
 def test():
     return {"status": "working"}
 
-
+# Railway startup
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    PORT = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
