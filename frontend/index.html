@@ -5,365 +5,73 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-            background: #060d18;
-            color: #e5e7eb;
-            min-height: 100vh;
-        }
-
-        .nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 40px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: rgba(6,13,24,0.95);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-        }
-        .nav-logo {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
+        body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+        .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
         .nav-logo span { color: #3b82f6; }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .nav-tag {
-            font-size: 11px;
-            background: rgba(59,130,246,0.15);
-            color: #60a5fa;
-            padding: 4px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(59,130,246,0.25);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .nav-claude {
-            font-size: 11px;
-            background: rgba(168,85,247,0.12);
-            color: #a855f7;
-            padding: 4px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(168,85,247,0.25);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .hero {
-            padding: 60px 40px 40px;
-            max-width: 1400px;
-            margin: auto;
-        }
-        .hero-eyebrow {
-            font-size: 11px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #3b82f6;
-            margin-bottom: 16px;
-        }
-        .hero h1 {
-            font-size: 42px;
-            font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            color: #64748b;
-            font-size: 15px;
-            max-width: 600px;
-            line-height: 1.8;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: auto;
-            padding: 0 40px 80px;
-        }
-
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-        .controls-label {
-            font-size: 12px;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .selector {
-            background: #0f1929;
-            color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .nav-tag { font-size: 11px; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(59,130,246,0.25); letter-spacing: 1px; text-transform: uppercase; }
+        .nav-claude { font-size: 11px; background: rgba(168,85,247,0.12); color: #a855f7; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(168,85,247,0.25); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+        .hero { padding: 60px 40px 40px; max-width: 1400px; margin: auto; }
+        .hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #3b82f6; margin-bottom: 16px; }
+        .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: #64748b; font-size: 15px; max-width: 600px; line-height: 1.8; }
+        .container { max-width: 1400px; margin: auto; padding: 0 40px 80px; }
+        .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+        .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+        .selector { background: #0f1929; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: border-color 0.2s; }
         .selector:focus { outline: none; border-color: #3b82f6; }
         .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .kpi-card {
-            background: #0b1527;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s, transform 0.2s;
-        }
-        .kpi-card:hover {
-            border-color: rgba(59,130,246,0.3);
-            transform: translateY(-2px);
-        }
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 24px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+        .kpi-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); opacity: 0; transition: opacity 0.2s; }
         .kpi-card:hover::before { opacity: 1; }
-        .kpi-label {
-            font-size: 11px;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 14px;
-        }
-        .kpi-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: #f1f5f9;
-            line-height: 1;
-            margin-bottom: 8px;
-        }
+        .kpi-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; }
+        .kpi-value { font-size: 32px; font-weight: 800; color: #f1f5f9; line-height: 1; margin-bottom: 8px; }
         .kpi-sub { font-size: 12px; color: #334155; }
-        .kpi-delta {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            margin-top: 10px;
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
+        .kpi-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 10px; padding: 3px 8px; border-radius: 6px; }
         .delta-up { background: rgba(34,197,94,0.1); color: #22c55e; }
         .delta-down { background: rgba(239,68,68,0.1); color: #ef4444; }
-
-        .signal-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 6px;
-        }
+        .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
         .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-        .charts-row {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .chart-card {
-            background: #0b1527;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 28px;
-        }
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-        }
+        .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .chart-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
         .chart-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
         .chart-sub { font-size: 12px; color: #475569; margin-top: 4px; }
         canvas { max-height: 320px; }
-
-        .chart-full {
-            background: #0b1527;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 28px;
-            margin-bottom: 24px;
-        }
-
-        /* AI Commentary */
-        .insight-panel {
-            background: #0b1527;
-            border: 1px solid rgba(168,85,247,0.2);
-            border-left: 3px solid #a855f7;
-            border-radius: 18px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-        }
-        .insight-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .insight-icon {
-            width: 36px; height: 36px;
-            background: rgba(168,85,247,0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .insight-label {
-            font-size: 11px;
-            color: #a855f7;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-        .insight-powered {
-            margin-left: auto;
-            font-size: 11px;
-            color: #4b3f6b;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .insight-text {
-            font-size: 14px;
-            color: #94a3b8;
-            line-height: 2;
-        }
-
-        /* Typing animation */
-        .typing-indicator {
-            display: inline-flex;
-            gap: 4px;
-            align-items: center;
-            padding: 4px 0;
-        }
-        .typing-indicator span {
-            width: 6px; height: 6px;
-            background: #a855f7;
-            border-radius: 50%;
-            animation: bounce 1.2s infinite;
-            opacity: 0.6;
-        }
+        .chart-full { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+        .insight-panel { background: #0b1527; border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid #a855f7; border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; }
+        .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .insight-icon { width: 36px; height: 36px; background: rgba(168,85,247,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .insight-label { font-size: 11px; color: #a855f7; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+        .insight-powered { margin-left: auto; font-size: 11px; color: #4b3f6b; display: flex; align-items: center; gap: 5px; }
+        .insight-text { font-size: 14px; color: #94a3b8; line-height: 2; }
+        .typing-indicator { display: inline-flex; gap: 4px; align-items: center; padding: 4px 0; }
+        .typing-indicator span { width: 6px; height: 6px; background: #a855f7; border-radius: 50%; animation: bounce 1.2s infinite; opacity: 0.6; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        .table-card {
-            background: #0b1527;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 28px;
-            overflow-x: auto;
-            margin-bottom: 24px;
-        }
+        @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+        .table-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; overflow-x: auto; margin-bottom: 24px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th {
-            text-align: left;
-            padding: 10px 16px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #475569;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        td {
-            padding: 13px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            color: #cbd5e1;
-        }
+        th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        td { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255,255,255,0.02); }
-        .sentiment-pill {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .sentiment-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
         .pill-tightening { background: rgba(34,197,94,0.12); color: #22c55e; }
-        .pill-strong     { background: rgba(59,130,246,0.12); color: #60a5fa; }
-        .pill-improving  { background: rgba(168,85,247,0.12); color: #a855f7; }
-        .pill-active     { background: rgba(245,158,11,0.12); color: #f59e0b; }
-        .pill-balanced   { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .pill-neutral    { background: rgba(148,163,184,0.12); color: #94a3b8; }
-
-        /* Footer */
-        .footer {
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding: 28px 40px;
-            max-width: 1400px;
-            margin: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .footer-credit {
-            font-size: 12px;
-            color: #334155;
-        }
-        .footer-credit strong {
-            color: #475569;
-        }
-        .footer-badges {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .footer-badge {
-            font-size: 11px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.07);
-            color: #334155;
-            letter-spacing: 0.5px;
-        }
-        .footer-badge-claude {
-            background: rgba(168,85,247,0.08);
-            border-color: rgba(168,85,247,0.2);
-            color: #7c3aed;
-            font-weight: 600;
-        }
-
+        .pill-strong { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .pill-improving { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .pill-active { background: rgba(245,158,11,0.12); color: #f59e0b; }
+        .pill-balanced { background: rgba(148,163,184,0.12); color: #94a3b8; }
+        .pill-neutral { background: rgba(148,163,184,0.12); color: #94a3b8; }
+        .footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 28px 40px; max-width: 1400px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .footer-credit { font-size: 12px; color: #334155; }
+        .footer-credit strong { color: #475569; }
+        .footer-badges { display: flex; align-items: center; gap: 10px; }
+        .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; letter-spacing: 0.5px; }
+        .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.2); color: #7c3aed; font-weight: 600; }
         @media (max-width: 900px) {
             .hero { padding: 40px 20px 24px; }
             .container { padding: 0 20px 40px; }
@@ -452,14 +160,13 @@
     <div class="chart-full">
         <div class="chart-header">
             <div>
-                <div class="chart-title">Submarket Comparison — Latest Quarter</div>
-                <div class="chart-sub">Prime rent and vacancy across all tracked submarkets</div>
+                <div class="chart-title">All Submarket Comparison — Latest Quarter</div>
+                <div class="chart-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div>
             </div>
         </div>
-        <canvas id="comparisonChart" style="max-height:260px;"></canvas>
+        <canvas id="comparisonChart" style="max-height:280px;"></canvas>
     </div>
 
-    <!-- AI COMMENTARY -->
     <div class="insight-panel">
         <div class="insight-header">
             <div class="insight-icon">✦</div>
@@ -467,9 +174,7 @@
             <div class="insight-powered">Powered by Claude · Anthropic</div>
         </div>
         <div class="insight-text" id="insight">
-            <div class="typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
+            <div class="typing-indicator"><span></span><span></span><span></span></div>
         </div>
     </div>
 
@@ -498,11 +203,8 @@
 
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
-    <div class="footer-credit">
-        Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2025
-    </div>
+    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2025</div>
     <div class="footer-badges">
         <div class="footer-badge">Central London Analytics</div>
         <div class="footer-badge footer-badge-claude">✦ Powered by Claude</div>
@@ -515,9 +217,7 @@ let allData = [];
 
 const API = 'https://west-end-office-intelligence-production.up.railway.app';
 
-function sentimentClass(s) {
-    return 'pill-' + s.toLowerCase();
-}
+function sentimentClass(s) { return 'pill-' + s.toLowerCase(); }
 
 function animateValue(el, end, suffix = '', decimals = 0) {
     const duration = 800;
@@ -531,21 +231,15 @@ function animateValue(el, end, suffix = '', decimals = 0) {
     requestAnimationFrame(update);
 }
 
-async function loadCommentary(area, filtered, avgVacancy, score) {
+async function loadCommentary(area) {
     const insightEl = document.getElementById("insight");
     insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-
     try {
         const response = await fetch(`${API}/commentary/${encodeURIComponent(area)}`);
         const result = await response.json();
         insightEl.textContent = result.commentary;
     } catch(e) {
-        const latest = filtered[filtered.length - 1];
-        const rentTrend = latest.rent_psf > (filtered[0]?.rent_psf || 0) ? 'upward' : 'stable';
-        insightEl.textContent =
-            `${area} currently demonstrates ${latest.sentiment.toLowerCase()} leasing conditions. ` +
-            `Prime rents are on an ${rentTrend} trajectory, reaching £${latest.rent_psf} psf in ${latest.year} ${latest.quarter}. ` +
-            `Forecast vacancy averages ${avgVacancy.toFixed(2)}% — Market Health Score: ${score}/100.`;
+        insightEl.textContent = "Commentary temporarily unavailable.";
     }
 }
 
@@ -554,7 +248,7 @@ async function loadDashboard(selectedArea = null) {
         const response = await fetch(`${API}/predictions`);
         allData = await response.json();
 
-        const uniqueAreas = [...new Set(allData.map(d => d.area))];
+        const uniqueAreas = [...new Set(allData.map(d => d.area))].sort();
         const selector = document.getElementById("areaSelect");
 
         if (selector.options.length === 0) {
@@ -573,8 +267,7 @@ async function loadDashboard(selectedArea = null) {
         const latest = filtered[filtered.length - 1];
         const prev = filtered[filtered.length - 2];
 
-        document.getElementById("lastUpdated").textContent =
-            `Last updated: ${latest.year} ${latest.quarter}`;
+        document.getElementById("lastUpdated").textContent = `Last updated: ${latest.year} ${latest.quarter}`;
 
         animateValue(document.getElementById("primeRent"), latest.rent_psf, '£', 0);
 
@@ -614,8 +307,7 @@ async function loadDashboard(selectedArea = null) {
             badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;';
         }
 
-        // Kick off AI commentary (non-blocking)
-        loadCommentary(selectedArea, filtered, avgVacancy, score);
+        loadCommentary(selectedArea);
 
         const labels = filtered.map(d => `${d.year} ${d.quarter}`);
 
@@ -625,24 +317,8 @@ async function loadDashboard(selectedArea = null) {
             data: {
                 labels,
                 datasets: [
-                    {
-                        label: 'Forecast Vacancy (%)',
-                        data: filtered.map(d => d.predicted.toFixed(2)),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59,130,246,0.06)',
-                        fill: true, tension: 0.4,
-                        pointRadius: 4, pointBackgroundColor: '#3b82f6',
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Prime Rent (£ psf)',
-                        data: filtered.map(d => d.rent_psf),
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34,197,94,0.04)',
-                        fill: true, tension: 0.4,
-                        pointRadius: 4, pointBackgroundColor: '#22c55e',
-                        yAxisID: 'y1'
-                    }
+                    { label: 'Forecast Vacancy (%)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
+                    { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
                 ]
             },
             options: chartOptions('y', 'y1')
@@ -656,22 +332,12 @@ async function loadDashboard(selectedArea = null) {
                 datasets: [{
                     label: 'Take-Up (sq ft)',
                     data: filtered.map(d => d.takeup_sqft),
-                    backgroundColor: labels.map((_, i) =>
-                        i === labels.length - 1
-                            ? 'rgba(59,130,246,0.8)'
-                            : 'rgba(59,130,246,0.25)'),
+                    backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
                     borderRadius: 6,
                     borderSkipped: false
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
-                scales: {
-                    x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                    y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
         });
 
         const latestByArea = uniqueAreas.map(area => {
@@ -685,18 +351,8 @@ async function loadDashboard(selectedArea = null) {
             data: {
                 labels: latestByArea.map(d => d.area),
                 datasets: [
-                    {
-                        label: 'Prime Rent (£ psf)',
-                        data: latestByArea.map(d => d.rent_psf),
-                        backgroundColor: 'rgba(34,197,94,0.7)',
-                        borderRadius: 6, yAxisID: 'y'
-                    },
-                    {
-                        label: 'Vacancy (%)',
-                        data: latestByArea.map(d => d.predicted.toFixed(2)),
-                        backgroundColor: 'rgba(59,130,246,0.7)',
-                        borderRadius: 6, yAxisID: 'y1'
-                    }
+                    { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
+                    { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
                 ]
             },
             options: chartOptions('y', 'y1')
@@ -718,9 +374,7 @@ async function loadDashboard(selectedArea = null) {
             tbody.appendChild(tr);
         });
 
-    } catch(e) {
-        console.error(e);
-    }
+    } catch(e) { console.error(e); }
 }
 
 function chartOptions(leftAxis, rightAxis) {

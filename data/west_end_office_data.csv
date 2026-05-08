@@ -1,21 +1,89 @@
 area,year,quarter,rent_psf,vacancy_rate,takeup_sqft,sentiment
+Mayfair,2023,Q1,135,5.2,148000,Improving
+Mayfair,2023,Q2,138,4.9,132000,Improving
+Mayfair,2023,Q3,140,4.6,155000,Tightening
+Mayfair,2023,Q4,140,4.5,102000,Tightening
+Mayfair,2024,Q1,140,4.5,102100,Tightening
+Mayfair,2024,Q2,140,4.2,85000,Tightening
+Mayfair,2024,Q3,160,3.8,95000,Tightening
 Mayfair,2024,Q4,160,3.4,95000,Tightening
 Mayfair,2025,Q1,165,3.5,110000,Tightening
 Mayfair,2025,Q2,175,3.2,95000,Tightening
 Mayfair,2025,Q3,185,3.6,88000,Tightening
+Soho,2023,Q1,100,6.2,62800,Improving
+Soho,2023,Q2,100,6.0,68000,Improving
+Soho,2023,Q3,100,5.8,75000,Strong
+Soho,2023,Q4,100,5.5,70000,Strong
+Soho,2024,Q1,100,5.0,62000,Strong
+Soho,2024,Q2,100,4.9,62600,Strong
+Soho,2024,Q3,100,4.5,70000,Strong
 Soho,2024,Q4,105,4.8,78000,Strong
 Soho,2025,Q1,108,4.6,58000,Strong
 Soho,2025,Q2,112,4.3,72000,Strong
 Soho,2025,Q3,115,4.1,68000,Strong
+Fitzrovia,2023,Q1,95,5.4,52000,Improving
+Fitzrovia,2023,Q2,95,5.6,53000,Improving
+Fitzrovia,2023,Q3,95,5.8,68000,Improving
+Fitzrovia,2023,Q4,95,6.0,58000,Improving
+Fitzrovia,2024,Q1,95,6.2,58000,Improving
+Fitzrovia,2024,Q2,97.5,6.0,53000,Improving
+Fitzrovia,2024,Q3,97.5,5.8,72000,Improving
 Fitzrovia,2024,Q4,100,6.0,65000,Improving
 Fitzrovia,2025,Q1,102,5.8,82000,Improving
 Fitzrovia,2025,Q2,105,5.5,75000,Improving
 Fitzrovia,2025,Q3,108,5.2,70000,Improving
+Victoria,2023,Q1,80,8.5,48000,Neutral
+Victoria,2023,Q2,82,8.3,55000,Neutral
+Victoria,2023,Q3,85,8.2,62000,Neutral
+Victoria,2023,Q4,85,8.0,58000,Neutral
+Victoria,2024,Q1,85,8.2,45000,Neutral
+Victoria,2024,Q2,90,7.8,55000,Neutral
+Victoria,2024,Q3,96,7.78,180000,Active
 Victoria,2024,Q4,96,7.78,85000,Active
 Victoria,2025,Q1,100,7.5,65000,Improving
 Victoria,2025,Q2,105,7.2,90000,Improving
 Victoria,2025,Q3,108,7.0,95000,Improving
+Midtown,2023,Q1,77.5,7.8,160000,Balanced
+Midtown,2023,Q2,77.5,7.5,175000,Balanced
+Midtown,2023,Q3,77.5,7.2,183000,Balanced
+Midtown,2023,Q4,80,7.0,190000,Balanced
+Midtown,2024,Q1,77.5,7.5,183000,Balanced
+Midtown,2024,Q2,77.5,6.3,183000,Balanced
+Midtown,2024,Q3,85,5.0,254000,Improving
 Midtown,2024,Q4,80,8.81,510000,Strong
 Midtown,2025,Q1,82,7.8,183000,Balanced
 Midtown,2025,Q2,85,7.2,210000,Improving
 Midtown,2025,Q3,88,6.5,220000,Improving
+Marylebone,2023,Q1,100,3.8,95000,Strong
+Marylebone,2023,Q2,100,3.6,88000,Strong
+Marylebone,2023,Q3,105,3.4,110000,Strong
+Marylebone,2023,Q4,105,3.2,85000,Strong
+Marylebone,2024,Q1,105,3.5,33600,Strong
+Marylebone,2024,Q2,105,3.4,55000,Strong
+Marylebone,2024,Q3,108,3.2,62000,Strong
+Marylebone,2024,Q4,108,3.0,70000,Tightening
+Marylebone,2025,Q1,110,2.9,85000,Tightening
+Marylebone,2025,Q2,112,2.8,78000,Tightening
+Marylebone,2025,Q3,115,2.7,72000,Tightening
+St James's,2023,Q1,135,4.2,72000,Strong
+St James's,2023,Q2,140,4.0,68000,Strong
+St James's,2023,Q3,145,3.8,75000,Tightening
+St James's,2023,Q4,145,3.6,65000,Tightening
+St James's,2024,Q1,140,3.8,45000,Tightening
+St James's,2024,Q2,140,3.6,48000,Tightening
+St James's,2024,Q3,145,3.4,55000,Tightening
+St James's,2024,Q4,150,3.4,52000,Tightening
+St James's,2025,Q1,155,3.3,58000,Tightening
+St James's,2025,Q2,160,3.1,65000,Tightening
+St James's,2025,Q3,165,3.0,60000,Tightening
+Covent Garden,2023,Q1,82.5,6.2,58000,Improving
+Covent Garden,2023,Q2,82.5,6.0,68000,Improving
+Covent Garden,2023,Q3,87.5,5.8,90000,Improving
+Covent Garden,2023,Q4,87.5,5.5,75000,Improving
+Covent Garden,2024,Q1,87.5,5.6,62000,Improving
+Covent Garden,2024,Q2,90,5.4,80000,Improving
+Covent Garden,2024,Q3,95,5.2,88000,Strong
+Covent Garden,2024,Q4,95,5.0,72000,Strong
+Covent Garden,2025,Q1,98,4.8,68000,Strong
+Covent Garden,2025,Q2,102,4.6,75000,Strong
+Covent Garden,2025,Q3,105,4.4,80000,Strong
