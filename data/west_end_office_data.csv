@@ -1,0 +1,21 @@
+area,year,vacancy_rate,rent_psf
+Soho,2020,7.2,85
+Soho,2021,8.1,82
+Soho,2022,6.4,90
+Soho,2023,5.9,95
+Mayfair,2020,4.1,120
+Mayfair,2021,5.3,118
+Mayfair,2022,4.7,125
+Mayfair,2023,4.2,130
+Fitzrovia,2020,6.5,70
+Fitzrovia,2021,7.1,68
+Fitzrovia,2022,6.0,74
+Fitzrovia,2023,5.5,80
+Covent Garden,2020,5.8,88
+Covent Garden,2021,6.2,85
+Covent Garden,2022,5.4,92
+Covent Garden,2023,5.0,96
+Marylebone,2020,5.1,78
+Marylebone,2021,5.7,75
+Marylebone,2022,5.0,82
+Marylebone,2023,4.6,86
