@@ -21,10 +21,15 @@
         .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
         .selector { background: #0f1929; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: border-color 0.2s; }
         .selector:focus { outline: none; border-color: #3b82f6; }
-        .download-btn { margin-left: 8px; background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .download-btn { background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
         .download-btn:hover { opacity: 0.85; }
         .download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .live-btn { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .live-btn:hover { opacity: 0.85; }
+        .live-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
+        .live-banner { background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2); border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; color: #38bdf8; display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .live-banner.error { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #f87171; }
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .kpi-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 24px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
         .kpi-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
@@ -47,18 +52,13 @@
         .heatmap-toggles { display: flex; gap: 8px; }
         .heatmap-toggle { background: #0f1929; border: 1px solid rgba(255,255,255,0.08); color: #64748b; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .heatmap-toggle.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #60a5fa; font-weight: 600; }
-        .map-container { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+        .map-container { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
         .svg-map-wrap { background: #060d18; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); padding: 20px; display: flex; align-items: center; justify-content: center; }
         svg#schematic { width: 100%; max-width: 580px; height: auto; display: block; margin: auto; }
-
-        /* Zone styles */
         .zone { cursor: pointer; transition: all 0.2s; }
         .zone:hover { filter: brightness(1.3); }
-        .zone.selected { filter: brightness(1.4); stroke-width: 3 !important; }
         .zone-label { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 700; letter-spacing: 0.3px; }
         .zone-sublabel { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 400; }
-
-        /* Side panel */
         .map-side-panel { display: flex; flex-direction: column; gap: 12px; }
         .map-legend { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 16px; }
         .map-legend-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #475569; margin-bottom: 12px; font-weight: 600; }
@@ -66,13 +66,13 @@
         .legend-swatch { width: 28px; height: 10px; border-radius: 3px; flex-shrink: 0; }
         .map-rankings { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 16px; flex: 1; }
         .map-rankings-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #475569; margin-bottom: 12px; font-weight: 600; }
-        .ranking-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: background 0.15s; border-radius: 6px; padding-left: 6px; padding-right: 6px; }
+        .ranking-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 6px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: background 0.15s; border-radius: 6px; }
         .ranking-row:last-child { border-bottom: none; }
         .ranking-row:hover { background: rgba(255,255,255,0.03); }
         .ranking-row.active-row { background: rgba(59,130,246,0.08); }
         .ranking-name { font-size: 12px; color: #cbd5e1; font-weight: 500; }
         .ranking-val { font-size: 11px; font-weight: 700; }
-        .ranking-bar-wrap { width: 60px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 0 8px; }
+        .ranking-bar-wrap { width: 50px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 0 8px; }
         .ranking-bar { height: 4px; border-radius: 2px; transition: width 0.4s; }
 
         .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
@@ -148,7 +148,16 @@
         <button id="downloadBtn" class="download-btn" onclick="downloadReport()">
             ⬇ Download Report
         </button>
+        <button id="liveBtn" class="live-btn" onclick="fetchLiveData()">
+            ⚡ Refresh Live Data
+        </button>
         <div class="last-updated" id="lastUpdated"></div>
+    </div>
+
+    <div class="live-banner" id="liveBanner">
+        <span>⚡</span>
+        <span id="liveBannerText"></span>
+        <span id="liveBannerSource" style="margin-left:auto;font-size:11px;opacity:0.7;"></span>
     </div>
 
     <div class="kpi-grid">
@@ -156,7 +165,7 @@
             <div class="kpi-label">Prime Rent</div>
             <div class="kpi-value" id="primeRent">—</div>
             <div class="kpi-sub">£ per sq ft (latest quarter)</div>
-            <div class="kpi-delta delta-up" id="rentDelta"></div>
+            <div class="kpi-delta" id="rentDelta"></div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Forecast Vacancy</div>
@@ -192,69 +201,58 @@
                 <button class="heatmap-toggle" id="toggleRent" onclick="setMapMode('rent')">Prime Rent</button>
             </div>
         </div>
-
         <div class="map-container">
-            <!-- SVG SCHEMATIC -->
             <div class="svg-map-wrap">
                 <svg id="schematic" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Background grid lines (subtle) -->
                     <defs>
                         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                             <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
                         </pattern>
                     </defs>
                     <rect width="560" height="480" fill="url(#grid)"/>
-
-                    <!-- Thames (decorative) -->
                     <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="rgba(59,130,246,0.2)" stroke-width="8" stroke-linecap="round"/>
                     <text x="240" y="445" fill="rgba(59,130,246,0.3)" font-size="9" font-family="Inter,Arial" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
-
-                    <!-- Hyde Park (decorative) -->
                     <rect x="18" y="160" width="90" height="110" rx="12" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
                     <text x="63" y="218" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Hyde Park</text>
-
-                    <!-- Regent's Park (decorative) -->
                     <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
                     <text x="200" y="52" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Regent's Park</text>
 
-                    <!-- ── ZONES ── -->
-
-                    <!-- MARYLEBONE - top left area -->
+                    <!-- MARYLEBONE -->
                     <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')">
                         <rect x="118" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Marylebone</text>
                         <text x="177" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Marylebone">—</text>
                     </g>
 
-                    <!-- FITZROVIA - top centre -->
+                    <!-- FITZROVIA -->
                     <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')">
                         <rect x="248" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Fitzrovia</text>
                         <text x="307" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Fitzrovia">—</text>
                     </g>
 
-                    <!-- MIDTOWN - top right -->
+                    <!-- MIDTOWN -->
                     <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')">
                         <rect x="378" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="437" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Midtown</text>
                         <text x="437" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Midtown">—</text>
                     </g>
 
-                    <!-- MAYFAIR - middle left -->
+                    <!-- MAYFAIR -->
                     <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')">
                         <rect x="118" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Mayfair</text>
                         <text x="177" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Mayfair">—</text>
                     </g>
 
-                    <!-- SOHO - middle centre -->
+                    <!-- SOHO -->
                     <g class="zone" id="zone-Soho" onclick="selectArea('Soho')">
                         <rect x="248" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Soho</text>
                         <text x="307" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Soho">—</text>
                     </g>
 
-                    <!-- COVENT GARDEN - middle right -->
+                    <!-- COVENT GARDEN -->
                     <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')">
                         <rect x="378" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="437" y="222" class="zone-label" font-size="11" fill="white" text-anchor="middle">Covent</text>
@@ -262,21 +260,21 @@
                         <text x="437" y="252" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Covent Garden">—</text>
                     </g>
 
-                    <!-- ST JAMES'S - bottom left -->
+                    <!-- ST JAMES'S -->
                     <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)">
                         <rect x="118" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="334" class="zone-label" font-size="11" fill="white" text-anchor="middle">St James's</text>
                         <text x="177" y="362" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-St James's">—</text>
                     </g>
 
-                    <!-- VICTORIA - bottom centre -->
+                    <!-- VICTORIA -->
                     <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')">
                         <rect x="248" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="338" class="zone-label" font-size="12" fill="white" text-anchor="middle">Victoria</text>
                         <text x="307" y="354" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Victoria">—</text>
                     </g>
 
-                    <!-- Connector lines between zones -->
+                    <!-- Connector lines -->
                     <line x1="236" y1="123" x2="248" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="366" y1="123" x2="378" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="177" y1="168" x2="177" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
@@ -295,7 +293,6 @@
                 </svg>
             </div>
 
-            <!-- SIDE PANEL -->
             <div class="map-side-panel">
                 <div class="map-legend">
                     <div class="map-legend-title" id="legendTitle">Vacancy Rate</div>
@@ -410,25 +407,25 @@ function setMapMode(mode) {
     mapMode = mode;
     document.getElementById('toggleVacancy').classList.toggle('active', mode === 'vacancy');
     document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
-    document.getElementById('legendTitle').textContent = mode === 'vacancy' ? 'Vacancy Rate' : 'Prime Rent';
-    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
 
     const legend = document.querySelector('.map-legend');
     if (mode === 'vacancy') {
         legend.innerHTML = `
-            <div class="map-legend-title" id="legendTitle">Vacancy Rate</div>
+            <div class="map-legend-title">Vacancy Rate</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> Below 5% — Strong</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> 5–7% — Monitor</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Above 7% — Weakening</div>
         `;
     } else {
         legend.innerHTML = `
-            <div class="map-legend-title" id="legendTitle">Prime Rent</div>
+            <div class="map-legend-title">Prime Rent</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> £150+ psf — Premium</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> £100–150 psf — Mid</div>
             <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Below £100 psf — Value</div>
         `;
     }
+    document.getElementById('rankingsTitle').textContent =
+        mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
     updateSchematic();
     updateRankings();
 }
@@ -440,10 +437,7 @@ function updateSchematic() {
         const areaData = allData.filter(d => d.area === area);
         const latest = areaData[areaData.length - 1];
         const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
-
-        const color = mapMode === 'vacancy'
-            ? getVacancyColor(avgVacancy)
-            : getRentColor(latest.rent_psf);
+        const color = mapMode === 'vacancy' ? getVacancyColor(avgVacancy) : getRentColor(latest.rent_psf);
 
         const zoneEl = document.getElementById(`zone-${area}`);
         if (zoneEl) {
@@ -451,15 +445,13 @@ function updateSchematic() {
             if (rect) {
                 rect.setAttribute('fill', color + '33');
                 rect.setAttribute('stroke', color);
-            }
-            // Highlight selected
-            if (area === currentArea) {
-                rect.setAttribute('fill', color + '66');
-                rect.setAttribute('stroke-width', '3');
+                rect.setAttribute('stroke-width', area === currentArea ? '3' : '1.5');
+                if (area === currentArea) {
+                    rect.setAttribute('fill', color + '66');
+                }
             }
         }
 
-        // Update value label
         const valEl = document.getElementById(`val-${area}`);
         if (valEl) {
             valEl.textContent = mapMode === 'vacancy'
@@ -481,25 +473,17 @@ function updateRankings() {
         return { area, vacancy: avgVacancy, rent: latest.rent_psf };
     });
 
-    if (mapMode === 'vacancy') {
-        ranked.sort((a,b) => a.vacancy - b.vacancy);
-    } else {
-        ranked.sort((a,b) => b.rent - a.rent);
-    }
+    ranked.sort((a,b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
 
-    const maxVal = mapMode === 'vacancy'
-        ? Math.max(...ranked.map(r => r.vacancy))
-        : Math.max(...ranked.map(r => r.rent));
+    const maxVal = Math.max(...ranked.map(r => mapMode === 'vacancy' ? r.vacancy : r.rent));
 
-    const container = document.getElementById('rankingsList');
-    container.innerHTML = ranked.map(r => {
+    document.getElementById('rankingsList').innerHTML = ranked.map(r => {
         const val = mapMode === 'vacancy' ? r.vacancy : r.rent;
         const color = mapMode === 'vacancy' ? getVacancyColor(r.vacancy) : getRentColor(r.rent);
-        const barWidth = Math.round((val / maxVal) * 60);
+        const barWidth = Math.round((val / maxVal) * 50);
         const displayVal = mapMode === 'vacancy' ? `${r.vacancy.toFixed(1)}%` : `£${r.rent}`;
-        const isActive = r.area === currentArea;
         return `
-            <div class="ranking-row ${isActive ? 'active-row' : ''}" onclick="selectArea('${r.area}')">
+            <div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" onclick="selectArea('${r.area}')">
                 <span class="ranking-name">${r.area}</span>
                 <div class="ranking-bar-wrap">
                     <div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div>
@@ -512,8 +496,7 @@ function updateRankings() {
 
 function selectArea(area) {
     currentArea = area;
-    const selector = document.getElementById("areaSelect");
-    selector.value = area;
+    document.getElementById("areaSelect").value = area;
     updateSchematic();
     updateRankings();
     loadDashboard(area);
@@ -544,6 +527,66 @@ async function loadCommentary(area) {
     } catch(e) {
         insightEl.textContent = "Commentary temporarily unavailable.";
     }
+}
+
+async function fetchLiveData() {
+    const area = document.getElementById("areaSelect").value;
+    const btn = document.getElementById("liveBtn");
+    const banner = document.getElementById("liveBanner");
+
+    btn.textContent = "⏳ Searching web...";
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    banner.style.display = "none";
+    banner.className = "live-banner";
+
+    try {
+        const response = await fetch(`${API}/live-data/${encodeURIComponent(area)}`);
+        const result = await response.json();
+
+        banner.style.display = "flex";
+
+        if (result.live) {
+            // Update prime rent card with live figure
+            document.getElementById("primeRent").textContent = `£${result.rent_psf}`;
+
+            let parts = [];
+            if (result.rent_change && result.rent_change !== 0) {
+                parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf vs baseline`);
+            }
+            if (result.vacancy_change && result.vacancy_change !== 0) {
+                parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}% vs baseline`);
+            }
+            if (parts.length === 0) {
+                parts.push("Data confirmed — consistent with baseline");
+            }
+            if (result.notes) parts.push(result.notes);
+
+            document.getElementById("liveBannerText").textContent =
+                `Live data updated · ${result.period} · ${parts.join(' · ')}`;
+            document.getElementById("liveBannerSource").textContent =
+                `${result.source} · Confidence: ${result.confidence}`;
+            document.getElementById("lastUpdated").textContent =
+                `⚡ Live: ${result.period}`;
+
+        } else {
+            banner.className = "live-banner error";
+            document.getElementById("liveBannerText").textContent =
+                `Live search unavailable — showing baseline data. ${result.error || ''}`;
+            document.getElementById("liveBannerSource").textContent = "";
+        }
+
+    } catch(e) {
+        banner.style.display = "flex";
+        banner.className = "live-banner error";
+        document.getElementById("liveBannerText").textContent =
+            "Live data fetch failed. Please try again.";
+        document.getElementById("liveBannerSource").textContent = "";
+    }
+
+    btn.textContent = "⚡ Refresh Live Data";
+    btn.disabled = false;
+    btn.style.opacity = "1";
 }
 
 async function downloadReport() {
@@ -600,7 +643,8 @@ async function loadDashboard(selectedArea = null) {
         const latest = filtered[filtered.length - 1];
         const prev = filtered[filtered.length - 2];
 
-        document.getElementById("lastUpdated").textContent = `Last updated: ${latest.year} ${latest.quarter}`;
+        document.getElementById("lastUpdated").textContent =
+            `Last updated: ${latest.year} ${latest.quarter}`;
 
         animateValue(document.getElementById("primeRent"), latest.rent_psf, '£', 0);
 
@@ -621,6 +665,7 @@ async function loadDashboard(selectedArea = null) {
             const rentDelta = document.getElementById("rentDelta");
             rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
             rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
+
             const vacChange = (latest.predicted - prev.predicted).toFixed(2);
             const vacDelta = document.getElementById("vacancyDelta");
             vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange) + '% vs prev quarter';
@@ -664,12 +709,20 @@ async function loadDashboard(selectedArea = null) {
                 datasets: [{
                     label: 'Take-Up (sq ft)',
                     data: filtered.map(d => d.takeup_sqft),
-                    backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
+                    backgroundColor: labels.map((_, i) =>
+                        i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
                     borderRadius: 6,
                     borderSkipped: false
                 }]
             },
-            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
+                scales: {
+                    x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                    y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
+                }
+            }
         });
 
         const latestByArea = uniqueAreas.map(area => {
