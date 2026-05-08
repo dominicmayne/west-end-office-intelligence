@@ -64,3 +64,7 @@ def predictions():
         })
 
     return results
+
+    @app.get("/test")
+def test():
+    return {"status": "working"}
