@@ -216,7 +216,7 @@ let chart;
 async function loadDashboard(selectedArea = "Soho") {
 
     const response =
-        await fetch('http://127.0.0.1:8000/predictions');
+        await fetch('https://west-end-office-intelligence-production.up.railway.app/predictions');
 
     const data = await response.json();
 
