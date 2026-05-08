@@ -63,13 +63,17 @@ def predictions():
 
     for _, row in data.iterrows():
         results.append({
-            "area": row["area"],
-            "year": int(row["year"]),
-            "vacancy": float(row["vacancy_rate"]),
-            "predicted": float(row["predicted"]),
-            "signal": get_signal(row["predicted"]),
-            "insight": get_insight(row["area"], row["predicted"])
-        })
+    "area": row["area"],
+    "year": int(row["year"]),
+    "quarter": row["quarter"],
+    "rent_psf": float(row["rent_psf"]),
+    "vacancy": float(row["vacancy_rate"]),
+    "takeup_sqft": int(row["takeup_sqft"]),
+    "sentiment": row["sentiment"],
+    "predicted": float(row["predicted"]),
+    "signal": get_signal(row["predicted"]),
+    "insight": get_insight(row["area"], row["predicted"])
+})
 
     return results
 
