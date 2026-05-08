@@ -91,6 +91,9 @@ async def commentary(area: str):
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
 
+    if not api_key:
+        return {"commentary": "API key not configured."}
+
     area_data = data[data["area"] == area].copy()
 
     if area_data.empty:
@@ -110,7 +113,7 @@ async def commentary(area: str):
 Write a concise, professional market commentary paragraph (4-6 sentences) for the {area} office submarket based on the following data:
 
 - Tracked period: {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']} ({quarters} quarters)
-- Prime rent: £{float(first['rent_psf'])} psf → £{float(latest['rent_psf'])} psf (change of £{rent_change:+.0f} psf)
+- Prime rent: £{float(first['rent_psf'])} psf to £{float(latest['rent_psf'])} psf (change of £{rent_change:+.0f} psf)
 - Average forecast vacancy: {avg_vacancy:.2f}%
 - Latest quarterly take-up: {latest_takeup:,} sq ft
 - Market sentiment: {sentiment}
@@ -135,7 +138,12 @@ Write in the style of a Savills or CBRE research note. Be specific, use the data
                     ]
                 }
             )
+
             result = response.json()
+
+            if "content" not in result:
+                return {"commentary": f"API error: {result.get('error', {}).get('message', str(result))}"}
+
             commentary_text = result["content"][0]["text"]
             return {"commentary": commentary_text}
 
