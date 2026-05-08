@@ -131,7 +131,7 @@ Write in the style of a Savills or CBRE research note. Be specific, use the data
                     "content-type": "application/json"
                 },
                 json={
-                    "model": "claude-sonnet-4-20250514",
+                    "model": "claude-sonnet-4-5",
                     "max_tokens": 300,
                     "messages": [
                         {"role": "user", "content": prompt}
