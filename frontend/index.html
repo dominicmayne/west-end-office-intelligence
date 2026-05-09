@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'DM Sans', Arial, sans-serif; background: #060d18; color: #e5e7eb; overflow-x: hidden; }
 
         /* NAV */
         .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(6,13,24,0.92); backdrop-filter: blur(14px); }
@@ -19,8 +19,8 @@
         .nav-cta { background: #3b82f6; color: white; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.2s; }
         .nav-cta:hover { background: #2563eb; }
 
-        /* HERO — desktop */
-        .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 60px 80px; position: relative; overflow: hidden; gap: 80px; max-width: 1300px; margin: auto; }
+        /* HERO */
+        .hero { display: flex; align-items: center; padding: 140px 60px 100px; position: relative; overflow: hidden; gap: 80px; max-width: 1300px; margin: auto; }
         .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 20% 50%, rgba(59,130,246,0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 80% 30%, rgba(168,85,247,0.05) 0%, transparent 60%); pointer-events: none; }
         .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 80px 80px; pointer-events: none; }
         .hero-left { position: relative; flex: 1; max-width: 580px; }
@@ -62,7 +62,7 @@
         .project-hobby-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; margin-left: 6px; }
         .project-card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; line-height: 1.2; }
         .project-card-sub { font-size: 13px; color: #64748b; line-height: 1.7; font-weight: 300; }
-        .project-card-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; position: relative; }
+        .project-card-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
         .project-pill { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); color: #475569; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
         .project-card-bottom { padding: 18px 32px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
         .project-card-link { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
@@ -105,60 +105,32 @@
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.06); color: #1e293b; }
         .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.15); color: #6d28d9; font-weight: 600; }
 
-        /* ── MOBILE ── */
+        /* MOBILE */
         @media (max-width: 768px) {
-            .nav { padding: 14px 20px !important; }
-            .nav-link { display: none !important; }
-            .nav-cta { padding: 10px 16px !important; font-size: 13px !important; }
-
-            .hero {
-                min-height: unset !important;
-                height: auto !important;
-                display: block !important;
-                padding: 80px 20px 40px !important;
-            }
-            .hero-bg { display: none; }
-            .hero-grid { display: none; }
-            .hero-left { max-width: 100% !important; margin-bottom: 28px; }
-            .hero h1 { font-size: 34px !important; letter-spacing: -0.5px !important; margin-bottom: 16px !important; }
-            .hero h1 .title { font-size: 22px !important; }
-            .hero-eyebrow { margin-bottom: 16px !important; font-size: 10px !important; }
-            .hero-sub { font-size: 14px !important; margin-bottom: 20px !important; line-height: 1.7 !important; }
-            .hero-tags { margin-bottom: 20px !important; }
-            .hero-tag { font-size: 11px !important; padding: 4px 10px !important; }
-            .hero-buttons { gap: 10px !important; }
-            .btn-primary { padding: 11px 22px !important; font-size: 14px !important; }
-            .btn-outline { padding: 11px 22px !important; font-size: 14px !important; }
-
-            .hero-right {
-                width: 100% !important;
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 10px !important;
-            }
-            .stat-card { padding: 14px !important; }
-            .stat-card-val { font-size: 22px !important; }
-            .stat-card-label { font-size: 10px !important; }
-
-            .projects { padding: 40px 20px !important; }
-            .projects-grid { grid-template-columns: 1fr !important; }
-            .section-title { font-size: 26px !important; }
-            .section-sub { margin-bottom: 24px !important; font-size: 14px !important; }
-            .project-card-title { font-size: 18px !important; }
-            .project-card-top { padding: 24px !important; min-height: unset !important; }
-            .project-card-bottom { padding: 14px 24px !important; }
-
-            .about-strip { padding: 40px 20px !important; }
-            .about-strip-inner { grid-template-columns: 1fr !important; gap: 28px !important; }
-            .about-text h2 { font-size: 24px !important; }
-            .about-facts { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-
-            .contact { padding: 40px 20px !important; }
-            .contact-inner h2 { font-size: 28px !important; }
-            .contact-links { flex-direction: column !important; align-items: stretch !important; }
-            .contact-link { justify-content: center !important; }
-
-            .footer { padding: 20px !important; flex-direction: column !important; align-items: flex-start !important; }
+            .nav { padding: 14px 20px; }
+            .nav-link { display: none; }
+            .nav-cta { padding: 10px 16px; font-size: 13px; }
+            .hero { flex-direction: column; padding: 90px 24px 48px; gap: 32px; }
+            .hero h1 { font-size: 34px; letter-spacing: -0.5px; }
+            .hero h1 .title { font-size: 22px; }
+            .hero-left { max-width: 100%; }
+            .hero-sub { font-size: 14px; }
+            .hero-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-card-val { font-size: 20px; }
+            .projects { padding: 48px 20px; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 26px; }
+            .project-card-top { padding: 24px; min-height: unset; }
+            .project-card-bottom { padding: 14px 24px; }
+            .about-strip { padding: 48px 20px; }
+            .about-strip-inner { grid-template-columns: 1fr; gap: 32px; }
+            .about-text h2 { font-size: 26px; }
+            .contact { padding: 48px 20px; }
+            .contact-inner h2 { font-size: 28px; }
+            .contact-links { flex-direction: column; align-items: stretch; }
+            .contact-link { justify-content: center; }
+            .footer { padding: 20px; flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
