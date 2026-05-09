@@ -1,0 +1,189 @@
+[
+    {
+      "area": "Mayfair",
+      "occupier": "Viking Capital",
+      "building": "77 Grosvenor Street",
+      "size_sqft": 4500,
+      "rent_psf": 220,
+      "sector": "Financial Services",
+      "date": "2025-Q1",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Mayfair",
+      "occupier": "Copenhagen Infrastructure Partners",
+      "building": "77 Grosvenor Street",
+      "size_sqft": 4200,
+      "rent_psf": 217.5,
+      "sector": "Financial Services",
+      "date": "2025-Q1",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Mayfair",
+      "occupier": "McDermott Will & Emery",
+      "building": "7 Brook Street",
+      "size_sqft": 55000,
+      "rent_psf": 185,
+      "sector": "Professional Services",
+      "date": "2025-Q2",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Mayfair",
+      "occupier": "Ares Management",
+      "building": "One Hanover Street",
+      "size_sqft": 124000,
+      "rent_psf": 195,
+      "sector": "Financial Services",
+      "date": "2025-Q4",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Victoria",
+      "occupier": "Evercore",
+      "building": "105 Victoria Street",
+      "size_sqft": 135000,
+      "rent_psf": 105,
+      "sector": "Financial Services",
+      "date": "2024-Q3",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Victoria",
+      "occupier": "Rolls Royce & Partners Finance",
+      "building": "SW1",
+      "size_sqft": 8000,
+      "rent_psf": 96,
+      "sector": "Financial Services",
+      "date": "2025-Q1",
+      "type": "Letting",
+      "grade": "A"
+    },
+    {
+      "area": "Midtown",
+      "occupier": "BDO",
+      "building": "M Building, Oxford Street",
+      "size_sqft": 221403,
+      "rent_psf": 88,
+      "sector": "Professional Services",
+      "date": "2024-Q3",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Midtown",
+      "occupier": "GSK",
+      "building": "The Earnshaw, 77-91 New Oxford Street",
+      "size_sqft": 145000,
+      "rent_psf": 92,
+      "sector": "Life Sciences",
+      "date": "2024-Q4",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Marylebone",
+      "occupier": "PIMCO",
+      "building": "19-35 Baker Street",
+      "size_sqft": 106100,
+      "rent_psf": 105,
+      "sector": "Financial Services",
+      "date": "2023-Q1",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Marylebone",
+      "occupier": "Moelis & Company",
+      "building": "25 Baker Street",
+      "size_sqft": 49175,
+      "rent_psf": 108,
+      "sector": "Financial Services",
+      "date": "2023-Q3",
+      "type": "Letting",
+      "grade": "A"
+    },
+    {
+      "area": "Marylebone",
+      "occupier": "Cushman & Wakefield",
+      "building": "25 Baker Street",
+      "size_sqft": 17100,
+      "rent_psf": 105,
+      "sector": "Professional Services",
+      "date": "2024-Q2",
+      "type": "Letting",
+      "grade": "A"
+    },
+    {
+      "area": "Soho",
+      "occupier": "Undisclosed Financial Services",
+      "building": "Lucent, 1 Sherwood Street",
+      "size_sqft": 49385,
+      "rent_psf": 102,
+      "sector": "Financial Services",
+      "date": "2023-Q2",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Soho",
+      "occupier": "Myo (IWG)",
+      "building": "Lucent, 1 Sherwood Street",
+      "size_sqft": 25064,
+      "rent_psf": 98,
+      "sector": "Flexible Office",
+      "date": "2023-Q2",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "Fitzrovia",
+      "occupier": "Databricks",
+      "building": "Charlotte House, Windmill Street",
+      "size_sqft": 28750,
+      "rent_psf": 97.5,
+      "sector": "Technology",
+      "date": "2024-Q1",
+      "type": "Letting",
+      "grade": "A"
+    },
+    {
+      "area": "Covent Garden",
+      "occupier": "Rothesay Life",
+      "building": "The Post Building",
+      "size_sqft": 44180,
+      "rent_psf": 90,
+      "sector": "Insurance",
+      "date": "2023-Q3",
+      "type": "Sub-let",
+      "grade": "A"
+    },
+    {
+      "area": "St James's",
+      "occupier": "Campbell Lutyens",
+      "building": "20 Carlton House Terrace",
+      "size_sqft": 28750,
+      "rent_psf": 142,
+      "sector": "Financial Services",
+      "date": "2024-Q1",
+      "type": "Pre-let",
+      "grade": "A"
+    },
+    {
+      "area": "St James's",
+      "occupier": "Jain Global",
+      "building": "16-21 St James's Street",
+      "size_sqft": 7150,
+      "rent_psf": 145,
+      "sector": "Financial Services",
+      "date": "2024-Q2",
+      "type": "Letting",
+      "grade": "A"
+    }
+  ]

@@ -21,13 +21,10 @@
         .hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #3b82f6; margin-bottom: 16px; }
         .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: #64748b; font-size: 15px; max-width: 600px; line-height: 1.8; }
-
-        /* FREE TIER BANNER */
         .free-banner { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 14px 20px; margin: 0 40px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 1320px; margin-left: auto; margin-right: auto; }
         .free-banner-text { font-size: 13px; color: #64748b; flex: 1; }
         .free-banner-text strong { color: #94a3b8; }
         .free-banner-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
-
         .container { max-width: 1400px; margin: auto; padding: 0 40px 80px; }
         .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
         .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
@@ -55,15 +52,6 @@
         .delta-down { background: rgba(239,68,68,0.1); color: #ef4444; }
         .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
         .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-        /* LOCKED STATE */
-        .locked-overlay { position: relative; }
-        .locked-overlay .lock-mask { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, #060d18 80%); border-radius: 18px; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 28px; }
-        .lock-badge { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-        .lock-badge:hover { background: rgba(59,130,246,0.2); }
-        .blurred { filter: blur(4px); pointer-events: none; user-select: none; }
-
-        /* SCHEMATIC MAP */
         .heatmap-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
         .heatmap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
         .heatmap-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
@@ -101,6 +89,39 @@
         canvas { max-height: 320px; }
         .chart-full { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
 
+        /* DEALS TRACKER */
+        .deals-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+        .deals-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .deals-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
+        .deals-sub { font-size: 12px; color: #475569; margin-top: 4px; }
+        .deals-refresh-btn { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .deals-refresh-btn:hover { background: rgba(34,197,94,0.18); }
+        .deals-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .deals-source-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; padding: 3px 10px; border-radius: 999px; font-weight: 600; margin-bottom: 16px; }
+        .source-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+        .source-seed { background: rgba(148,163,184,0.1); color: #64748b; border: 1px solid rgba(148,163,184,0.15); }
+        .deals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+        .deal-card { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 16px; transition: border-color 0.2s; }
+        .deal-card:hover { border-color: rgba(255,255,255,0.1); }
+        .deal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .deal-occupier { font-size: 13px; font-weight: 700; color: #f1f5f9; line-height: 1.3; }
+        .deal-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; flex-shrink: 0; margin-left: 8px; }
+        .type-prelet { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .type-letting { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .type-sublet { background: rgba(245,158,11,0.12); color: #f59e0b; }
+        .type-renewal { background: rgba(148,163,184,0.12); color: #94a3b8; }
+        .deal-building { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+        .deal-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+        .deal-stat { display: flex; flex-direction: column; }
+        .deal-stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #334155; margin-bottom: 2px; }
+        .deal-stat-val { font-size: 13px; font-weight: 700; color: #94a3b8; }
+        .deal-stat-val.green { color: #22c55e; }
+        .deal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04); }
+        .deal-sector { font-size: 10px; color: #334155; }
+        .deal-date { font-size: 10px; color: #334155; }
+        .deals-loading { text-align: center; padding: 40px; color: #334155; font-size: 13px; }
+        .deals-empty { text-align: center; padding: 40px; color: #334155; font-size: 13px; }
+
         /* INSIGHT */
         .insight-panel { background: #0b1527; border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid #a855f7; border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
         .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -113,7 +134,10 @@
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
-
+        .locked-overlay { position: relative; }
+        .locked-overlay .lock-mask { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, #060d18 80%); border-radius: 18px; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 28px; }
+        .lock-badge { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 600; text-decoration: none; }
+        .blurred { filter: blur(4px); pointer-events: none; user-select: none; }
         .table-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; overflow-x: auto; margin-bottom: 24px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -143,6 +167,7 @@
             .footer { padding: 24px 20px; }
             .map-container { grid-template-columns: 1fr; }
             .free-banner { margin: 0 20px 20px; }
+            .deals-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -163,10 +188,9 @@
     <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
 </div>
 
-<!-- FREE TIER BANNER (shown when not logged in) -->
 <div class="free-banner" id="freeBanner" style="display:none;">
     <span>🔒</span>
-    <div class="free-banner-text"><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh and PDF reports.</div>
+    <div class="free-banner-text"><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
     <a href="/login" class="free-banner-btn">Get Full Access →</a>
 </div>
 
@@ -175,12 +199,8 @@
     <div class="controls">
         <span class="controls-label">Submarket</span>
         <select id="areaSelect" class="selector"></select>
-        <button id="downloadBtn" class="download-btn" onclick="handleDownload()">
-            ⬇ Download Report
-        </button>
-        <button id="liveBtn" class="live-btn" onclick="handleLiveData()">
-            ⚡ Refresh Live Data
-        </button>
+        <button id="downloadBtn" class="download-btn" onclick="handleDownload()">⬇ Download Report</button>
+        <button id="liveBtn" class="live-btn" onclick="handleLiveData()">⚡ Refresh Live Data</button>
         <div class="last-updated" id="lastUpdated"></div>
     </div>
 
@@ -224,7 +244,7 @@
         <div class="heatmap-header">
             <div>
                 <div class="heatmap-title">Central London Submarket Schematic</div>
-                <div class="heatmap-sub">Click any zone to load submarket analytics · Toggle metric below</div>
+                <div class="heatmap-sub">Click any zone to load submarket analytics</div>
             </div>
             <div class="heatmap-toggles">
                 <button class="heatmap-toggle active" id="toggleVacancy" onclick="setMapMode('vacancy')">Vacancy Rate</button>
@@ -234,11 +254,7 @@
         <div class="map-container">
             <div class="svg-map-wrap">
                 <svg id="schematic" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
-                        </pattern>
-                    </defs>
+                    <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></pattern></defs>
                     <rect width="560" height="480" fill="url(#grid)"/>
                     <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="rgba(59,130,246,0.2)" stroke-width="8" stroke-linecap="round"/>
                     <text x="240" y="445" fill="rgba(59,130,246,0.3)" font-size="9" font-family="Inter,Arial" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
@@ -246,47 +262,14 @@
                     <text x="63" y="218" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Hyde Park</text>
                     <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
                     <text x="200" y="52" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Regent's Park</text>
-                    <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')">
-                        <rect x="118" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="177" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Marylebone</text>
-                        <text x="177" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Marylebone">—</text>
-                    </g>
-                    <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')">
-                        <rect x="248" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="307" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Fitzrovia</text>
-                        <text x="307" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Fitzrovia">—</text>
-                    </g>
-                    <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')">
-                        <rect x="378" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="437" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Midtown</text>
-                        <text x="437" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Midtown">—</text>
-                    </g>
-                    <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')">
-                        <rect x="118" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="177" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Mayfair</text>
-                        <text x="177" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Mayfair">—</text>
-                    </g>
-                    <g class="zone" id="zone-Soho" onclick="selectArea('Soho')">
-                        <rect x="248" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="307" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Soho</text>
-                        <text x="307" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Soho">—</text>
-                    </g>
-                    <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')">
-                        <rect x="378" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="437" y="222" class="zone-label" font-size="11" fill="white" text-anchor="middle">Covent</text>
-                        <text x="437" y="236" class="zone-label" font-size="11" fill="white" text-anchor="middle">Garden</text>
-                        <text x="437" y="252" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Covent Garden">—</text>
-                    </g>
-                    <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)">
-                        <rect x="118" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="177" y="334" class="zone-label" font-size="11" fill="white" text-anchor="middle">St James's</text>
-                        <text x="177" y="362" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-St James's">—</text>
-                    </g>
-                    <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')">
-                        <rect x="248" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
-                        <text x="307" y="338" class="zone-label" font-size="12" fill="white" text-anchor="middle">Victoria</text>
-                        <text x="307" y="354" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Victoria">—</text>
-                    </g>
+                    <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Marylebone</text><text x="177" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Marylebone">—</text></g>
+                    <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Fitzrovia</text><text x="307" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Fitzrovia">—</text></g>
+                    <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="437" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Midtown</text><text x="437" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Midtown">—</text></g>
+                    <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Mayfair</text><text x="177" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Mayfair">—</text></g>
+                    <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Soho</text><text x="307" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Soho">—</text></g>
+                    <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="437" y="222" class="zone-label" font-size="11" fill="white" text-anchor="middle">Covent</text><text x="437" y="236" class="zone-label" font-size="11" fill="white" text-anchor="middle">Garden</text><text x="437" y="252" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Covent Garden">—</text></g>
+                    <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="334" class="zone-label" font-size="11" fill="white" text-anchor="middle">St James's</text><text x="177" y="362" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-St James's">—</text></g>
+                    <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="338" class="zone-label" font-size="12" fill="white" text-anchor="middle">Victoria</text><text x="307" y="354" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Victoria">—</text></g>
                     <line x1="236" y1="123" x2="248" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="366" y1="123" x2="378" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="177" y1="168" x2="177" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
@@ -319,36 +302,38 @@
 
     <div class="charts-row">
         <div class="chart-card">
-            <div class="chart-header">
-                <div>
-                    <div class="chart-title">Vacancy vs Prime Rent</div>
-                    <div class="chart-sub">Forecast vacancy overlaid with prime rent trend</div>
-                </div>
-            </div>
+            <div class="chart-header"><div><div class="chart-title">Vacancy vs Prime Rent</div><div class="chart-sub">Forecast vacancy overlaid with prime rent trend</div></div></div>
             <canvas id="trendChart"></canvas>
         </div>
         <div class="chart-card">
-            <div class="chart-header">
-                <div>
-                    <div class="chart-title">Take-Up Momentum</div>
-                    <div class="chart-sub">Quarterly leasing volume (sq ft)</div>
-                </div>
-            </div>
+            <div class="chart-header"><div><div class="chart-title">Take-Up Momentum</div><div class="chart-sub">Quarterly leasing volume (sq ft)</div></div></div>
             <canvas id="takeupChart"></canvas>
         </div>
     </div>
 
     <div class="chart-full">
-        <div class="chart-header">
-            <div>
-                <div class="chart-title">All Submarket Comparison — Latest Quarter</div>
-                <div class="chart-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div>
-            </div>
-        </div>
+        <div class="chart-header"><div><div class="chart-title">All Submarket Comparison — Latest Quarter</div><div class="chart-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div></div></div>
         <canvas id="comparisonChart" style="max-height:280px;"></canvas>
     </div>
 
-    <!-- AI COMMENTARY — locked for free users -->
+    <!-- DEALS TRACKER -->
+    <div class="deals-card" id="dealsCard">
+        <div class="deals-header">
+            <div>
+                <div class="deals-title">Recent Deals Tracker</div>
+                <div class="deals-sub" id="dealsSub">Notable transactions in this submarket</div>
+            </div>
+            <button class="deals-refresh-btn" id="dealsRefreshBtn" onclick="handleDealsRefresh()">
+                🔍 Search Latest Deals
+            </button>
+        </div>
+        <div id="dealsSourceBadge"></div>
+        <div id="dealsContent">
+            <div class="deals-loading">Loading deals data...</div>
+        </div>
+    </div>
+
+    <!-- AI COMMENTARY -->
     <div id="insightWrapper">
         <div class="insight-panel">
             <div class="insight-header">
@@ -363,24 +348,9 @@
     </div>
 
     <div class="table-card">
-        <div class="chart-header">
-            <div>
-                <div class="chart-title">Quarterly Data Breakdown</div>
-                <div class="chart-sub">All data points for selected submarket</div>
-            </div>
-        </div>
+        <div class="chart-header"><div><div class="chart-title">Quarterly Data Breakdown</div><div class="chart-sub">All data points for selected submarket</div></div></div>
         <table>
-            <thead>
-                <tr>
-                    <th>Period</th>
-                    <th>Prime Rent (£ psf)</th>
-                    <th>Vacancy Rate</th>
-                    <th>Forecast Vacancy</th>
-                    <th>Take-Up (sq ft)</th>
-                    <th>Sentiment</th>
-                    <th>Signal</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Period</th><th>Prime Rent (£ psf)</th><th>Vacancy Rate</th><th>Forecast Vacancy</th><th>Take-Up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
             <tbody id="dataTable"></tbody>
         </table>
     </div>
@@ -400,11 +370,11 @@ let trendChart, takeupChart, comparisonChart;
 let allData = [];
 let mapMode = 'vacancy';
 let currentArea = null;
+let currentDeals = [];
 
 const API = 'https://west-end-office-intelligence-production.up.railway.app';
 const isLoggedIn = sessionStorage.getItem('weoi_auth') === 'true';
 
-// Setup nav and UI based on auth state
 function setupAuth() {
     const navArea = document.getElementById('navAuthArea');
     if (isLoggedIn) {
@@ -413,11 +383,12 @@ function setupAuth() {
     } else {
         navArea.innerHTML = `<a href="/login" class="nav-auth-btn nav-signin">Sign In →</a>`;
         document.getElementById('freeBanner').style.display = 'flex';
-        // Lock premium buttons
         document.getElementById('downloadBtn').style.opacity = '0.4';
         document.getElementById('downloadBtn').style.cursor = 'not-allowed';
         document.getElementById('liveBtn').style.opacity = '0.4';
         document.getElementById('liveBtn').style.cursor = 'not-allowed';
+        document.getElementById('dealsRefreshBtn').style.opacity = '0.4';
+        document.getElementById('dealsRefreshBtn').style.cursor = 'not-allowed';
     }
 }
 
@@ -427,19 +398,102 @@ function signOut() {
 }
 
 function handleDownload() {
-    if (!isLoggedIn) {
-        window.location.href = '/login';
-        return;
-    }
+    if (!isLoggedIn) { window.location.href = '/login'; return; }
     downloadReport();
 }
 
 function handleLiveData() {
-    if (!isLoggedIn) {
-        window.location.href = '/login';
+    if (!isLoggedIn) { window.location.href = '/login'; return; }
+    fetchLiveData();
+}
+
+function handleDealsRefresh() {
+    if (!isLoggedIn) { window.location.href = '/login'; return; }
+    loadDeals(currentArea, true);
+}
+
+// ── DEALS ──
+function getDealTypeClass(type) {
+    if (!type) return 'type-letting';
+    const t = type.toLowerCase();
+    if (t.includes('pre')) return 'type-prelet';
+    if (t.includes('sub')) return 'type-sublet';
+    if (t.includes('renew')) return 'type-renewal';
+    return 'type-letting';
+}
+
+function renderDeals(deals, source, area) {
+    const content = document.getElementById('dealsContent');
+    const sourceBadge = document.getElementById('dealsSourceBadge');
+    const sub = document.getElementById('dealsSub');
+
+    sub.textContent = `${deals.length} notable transaction${deals.length !== 1 ? 's' : ''} tracked in ${area}`;
+
+    if (source === 'live') {
+        sourceBadge.innerHTML = `<span class="deals-source-badge source-live">⚡ Live — Claude web search</span>`;
+    } else {
+        sourceBadge.innerHTML = `<span class="deals-source-badge source-seed">📋 Curated research data</span>`;
+    }
+
+    if (!deals.length) {
+        content.innerHTML = `<div class="deals-empty">No deals data available for this submarket yet.</div>`;
         return;
     }
-    fetchLiveData();
+
+    content.innerHTML = `<div class="deals-grid">${deals.map(deal => `
+        <div class="deal-card">
+            <div class="deal-top">
+                <div class="deal-occupier">${deal.occupier || 'Undisclosed'}</div>
+                <span class="deal-type-badge ${getDealTypeClass(deal.type)}">${deal.type || 'Letting'}</span>
+            </div>
+            <div class="deal-building">📍 ${deal.building || 'Address undisclosed'}</div>
+            <div class="deal-stats">
+                <div class="deal-stat">
+                    <div class="deal-stat-label">Size</div>
+                    <div class="deal-stat-val">${deal.size_sqft ? deal.size_sqft.toLocaleString() + ' sq ft' : 'Undisclosed'}</div>
+                </div>
+                <div class="deal-stat">
+                    <div class="deal-stat-label">Rent</div>
+                    <div class="deal-stat-val green">${deal.rent_psf ? '£' + deal.rent_psf + ' psf' : 'Confidential'}</div>
+                </div>
+                <div class="deal-stat">
+                    <div class="deal-stat-label">Grade</div>
+                    <div class="deal-stat-val">${deal.grade || 'A'}</div>
+                </div>
+            </div>
+            <div class="deal-footer">
+                <span class="deal-sector">${deal.sector || 'Unknown sector'}</span>
+                <span class="deal-date">${deal.date || ''}</span>
+            </div>
+        </div>
+    `).join('')}</div>`;
+}
+
+async function loadDeals(area, forceRefresh = false) {
+    const content = document.getElementById('dealsContent');
+    const btn = document.getElementById('dealsRefreshBtn');
+
+    if (forceRefresh && isLoggedIn) {
+        content.innerHTML = `<div class="deals-loading">🔍 Searching web for latest deals in ${area}...</div>`;
+        btn.disabled = true;
+        btn.textContent = '⏳ Searching...';
+    } else {
+        content.innerHTML = `<div class="deals-loading">Loading deals data...</div>`;
+    }
+
+    try {
+        const response = await fetch(`${API}/deals/${encodeURIComponent(area)}`);
+        const result = await response.json();
+        currentDeals = result.deals || [];
+        renderDeals(currentDeals, result.source, area);
+    } catch(e) {
+        content.innerHTML = `<div class="deals-empty">Unable to load deals data. Please try again.</div>`;
+    }
+
+    if (forceRefresh) {
+        btn.disabled = false;
+        btn.textContent = '🔍 Search Latest Deals';
+    }
 }
 
 function getVacancyColor(v) {
@@ -460,19 +514,9 @@ function setMapMode(mode) {
     document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
     const legend = document.querySelector('.map-legend');
     if (mode === 'vacancy') {
-        legend.innerHTML = `
-            <div class="map-legend-title">Vacancy Rate</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> Below 5% — Strong</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> 5–7% — Monitor</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Above 7% — Weakening</div>
-        `;
+        legend.innerHTML = `<div class="map-legend-title">Vacancy Rate</div><div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Above 7% — Weakening</div>`;
     } else {
-        legend.innerHTML = `
-            <div class="map-legend-title">Prime Rent</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> £150+ psf — Premium</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> £100–150 psf — Mid</div>
-            <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Below £100 psf — Value</div>
-        `;
+        legend.innerHTML = `<div class="map-legend-title">Prime Rent</div><div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Below £100 psf — Value</div>`;
     }
     document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
     updateSchematic();
@@ -520,13 +564,7 @@ function updateRankings() {
         const color = mapMode === 'vacancy' ? getVacancyColor(r.vacancy) : getRentColor(r.rent);
         const barWidth = Math.round((val / maxVal) * 50);
         const displayVal = mapMode === 'vacancy' ? `${r.vacancy.toFixed(1)}%` : `£${r.rent}`;
-        return `
-            <div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" onclick="selectArea('${r.area}')">
-                <span class="ranking-name">${r.area}</span>
-                <div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div>
-                <span class="ranking-val" style="color:${color}">${displayVal}</span>
-            </div>
-        `;
+        return `<div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" onclick="selectArea('${r.area}')"><span class="ranking-name">${r.area}</span><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div><span class="ranking-val" style="color:${color}">${displayVal}</span></div>`;
     }).join('');
 }
 
@@ -555,30 +593,16 @@ function animateValue(el, end, suffix = '', decimals = 0) {
 
 async function loadCommentary(area) {
     if (!isLoggedIn) {
-        // Show locked state for free users
-        const wrapper = document.getElementById('insightWrapper');
-        wrapper.innerHTML = `
+        document.getElementById('insightWrapper').innerHTML = `
             <div class="insight-panel locked-overlay">
-                <div class="insight-header">
-                    <div class="insight-icon">✦</div>
-                    <div class="insight-label">AI Market Commentary</div>
-                    <div class="insight-powered">Powered by Claude · Anthropic</div>
-                </div>
-                <div class="insight-text blurred">
-                    Prime rents in ${area} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited.
-                </div>
-                <div class="lock-mask">
-                    <a href="/login" class="lock-badge">🔒 Sign in to read AI commentary →</a>
-                </div>
-            </div>
-        `;
+                <div class="insight-header"><div class="insight-icon">✦</div><div class="insight-label">AI Market Commentary</div><div class="insight-powered">Powered by Claude · Anthropic</div></div>
+                <div class="insight-text blurred">Prime rents in ${area} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
+                <div class="lock-mask"><a href="/login" class="lock-badge">🔒 Sign in to read AI commentary →</a></div>
+            </div>`;
         return;
     }
-
     const insightEl = document.getElementById('insight');
-    if (insightEl) {
-        insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-    }
+    if (insightEl) insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
     try {
         const response = await fetch(`${API}/commentary/${encodeURIComponent(area)}`);
         const result = await response.json();
@@ -594,7 +618,7 @@ async function fetchLiveData() {
     const area = document.getElementById("areaSelect").value;
     const btn = document.getElementById("liveBtn");
     const banner = document.getElementById("liveBanner");
-    btn.textContent = "⏳ Searching web...";
+    btn.textContent = "⏳ Searching...";
     btn.disabled = true;
     btn.style.opacity = "0.7";
     banner.style.display = "none";
@@ -606,22 +630,22 @@ async function fetchLiveData() {
         if (result.live) {
             document.getElementById("primeRent").textContent = `£${result.rent_psf}`;
             let parts = [];
-            if (result.rent_change && result.rent_change !== 0) parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf vs baseline`);
-            if (result.vacancy_change && result.vacancy_change !== 0) parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}% vs baseline`);
-            if (parts.length === 0) parts.push("Data confirmed — consistent with baseline");
+            if (result.rent_change && result.rent_change !== 0) parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf`);
+            if (result.vacancy_change && result.vacancy_change !== 0) parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}%`);
+            if (parts.length === 0) parts.push("Confirmed current");
             if (result.notes) parts.push(result.notes);
-            document.getElementById("liveBannerText").textContent = `Live data updated · ${result.period} · ${parts.join(' · ')}`;
-            document.getElementById("liveBannerSource").textContent = `${result.source} · Confidence: ${result.confidence}`;
+            document.getElementById("liveBannerText").textContent = `⚡ Live · ${result.period} · ${parts.join(' · ')}`;
+            document.getElementById("liveBannerSource").textContent = `${result.source} · ${result.confidence} confidence`;
             document.getElementById("lastUpdated").textContent = `⚡ Live: ${result.period}`;
         } else {
             banner.className = "live-banner-data error";
-            document.getElementById("liveBannerText").textContent = `Live search unavailable — showing baseline data. ${result.error || ''}`;
+            document.getElementById("liveBannerText").textContent = `Live search unavailable — showing baseline. ${result.error || ''}`;
             document.getElementById("liveBannerSource").textContent = "";
         }
     } catch(e) {
         banner.style.display = "flex";
         banner.className = "live-banner-data error";
-        document.getElementById("liveBannerText").textContent = "Live data fetch failed. Please try again.";
+        document.getElementById("liveBannerText").textContent = "Live data fetch failed.";
     }
     btn.textContent = "⚡ Refresh Live Data";
     btn.disabled = false;
@@ -662,8 +686,7 @@ async function loadDashboard(selectedArea = null) {
         if (selector.options.length === 0) {
             uniqueAreas.forEach(area => {
                 const opt = document.createElement("option");
-                opt.value = area;
-                opt.textContent = area;
+                opt.value = area; opt.textContent = area;
                 selector.appendChild(opt);
             });
             selectedArea = uniqueAreas[0];
@@ -673,6 +696,10 @@ async function loadDashboard(selectedArea = null) {
         currentArea = selectedArea;
         updateSchematic();
         updateRankings();
+
+        // Load deals for this area
+        loadDeals(selectedArea);
+
         const filtered = allData.filter(d => d.area === selectedArea);
         const latest = filtered[filtered.length - 1];
         const prev = filtered[filtered.length - 2];
@@ -698,18 +725,10 @@ async function loadDashboard(selectedArea = null) {
             vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
         }
         const badge = document.getElementById("signalBadge");
-        if (avgVacancy < 5) {
-            badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET';
-            badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;';
-        } else if (avgVacancy < 7) {
-            badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR';
-            badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;';
-        } else {
-            badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING';
-            badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;';
-        }
+        if (avgVacancy < 5) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
+        else if (avgVacancy < 7) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
+        else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
 
-        // Debounced commentary — only fires after 1.5s pause
         clearTimeout(window.commentaryTimer);
         window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), 1500);
 
@@ -717,58 +736,33 @@ async function loadDashboard(selectedArea = null) {
         if (trendChart) trendChart.destroy();
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: {
-                labels,
-                datasets: [
-                    { label: 'Forecast Vacancy (%)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
-                    { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
-                ]
-            },
+            data: { labels, datasets: [
+                { label: 'Forecast Vacancy (%)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
+                { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
+            ]},
             options: chartOptions('y', 'y1')
         });
         if (takeupChart) takeupChart.destroy();
         takeupChart = new Chart(document.getElementById('takeupChart'), {
             type: 'bar',
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Take-Up (sq ft)',
-                    data: filtered.map(d => d.takeup_sqft),
-                    backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
-                    borderRadius: 6, borderSkipped: false
-                }]
-            },
+            data: { labels, datasets: [{ label: 'Take-Up (sq ft)', data: filtered.map(d => d.takeup_sqft), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'), borderRadius: 6, borderSkipped: false }]},
             options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
         });
-        const latestByArea = uniqueAreas.map(area => {
-            const d = allData.filter(x => x.area === area);
-            return d[d.length - 1];
-        });
+        const latestByArea = uniqueAreas.map(area => { const d = allData.filter(x => x.area === area); return d[d.length - 1]; });
         if (comparisonChart) comparisonChart.destroy();
         comparisonChart = new Chart(document.getElementById('comparisonChart'), {
             type: 'bar',
-            data: {
-                labels: latestByArea.map(d => d.area),
-                datasets: [
-                    { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
-                    { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
-                ]
-            },
+            data: { labels: latestByArea.map(d => d.area), datasets: [
+                { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
+                { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
+            ]},
             options: chartOptions('y', 'y1')
         });
         const tbody = document.getElementById("dataTable");
         tbody.innerHTML = '';
         filtered.forEach(row => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${row.year} ${row.quarter}</strong></td>
-                <td>£${row.rent_psf}</td>
-                <td>${row.vacancy?.toFixed(1) ?? row.predicted?.toFixed(1)}%</td>
-                <td>${parseFloat(row.predicted).toFixed(2)}%</td>
-                <td>${row.takeup_sqft.toLocaleString()}</td>
-                <td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${row.sentiment}</span></td>
-                <td>${row.signal}</td>
-            `;
+            tr.innerHTML = `<td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.rent_psf}</td><td>${row.vacancy?.toFixed(1) ?? row.predicted?.toFixed(1)}%</td><td>${parseFloat(row.predicted).toFixed(2)}%</td><td>${row.takeup_sqft.toLocaleString()}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${row.sentiment}</span></td><td>${row.signal}</td>`;
             tbody.appendChild(tr);
         });
     } catch(e) { console.error(e); }
