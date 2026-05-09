@@ -1,8 +1,10 @@
 {
     "rewrites": [
+      { "source": "/west-end", "destination": "/west-end.html" },
       { "source": "/dashboard", "destination": "/dashboard.html" },
       { "source": "/login", "destination": "/login.html" },
       { "source": "/about", "destination": "/about.html" },
+      { "source": "/spurs", "destination": "/spurs.html" },
       { "source": "/", "destination": "/index.html" }
     ]
   }
