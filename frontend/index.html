@@ -92,20 +92,54 @@
         .footer-right { display: flex; gap: 10px; }
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.06); color: #1e293b; }
         .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.15); color: #6d28d9; font-weight: 600; }
+
+        /* ── MOBILE FIXES ── */
         @media (max-width: 900px) {
-            .nav { padding: 16px 24px; }
-            .nav-right { gap: 12px; }
-            .hero { flex-direction: column; padding: 100px 24px 60px; gap: 40px; }
-            .hero h1 { font-size: 36px; }
-            .hero h1 .title { font-size: 24px; }
-            .hero-right { width: 100%; flex-direction: row; flex-wrap: wrap; }
-            .stat-card { flex: 1; min-width: 120px; }
-            .projects { padding: 60px 24px; }
+            /* Nav — bigger touch targets, hide text links */
+            .nav { padding: 14px 20px; }
+            .nav-link { display: none; }
+            .nav-cta { padding: 10px 16px; font-size: 13px; }
+
+            /* Hero — remove the giant min-height, stack vertically, cut padding */
+            .hero {
+                min-height: unset;
+                flex-direction: column;
+                padding: 90px 24px 48px;
+                gap: 32px;
+                align-items: flex-start;
+            }
+            .hero h1 { font-size: 36px; letter-spacing: -0.5px; }
+            .hero h1 .title { font-size: 22px; }
+            .hero-sub { font-size: 15px; margin-bottom: 24px; }
+            .hero-eyebrow { margin-bottom: 20px; }
+            .hero-tags { margin-bottom: 24px; }
+
+            /* Stat cards — row instead of column */
+            .hero-right {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .stat-card { flex: 1; min-width: 140px; padding: 14px 16px; }
+            .stat-card-val { font-size: 22px; }
+
+            /* Projects */
+            .projects { padding: 48px 20px; }
             .projects-grid { grid-template-columns: 1fr; }
-            .about-strip { padding: 60px 24px; }
-            .about-strip-inner { grid-template-columns: 1fr; gap: 40px; }
-            .contact { padding: 60px 24px; }
-            .footer { padding: 24px; flex-direction: column; align-items: flex-start; }
+            .section-sub { margin-bottom: 28px; }
+
+            /* About strip */
+            .about-strip { padding: 48px 20px; }
+            .about-strip-inner { grid-template-columns: 1fr; gap: 32px; }
+
+            /* Contact */
+            .contact { padding: 48px 20px; }
+            .contact-links { flex-direction: column; align-items: stretch; }
+            .contact-link { justify-content: center; }
+
+            /* Footer */
+            .footer { padding: 20px; flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -174,8 +208,6 @@
     <div class="section-sub">Two independently built platforms — one covering Central London office markets, one exploring football stadium commercial intelligence. Both built using AI-assisted development from scratch.</div>
 
     <div class="projects-grid">
-
-        <!-- PROJECT 1 — WEST END -->
         <a href="/west-end" class="project-card">
             <div class="project-card-top">
                 <div class="project-card-bg" style="background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(59,130,246,0.08) 0%, transparent 60%);"></div>
@@ -198,7 +230,6 @@
             </div>
         </a>
 
-        <!-- PROJECT 2 — SPURS -->
         <a href="/spurs" class="project-card">
             <div class="project-card-top">
                 <div class="project-card-bg" style="background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(245,158,11,0.06) 0%, transparent 60%);"></div>
@@ -222,7 +253,6 @@
                 <span class="project-card-link" style="color:#f59e0b">View Dashboard →</span>
             </div>
         </a>
-
     </div>
 </section>
 
@@ -231,12 +261,8 @@
         <div class="about-text">
             <div class="section-eyebrow" style="text-align:left;">About</div>
             <h2>Real estate knowledge meets modern technology</h2>
-            <p>
-                I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with a First Class final year project. During my job search I became interested in how AI and data could be applied to property intelligence — so I built my own platform to find out.
-            </p>
-            <p>
-                Both projects on this site were built entirely using AI-assisted development — no prior coding experience. I directed Claude to design, build and deploy full-stack applications, learning how to use AI as a genuine productivity tool rather than a shortcut.
-            </p>
+            <p>I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with a First Class final year project. During my job search I became interested in how AI and data could be applied to property intelligence — so I built my own platform to find out.</p>
+            <p>Both projects on this site were built entirely using AI-assisted development — no prior coding experience. I directed Claude to design, build and deploy full-stack applications, learning how to use AI as a genuine productivity tool rather than a shortcut.</p>
             <a href="/about">Read my full profile →</a>
         </div>
         <div class="about-facts">
