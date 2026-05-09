@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign In — West End Office Intelligence</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; display: flex; flex-direction: column; }
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(6,13,24,0.9); backdrop-filter: blur(12px); }
+        .nav-logo { font-size: 15px; font-weight: 700; color: #fff; text-decoration: none; }
+        .nav-logo span { color: #3b82f6; }
+        .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; position: relative; overflow: hidden; }
+        .bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 60% 60% at 50% 40%, rgba(59,130,246,0.08) 0%, transparent 70%); pointer-events: none; }
+        .grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+        .card { position: relative; background: #0b1527; border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 48px; width: 100%; max-width: 420px; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), rgba(168,85,247,0.5), transparent); border-radius: 24px 24px 0 0; }
+        .card-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #3b82f6; margin-bottom: 12px; text-align: center; }
+        .card-title { font-size: 26px; font-weight: 800; color: #f1f5f9; text-align: center; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .card-sub { font-size: 13px; color: #475569; text-align: center; margin-bottom: 36px; line-height: 1.6; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; margin-bottom: 8px; font-weight: 600; }
+        .field input { width: 100%; background: #060d18; border: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; padding: 12px 16px; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+        .field input:focus { border-color: #3b82f6; }
+        .field input::placeholder { color: #334155; }
+        .error-msg { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; text-align: center; }
+        .submit-btn { width: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(59,130,246,0.25); font-family: inherit; margin-top: 8px; }
+        .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.35); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .back-link { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: #334155; text-decoration: none; transition: color 0.2s; }
+        .back-link:hover { color: #64748b; }
+        .powered { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 28px; font-size: 11px; color: #1e293b; }
+        .powered span { color: #4b3f6b; }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/" class="nav-logo">West End <span>Office Intelligence</span></a>
+</nav>
+
+<div class="main">
+    <div class="bg"></div>
+    <div class="grid"></div>
+    <div class="card">
+        <div class="card-eyebrow">Secure Access</div>
+        <div class="card-title">Sign In</div>
+        <div class="card-sub">Enter your access password to view the platform</div>
+
+        <div class="error-msg" id="errorMsg">Incorrect password. Please try again.</div>
+
+        <div class="field">
+            <label>Access Password</label>
+            <input type="password" id="passwordInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()"/>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="checkPassword()">
+            Access Dashboard →
+        </button>
+
+        <a href="/" class="back-link">← Back to home</a>
+
+        <div class="powered">
+            <span>✦ Powered by Claude · Anthropic</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Check if already logged in
+    if (sessionStorage.getItem('weoi_auth') === 'true') {
+        window.location.href = '/dashboard';
+    }
+
+    function checkPassword() {
+        const input = document.getElementById('passwordInput').value;
+        const btn = document.getElementById('submitBtn');
+        const error = document.getElementById('errorMsg');
+
+        // Set your password here
+        const PASSWORD = 'dom123';
+
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+        error.style.display = 'none';
+
+        setTimeout(() => {
+            if (input === PASSWORD) {
+                sessionStorage.setItem('weoi_auth', 'true');
+                window.location.href = '/dashboard';
+            } else {
+                error.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Access Dashboard →';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }, 600);
+    }
+</script>
+
+</body>
+</html>

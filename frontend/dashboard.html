@@ -7,15 +7,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
         .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); }
-        .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
+        .nav-logo { font-size: 15px; font-weight: 700; color: #fff; text-decoration: none; }
         .nav-logo span { color: #3b82f6; }
         .nav-right { display: flex; align-items: center; gap: 12px; }
         .nav-tag { font-size: 11px; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(59,130,246,0.25); letter-spacing: 1px; text-transform: uppercase; }
-        .nav-claude { font-size: 11px; background: rgba(168,85,247,0.12); color: #a855f7; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(168,85,247,0.25); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+        .nav-claude { font-size: 11px; background: rgba(168,85,247,0.12); color: #a855f7; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(168,85,247,0.25); letter-spacing: 1px; text-transform: uppercase; }
+        .nav-auth-btn { font-size: 12px; padding: 6px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; }
+        .nav-signin { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+        .nav-signin:hover { background: rgba(59,130,246,0.2); }
+        .nav-signout { background: rgba(255,255,255,0.05); color: #64748b; border: 1px solid rgba(255,255,255,0.08); }
+        .nav-signout:hover { color: #94a3b8; }
         .hero { padding: 60px 40px 40px; max-width: 1400px; margin: auto; }
         .hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #3b82f6; margin-bottom: 16px; }
         .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: #64748b; font-size: 15px; max-width: 600px; line-height: 1.8; }
+
+        /* FREE TIER BANNER */
+        .free-banner { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 14px 20px; margin: 0 40px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 1320px; margin-left: auto; margin-right: auto; }
+        .free-banner-text { font-size: 13px; color: #64748b; flex: 1; }
+        .free-banner-text strong { color: #94a3b8; }
+        .free-banner-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+
         .container { max-width: 1400px; margin: auto; padding: 0 40px 80px; }
         .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
         .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
@@ -28,8 +40,8 @@
         .live-btn:hover { opacity: 0.85; }
         .live-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
-        .live-banner { background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2); border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; color: #38bdf8; display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .live-banner.error { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #f87171; }
+        .live-banner-data { background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2); border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; color: #38bdf8; display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .live-banner-data.error { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #f87171; }
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .kpi-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 24px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
         .kpi-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
@@ -44,6 +56,13 @@
         .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
         .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
 
+        /* LOCKED STATE */
+        .locked-overlay { position: relative; }
+        .locked-overlay .lock-mask { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, #060d18 80%); border-radius: 18px; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 28px; }
+        .lock-badge { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+        .lock-badge:hover { background: rgba(59,130,246,0.2); }
+        .blurred { filter: blur(4px); pointer-events: none; user-select: none; }
+
         /* SCHEMATIC MAP */
         .heatmap-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
         .heatmap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
@@ -57,7 +76,7 @@
         svg#schematic { width: 100%; max-width: 580px; height: auto; display: block; margin: auto; }
         .zone { cursor: pointer; transition: all 0.2s; }
         .zone:hover { filter: brightness(1.3); }
-        .zone-label { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 700; letter-spacing: 0.3px; }
+        .zone-label { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 700; }
         .zone-sublabel { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 400; }
         .map-side-panel { display: flex; flex-direction: column; gap: 12px; }
         .map-legend { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 16px; }
@@ -74,7 +93,6 @@
         .ranking-val { font-size: 11px; font-weight: 700; }
         .ranking-bar-wrap { width: 50px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 0 8px; }
         .ranking-bar { height: 4px; border-radius: 2px; transition: width 0.4s; }
-
         .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
         .chart-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; }
         .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
@@ -82,7 +100,9 @@
         .chart-sub { font-size: 12px; color: #475569; margin-top: 4px; }
         canvas { max-height: 320px; }
         .chart-full { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-        .insight-panel { background: #0b1527; border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid #a855f7; border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; }
+
+        /* INSIGHT */
+        .insight-panel { background: #0b1527; border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid #a855f7; border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
         .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
         .insight-icon { width: 36px; height: 36px; background: rgba(168,85,247,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .insight-label { font-size: 11px; color: #a855f7; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
@@ -93,6 +113,7 @@
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
         .table-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; overflow-x: auto; margin-bottom: 24px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -121,16 +142,18 @@
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
             .footer { padding: 24px 20px; }
             .map-container { grid-template-columns: 1fr; }
+            .free-banner { margin: 0 20px 20px; }
         }
     </style>
 </head>
 <body>
 
 <nav class="nav">
-    <div class="nav-logo">West End <span>Office Intelligence</span></div>
+    <a href="/" class="nav-logo">West End <span>Office Intelligence</span></a>
     <div class="nav-right">
         <div class="nav-tag">Live Market Data</div>
         <div class="nav-claude">✦ Powered by Claude</div>
+        <span id="navAuthArea"></span>
     </div>
 </nav>
 
@@ -140,21 +163,28 @@
     <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
 </div>
 
+<!-- FREE TIER BANNER (shown when not logged in) -->
+<div class="free-banner" id="freeBanner" style="display:none;">
+    <span>🔒</span>
+    <div class="free-banner-text"><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh and PDF reports.</div>
+    <a href="/login" class="free-banner-btn">Get Full Access →</a>
+</div>
+
 <div class="container">
 
     <div class="controls">
         <span class="controls-label">Submarket</span>
         <select id="areaSelect" class="selector"></select>
-        <button id="downloadBtn" class="download-btn" onclick="downloadReport()">
+        <button id="downloadBtn" class="download-btn" onclick="handleDownload()">
             ⬇ Download Report
         </button>
-        <button id="liveBtn" class="live-btn" onclick="fetchLiveData()">
+        <button id="liveBtn" class="live-btn" onclick="handleLiveData()">
             ⚡ Refresh Live Data
         </button>
         <div class="last-updated" id="lastUpdated"></div>
     </div>
 
-    <div class="live-banner" id="liveBanner">
+    <div class="live-banner-data" id="liveBanner">
         <span>⚡</span>
         <span id="liveBannerText"></span>
         <span id="liveBannerSource" style="margin-left:auto;font-size:11px;opacity:0.7;"></span>
@@ -216,65 +246,47 @@
                     <text x="63" y="218" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Hyde Park</text>
                     <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
                     <text x="200" y="52" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Regent's Park</text>
-
-                    <!-- MARYLEBONE -->
                     <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')">
                         <rect x="118" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Marylebone</text>
                         <text x="177" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Marylebone">—</text>
                     </g>
-
-                    <!-- FITZROVIA -->
                     <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')">
                         <rect x="248" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Fitzrovia</text>
                         <text x="307" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Fitzrovia">—</text>
                     </g>
-
-                    <!-- MIDTOWN -->
                     <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')">
                         <rect x="378" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="437" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Midtown</text>
                         <text x="437" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Midtown">—</text>
                     </g>
-
-                    <!-- MAYFAIR -->
                     <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')">
                         <rect x="118" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Mayfair</text>
                         <text x="177" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Mayfair">—</text>
                     </g>
-
-                    <!-- SOHO -->
                     <g class="zone" id="zone-Soho" onclick="selectArea('Soho')">
                         <rect x="248" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Soho</text>
                         <text x="307" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Soho">—</text>
                     </g>
-
-                    <!-- COVENT GARDEN -->
                     <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')">
                         <rect x="378" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="437" y="222" class="zone-label" font-size="11" fill="white" text-anchor="middle">Covent</text>
                         <text x="437" y="236" class="zone-label" font-size="11" fill="white" text-anchor="middle">Garden</text>
                         <text x="437" y="252" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Covent Garden">—</text>
                     </g>
-
-                    <!-- ST JAMES'S -->
                     <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)">
                         <rect x="118" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="177" y="334" class="zone-label" font-size="11" fill="white" text-anchor="middle">St James's</text>
                         <text x="177" y="362" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-St James's">—</text>
                     </g>
-
-                    <!-- VICTORIA -->
                     <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')">
                         <rect x="248" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/>
                         <text x="307" y="338" class="zone-label" font-size="12" fill="white" text-anchor="middle">Victoria</text>
                         <text x="307" y="354" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Victoria">—</text>
                     </g>
-
-                    <!-- Connector lines -->
                     <line x1="236" y1="123" x2="248" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="366" y1="123" x2="378" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="177" y1="168" x2="177" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
@@ -285,14 +297,11 @@
                     <line x1="177" y1="278" x2="177" y2="298" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="307" y1="278" x2="307" y2="298" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
                     <line x1="236" y1="343" x2="248" y2="343" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-
-                    <!-- Compass -->
                     <text x="516" y="68" fill="rgba(255,255,255,0.15)" font-size="10" font-family="Inter,Arial" text-anchor="middle" font-weight="700">N</text>
                     <line x1="516" y1="72" x2="516" y2="58" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
                     <polygon points="516,52 513,62 516,60 519,62" fill="rgba(255,255,255,0.15)"/>
                 </svg>
             </div>
-
             <div class="map-side-panel">
                 <div class="map-legend">
                     <div class="map-legend-title" id="legendTitle">Vacancy Rate</div>
@@ -339,14 +348,17 @@
         <canvas id="comparisonChart" style="max-height:280px;"></canvas>
     </div>
 
-    <div class="insight-panel">
-        <div class="insight-header">
-            <div class="insight-icon">✦</div>
-            <div class="insight-label">AI Market Commentary</div>
-            <div class="insight-powered">Powered by Claude · Anthropic</div>
-        </div>
-        <div class="insight-text" id="insight">
-            <div class="typing-indicator"><span></span><span></span><span></span></div>
+    <!-- AI COMMENTARY — locked for free users -->
+    <div id="insightWrapper">
+        <div class="insight-panel">
+            <div class="insight-header">
+                <div class="insight-icon">✦</div>
+                <div class="insight-label">AI Market Commentary</div>
+                <div class="insight-powered">Powered by Claude · Anthropic</div>
+            </div>
+            <div class="insight-text" id="insight">
+                <div class="typing-indicator"><span></span><span></span><span></span></div>
+            </div>
         </div>
     </div>
 
@@ -390,6 +402,45 @@ let mapMode = 'vacancy';
 let currentArea = null;
 
 const API = 'https://west-end-office-intelligence-production.up.railway.app';
+const isLoggedIn = sessionStorage.getItem('weoi_auth') === 'true';
+
+// Setup nav and UI based on auth state
+function setupAuth() {
+    const navArea = document.getElementById('navAuthArea');
+    if (isLoggedIn) {
+        navArea.innerHTML = `<a href="#" class="nav-auth-btn nav-signout" onclick="signOut()">Sign Out</a>`;
+        document.getElementById('freeBanner').style.display = 'none';
+    } else {
+        navArea.innerHTML = `<a href="/login" class="nav-auth-btn nav-signin">Sign In →</a>`;
+        document.getElementById('freeBanner').style.display = 'flex';
+        // Lock premium buttons
+        document.getElementById('downloadBtn').style.opacity = '0.4';
+        document.getElementById('downloadBtn').style.cursor = 'not-allowed';
+        document.getElementById('liveBtn').style.opacity = '0.4';
+        document.getElementById('liveBtn').style.cursor = 'not-allowed';
+    }
+}
+
+function signOut() {
+    sessionStorage.removeItem('weoi_auth');
+    window.location.reload();
+}
+
+function handleDownload() {
+    if (!isLoggedIn) {
+        window.location.href = '/login';
+        return;
+    }
+    downloadReport();
+}
+
+function handleLiveData() {
+    if (!isLoggedIn) {
+        window.location.href = '/login';
+        return;
+    }
+    fetchLiveData();
+}
 
 function getVacancyColor(v) {
     if (v < 5) return '#22c55e';
@@ -407,7 +458,6 @@ function setMapMode(mode) {
     mapMode = mode;
     document.getElementById('toggleVacancy').classList.toggle('active', mode === 'vacancy');
     document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
-
     const legend = document.querySelector('.map-legend');
     if (mode === 'vacancy') {
         legend.innerHTML = `
@@ -424,8 +474,7 @@ function setMapMode(mode) {
             <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Below £100 psf — Value</div>
         `;
     }
-    document.getElementById('rankingsTitle').textContent =
-        mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
+    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
     updateSchematic();
     updateRankings();
 }
@@ -438,25 +487,18 @@ function updateSchematic() {
         const latest = areaData[areaData.length - 1];
         const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
         const color = mapMode === 'vacancy' ? getVacancyColor(avgVacancy) : getRentColor(latest.rent_psf);
-
         const zoneEl = document.getElementById(`zone-${area}`);
         if (zoneEl) {
             const rect = zoneEl.querySelector('rect');
             if (rect) {
-                rect.setAttribute('fill', color + '33');
+                rect.setAttribute('fill', area === currentArea ? color + '66' : color + '33');
                 rect.setAttribute('stroke', color);
                 rect.setAttribute('stroke-width', area === currentArea ? '3' : '1.5');
-                if (area === currentArea) {
-                    rect.setAttribute('fill', color + '66');
-                }
             }
         }
-
         const valEl = document.getElementById(`val-${area}`);
         if (valEl) {
-            valEl.textContent = mapMode === 'vacancy'
-                ? `${avgVacancy.toFixed(1)}% vacancy`
-                : `£${latest.rent_psf} psf`;
+            valEl.textContent = mapMode === 'vacancy' ? `${avgVacancy.toFixed(1)}% vacancy` : `£${latest.rent_psf} psf`;
             valEl.setAttribute('fill', color);
         }
     });
@@ -465,18 +507,14 @@ function updateSchematic() {
 function updateRankings() {
     if (!allData.length) return;
     const uniqueAreas = [...new Set(allData.map(d => d.area))];
-
     let ranked = uniqueAreas.map(area => {
         const areaData = allData.filter(d => d.area === area);
         const latest = areaData[areaData.length - 1];
         const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
         return { area, vacancy: avgVacancy, rent: latest.rent_psf };
     });
-
     ranked.sort((a,b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
-
     const maxVal = Math.max(...ranked.map(r => mapMode === 'vacancy' ? r.vacancy : r.rent));
-
     document.getElementById('rankingsList').innerHTML = ranked.map(r => {
         const val = mapMode === 'vacancy' ? r.vacancy : r.rent;
         const color = mapMode === 'vacancy' ? getVacancyColor(r.vacancy) : getRentColor(r.rent);
@@ -485,9 +523,7 @@ function updateRankings() {
         return `
             <div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" onclick="selectArea('${r.area}')">
                 <span class="ranking-name">${r.area}</span>
-                <div class="ranking-bar-wrap">
-                    <div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div>
-                </div>
+                <div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div>
                 <span class="ranking-val" style="color:${color}">${displayVal}</span>
             </div>
         `;
@@ -518,14 +554,39 @@ function animateValue(el, end, suffix = '', decimals = 0) {
 }
 
 async function loadCommentary(area) {
-    const insightEl = document.getElementById("insight");
-    insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    if (!isLoggedIn) {
+        // Show locked state for free users
+        const wrapper = document.getElementById('insightWrapper');
+        wrapper.innerHTML = `
+            <div class="insight-panel locked-overlay">
+                <div class="insight-header">
+                    <div class="insight-icon">✦</div>
+                    <div class="insight-label">AI Market Commentary</div>
+                    <div class="insight-powered">Powered by Claude · Anthropic</div>
+                </div>
+                <div class="insight-text blurred">
+                    Prime rents in ${area} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited.
+                </div>
+                <div class="lock-mask">
+                    <a href="/login" class="lock-badge">🔒 Sign in to read AI commentary →</a>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    const insightEl = document.getElementById('insight');
+    if (insightEl) {
+        insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    }
     try {
         const response = await fetch(`${API}/commentary/${encodeURIComponent(area)}`);
         const result = await response.json();
-        insightEl.textContent = result.commentary;
+        const el = document.getElementById('insight');
+        if (el) el.textContent = result.commentary;
     } catch(e) {
-        insightEl.textContent = "Commentary temporarily unavailable.";
+        const el = document.getElementById('insight');
+        if (el) el.textContent = "Commentary temporarily unavailable.";
     }
 }
 
@@ -533,57 +594,35 @@ async function fetchLiveData() {
     const area = document.getElementById("areaSelect").value;
     const btn = document.getElementById("liveBtn");
     const banner = document.getElementById("liveBanner");
-
     btn.textContent = "⏳ Searching web...";
     btn.disabled = true;
     btn.style.opacity = "0.7";
     banner.style.display = "none";
-    banner.className = "live-banner";
-
+    banner.className = "live-banner-data";
     try {
         const response = await fetch(`${API}/live-data/${encodeURIComponent(area)}`);
         const result = await response.json();
-
         banner.style.display = "flex";
-
         if (result.live) {
-            // Update prime rent card with live figure
             document.getElementById("primeRent").textContent = `£${result.rent_psf}`;
-
             let parts = [];
-            if (result.rent_change && result.rent_change !== 0) {
-                parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf vs baseline`);
-            }
-            if (result.vacancy_change && result.vacancy_change !== 0) {
-                parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}% vs baseline`);
-            }
-            if (parts.length === 0) {
-                parts.push("Data confirmed — consistent with baseline");
-            }
+            if (result.rent_change && result.rent_change !== 0) parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf vs baseline`);
+            if (result.vacancy_change && result.vacancy_change !== 0) parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}% vs baseline`);
+            if (parts.length === 0) parts.push("Data confirmed — consistent with baseline");
             if (result.notes) parts.push(result.notes);
-
-            document.getElementById("liveBannerText").textContent =
-                `Live data updated · ${result.period} · ${parts.join(' · ')}`;
-            document.getElementById("liveBannerSource").textContent =
-                `${result.source} · Confidence: ${result.confidence}`;
-            document.getElementById("lastUpdated").textContent =
-                `⚡ Live: ${result.period}`;
-
+            document.getElementById("liveBannerText").textContent = `Live data updated · ${result.period} · ${parts.join(' · ')}`;
+            document.getElementById("liveBannerSource").textContent = `${result.source} · Confidence: ${result.confidence}`;
+            document.getElementById("lastUpdated").textContent = `⚡ Live: ${result.period}`;
         } else {
-            banner.className = "live-banner error";
-            document.getElementById("liveBannerText").textContent =
-                `Live search unavailable — showing baseline data. ${result.error || ''}`;
+            banner.className = "live-banner-data error";
+            document.getElementById("liveBannerText").textContent = `Live search unavailable — showing baseline data. ${result.error || ''}`;
             document.getElementById("liveBannerSource").textContent = "";
         }
-
     } catch(e) {
         banner.style.display = "flex";
-        banner.className = "live-banner error";
-        document.getElementById("liveBannerText").textContent =
-            "Live data fetch failed. Please try again.";
-        document.getElementById("liveBannerSource").textContent = "";
+        banner.className = "live-banner-data error";
+        document.getElementById("liveBannerText").textContent = "Live data fetch failed. Please try again.";
     }
-
     btn.textContent = "⚡ Refresh Live Data";
     btn.disabled = false;
     btn.style.opacity = "1";
@@ -618,10 +657,8 @@ async function loadDashboard(selectedArea = null) {
     try {
         const response = await fetch(`${API}/predictions`);
         allData = await response.json();
-
         const uniqueAreas = [...new Set(allData.map(d => d.area))].sort();
         const selector = document.getElementById("areaSelect");
-
         if (selector.options.length === 0) {
             uniqueAreas.forEach(area => {
                 const opt = document.createElement("option");
@@ -631,47 +668,35 @@ async function loadDashboard(selectedArea = null) {
             });
             selectedArea = uniqueAreas[0];
         }
-
         if (!selectedArea) selectedArea = selector.value;
         selector.value = selectedArea;
         currentArea = selectedArea;
-
         updateSchematic();
         updateRankings();
-
         const filtered = allData.filter(d => d.area === selectedArea);
         const latest = filtered[filtered.length - 1];
         const prev = filtered[filtered.length - 2];
-
-        document.getElementById("lastUpdated").textContent =
-            `Last updated: ${latest.year} ${latest.quarter}`;
-
+        document.getElementById("lastUpdated").textContent = `Last updated: ${latest.year} ${latest.quarter}`;
         animateValue(document.getElementById("primeRent"), latest.rent_psf, '£', 0);
-
         const avgVacancy = filtered.reduce((a,b) => a + b.predicted, 0) / filtered.length;
         const avgVacancyEl = document.getElementById("avgVacancy");
         animateValue(avgVacancyEl, avgVacancy, '', 2);
         setTimeout(() => avgVacancyEl.textContent += '%', 820);
-
         document.getElementById("takeup").textContent = latest.takeup_sqft.toLocaleString();
-
         const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
         const healthEl = document.getElementById("healthScore");
         animateValue(healthEl, score, '', 0);
         setTimeout(() => healthEl.textContent += '/100', 820);
-
         if (prev) {
             const rentChange = latest.rent_psf - prev.rent_psf;
             const rentDelta = document.getElementById("rentDelta");
             rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
             rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
-
             const vacChange = (latest.predicted - prev.predicted).toFixed(2);
             const vacDelta = document.getElementById("vacancyDelta");
             vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange) + '% vs prev quarter';
             vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
         }
-
         const badge = document.getElementById("signalBadge");
         if (avgVacancy < 5) {
             badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET';
@@ -684,10 +709,11 @@ async function loadDashboard(selectedArea = null) {
             badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;';
         }
 
-        loadCommentary(selectedArea);
+        // Debounced commentary — only fires after 1.5s pause
+        clearTimeout(window.commentaryTimer);
+        window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), 1500);
 
         const labels = filtered.map(d => `${d.year} ${d.quarter}`);
-
         if (trendChart) trendChart.destroy();
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line',
@@ -700,7 +726,6 @@ async function loadDashboard(selectedArea = null) {
             },
             options: chartOptions('y', 'y1')
         });
-
         if (takeupChart) takeupChart.destroy();
         takeupChart = new Chart(document.getElementById('takeupChart'), {
             type: 'bar',
@@ -709,27 +734,16 @@ async function loadDashboard(selectedArea = null) {
                 datasets: [{
                     label: 'Take-Up (sq ft)',
                     data: filtered.map(d => d.takeup_sqft),
-                    backgroundColor: labels.map((_, i) =>
-                        i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
-                    borderRadius: 6,
-                    borderSkipped: false
+                    backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'),
+                    borderRadius: 6, borderSkipped: false
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
-                scales: {
-                    x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                    y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
         });
-
         const latestByArea = uniqueAreas.map(area => {
             const d = allData.filter(x => x.area === area);
             return d[d.length - 1];
         });
-
         if (comparisonChart) comparisonChart.destroy();
         comparisonChart = new Chart(document.getElementById('comparisonChart'), {
             type: 'bar',
@@ -742,7 +756,6 @@ async function loadDashboard(selectedArea = null) {
             },
             options: chartOptions('y', 'y1')
         });
-
         const tbody = document.getElementById("dataTable");
         tbody.innerHTML = '';
         filtered.forEach(row => {
@@ -758,7 +771,6 @@ async function loadDashboard(selectedArea = null) {
             `;
             tbody.appendChild(tr);
         });
-
     } catch(e) { console.error(e); }
 }
 
@@ -775,6 +787,7 @@ function chartOptions(leftAxis, rightAxis) {
     };
 }
 
+setupAuth();
 loadDashboard();
 document.getElementById("areaSelect").addEventListener("change", e => loadDashboard(e.target.value));
 </script>
