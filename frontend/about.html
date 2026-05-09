@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dominic Mayne — Real Estate & Technology</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #060d18;
+            --navy2: #0b1527;
+            --slate: #334155;
+            --mid: #475569;
+            --muted: #64748b;
+            --border: rgba(255,255,255,0.06);
+            --blue: #3b82f6;
+            --blue-soft: rgba(59,130,246,0.12);
+            --purple: #a855f7;
+            --green: #22c55e;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--navy);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NAV */
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 60px;
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(6,13,24,0.92);
+            backdrop-filter: blur(14px);
+        }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .nav-logo span { color: var(--blue); }
+        .nav-links { display: flex; align-items: center; gap: 24px; }
+        .nav-link {
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        .nav-link:hover { color: var(--text); }
+        .nav-cta {
+            background: var(--blue);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .nav-cta:hover { background: #2563eb; }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: 120px 60px 80px;
+            position: relative;
+            overflow: hidden;
+            gap: 60px;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 50% 70% at 70% 40%, rgba(59,130,246,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 30% 60%, rgba(168,85,247,0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-lines {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+        .hero-left { position: relative; }
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59,130,246,0.08);
+            border: 1px solid rgba(59,130,246,0.18);
+            color: #60a5fa;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+        .hero-eyebrow-dot {
+            width: 5px; height: 5px;
+            background: var(--blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.08;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+        .hero h1 .name {
+            display: block;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero h1 .role {
+            display: block;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 42px;
+        }
+        .hero-sub {
+            font-size: 16px;
+            color: var(--muted);
+            line-height: 1.85;
+            max-width: 480px;
+            margin-bottom: 36px;
+            font-weight: 300;
+        }
+        .hero-sub strong { color: var(--text-dim); font-weight: 500; }
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), #2563eb);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.25);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,0.35); }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-dim);
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+
+        /* HERO RIGHT — platform preview */
+        .hero-right { position: relative; }
+        .platform-preview {
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .platform-preview::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), rgba(168,85,247,0.4), transparent);
+        }
+        .preview-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .preview-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .preview-url {
+            flex: 1;
+            height: 7px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        .preview-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .preview-kpi {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .preview-kpi-l { height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; width: 55%; margin-bottom: 8px; }
+        .preview-kpi-v { height: 16px; border-radius: 3px; width: 65%; }
+        .preview-chart {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 14px;
+            height: 90px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .preview-insight {
+            background: rgba(168,85,247,0.06);
+            border: 1px solid rgba(168,85,247,0.15);
+            border-left: 3px solid var(--purple);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+        .preview-insight-label {
+            font-size: 9px;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .preview-insight-lines div {
+            height: 5px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+        .preview-tag {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .preview-tag-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+
+        /* SECTION */
+        .section { padding: 80px 60px; max-width: 1200px; margin: auto; }
+        .section-eyebrow {
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        .section-sub {
+            font-size: 15px;
+            color: var(--muted);
+            max-width: 560px;
+            line-height: 1.85;
+            font-weight: 300;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0 60px;
+        }
+
+        /* ABOUT */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 48px;
+            align-items: start;
+        }
+        .about-text p {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.9;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .about-text p strong { color: var(--text); font-weight: 500; }
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .stat-box {
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+        .stat-box:hover { border-color: rgba(59,130,246,0.2); }
+        .stat-box-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .stat-box-val span { color: var(--blue); }
+        .stat-box-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+
+        /* BUILD STORY */
+        .build-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 48px;
+        }
+        .build-card {
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .build-card:hover { border-color: rgba(59,130,246,0.2); transform: translateY(-3px); }
+        .build-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .build-card:hover::before { opacity: 1; }
+        .build-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .build-card.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+        .build-card.green::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .build-card.cyan::before { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+        .build-card.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .build-card.rose::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+        .build-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.06);
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+        .build-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 10px; }
+        .build-text { font-size: 13px; color: var(--muted); line-height: 1.8; font-weight: 300; }
+        .build-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 14px;
+        }
+        .tech-pill {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* SKILLS */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 48px;
+        }
+        .skill-row {
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .skill-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .skill-info { flex: 1; }
+        .skill-name { font-size: 14px; font-weight: 600; color: #f1f5f9; margin-bottom: 3px; }
+        .skill-detail { font-size: 12px; color: var(--muted); font-weight: 300; }
+        .skill-bar-wrap { width: 80px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+        .skill-bar { height: 3px; border-radius: 2px; }
+
+        /* EXPERIENCE */
+        .exp-list { margin-top: 48px; }
+        .exp-item {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 32px;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .exp-item:last-child { border-bottom: none; }
+        .exp-meta {}
+        .exp-date { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+        .exp-company {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .exp-location { font-size: 12px; color: var(--slate); }
+        .exp-content {}
+        .exp-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 12px;
+        }
+        .exp-points { list-style: none; }
+        .exp-points li {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+            font-weight: 300;
+        }
+        .exp-points li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--blue);
+            font-size: 12px;
+        }
+
+        /* CONTACT */
+        .contact-section {
+            background: var(--navy2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .contact-content { position: relative; max-width: 560px; margin: auto; }
+        .contact-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        .contact-sub { font-size: 15px; color: var(--muted); margin-bottom: 36px; line-height: 1.8; font-weight: 300; }
+        .contact-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .contact-email {
+            background: linear-gradient(135deg, var(--blue), #2563eb);
+            color: white;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+        }
+        .contact-email:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.35); }
+        .contact-linkedin {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .contact-linkedin:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+        .contact-phone {
+            background: rgba(34,197,94,0.08);
+            color: #4ade80;
+            border: 1px solid rgba(34,197,94,0.15);
+        }
+
+        /* FOOTER */
+        .footer {
+            padding: 28px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .footer-left { font-size: 12px; color: var(--slate); }
+        .footer-right { display: flex; gap: 10px; }
+        .footer-badge {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--slate);
+        }
+        .footer-badge-claude {
+            background: rgba(168,85,247,0.07);
+            border-color: rgba(168,85,247,0.15);
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .nav { padding: 16px 24px; }
+            .nav-links { display: none; }
+            .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 40px; }
+            .hero h1 { font-size: 38px; }
+            .hero h1 .role { font-size: 30px; }
+            .about-grid { grid-template-columns: 1fr; }
+            .build-grid { grid-template-columns: 1fr; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .exp-item { grid-template-columns: 1fr; gap: 8px; }
+            .section { padding: 60px 24px; }
+            .divider { margin: 0 24px; }
+            .contact-section { padding: 60px 24px; }
+            .footer { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="/" class="nav-logo">West End <span>Office Intelligence</span></a>
+    <div class="nav-links">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#platform" class="nav-link">The Platform</a>
+        <a href="#experience" class="nav-link">Experience</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="/dashboard" class="nav-cta">View Platform →</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-left">
+        <div class="hero-eyebrow">
+            <div class="hero-eyebrow-dot"></div>
+            Real Estate · Technology · Analytics
+        </div>
+        <h1>
+            <span class="name">Dominic Mayne</span>
+            <span class="role">Real Estate Graduate & Proptech Builder</span>
+        </h1>
+        <p class="hero-sub">
+            <strong>BSc Real Estate, University of Reading (2:1).</strong> I built this platform independently to demonstrate that real estate knowledge and modern technology aren't separate disciplines — they're most powerful when combined.
+        </p>
+        <div class="hero-buttons">
+            <a href="/dashboard" class="btn-primary">View the Platform →</a>
+            <a href="#about" class="btn-outline">Read My Story</a>
+        </div>
+    </div>
+    <div class="hero-right">
+        <div class="preview-tag">
+            <div class="preview-tag-dot"></div>
+            Live Platform
+        </div>
+        <div class="platform-preview">
+            <div class="preview-bar">
+                <div class="preview-dot" style="background:#ef4444"></div>
+                <div class="preview-dot" style="background:#f59e0b"></div>
+                <div class="preview-dot" style="background:#22c55e"></div>
+                <div class="preview-url"></div>
+            </div>
+            <div class="preview-kpis">
+                <div class="preview-kpi"><div class="preview-kpi-l"></div><div class="preview-kpi-v" style="background:rgba(59,130,246,0.35)"></div></div>
+                <div class="preview-kpi"><div class="preview-kpi-l"></div><div class="preview-kpi-v" style="background:rgba(34,197,94,0.35)"></div></div>
+                <div class="preview-kpi"><div class="preview-kpi-l"></div><div class="preview-kpi-v" style="background:rgba(168,85,247,0.35)"></div></div>
+            </div>
+            <div class="preview-chart">
+                <svg width="100%" height="100%" viewBox="0 0 400 70" preserveAspectRatio="none">
+                    <polyline points="0,55 60,40 120,45 180,25 240,15 300,20 360,8 400,12" fill="none" stroke="rgba(59,130,246,0.7)" stroke-width="2"/>
+                    <polyline points="0,60 60,58 120,52 180,48 240,42 300,36 360,30 400,26" fill="none" stroke="rgba(34,197,94,0.6)" stroke-width="2"/>
+                    <polyline points="0,55 60,40 120,45 180,25 240,15 300,20 360,8 400,12 400,70 0,70" fill="rgba(59,130,246,0.05)" stroke="none"/>
+                </svg>
+            </div>
+            <div class="preview-insight">
+                <div class="preview-insight-label">✦ AI Market Commentary · Claude</div>
+                <div class="preview-insight-lines">
+                    <div style="width:100%"></div>
+                    <div style="width:85%"></div>
+                    <div style="width:92%"></div>
+                    <div style="width:70%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- ABOUT -->
+<section class="section" id="about">
+    <div class="section-eyebrow">Background</div>
+    <div class="section-title">Why I built this</div>
+    <div class="section-sub">A real estate degree meets modern technology — built independently, from scratch.</div>
+    <div class="about-grid">
+        <div class="about-text">
+            <p>
+                I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with modules covering Real Estate Valuation, Development Appraisal, Applied Property Law and Asset Management. My final project received a First Class grade.
+            </p>
+            <p>
+                During my studies and job search I noticed a gap: the tools used by institutional property professionals — CoStar, EG Propertylink, agent research platforms — are expensive, complex, and largely inaccessible to graduates. I wanted to understand how modern technology could democratise access to this kind of intelligence, so I built my own version.
+            </p>
+            <p>
+                This platform was built entirely independently, with <strong>no prior professional software development experience</strong>. I taught myself Python, FastAPI, machine learning with scikit-learn, and frontend development to bring it to life. Every line of code, every design decision, and every data point was my own work.
+            </p>
+            <p>
+                I'm now looking to bring both sides of this — <strong>real estate knowledge and technical capability</strong> — into a graduate role at a firm where data, technology and property intersect.
+            </p>
+        </div>
+        <div class="about-stats">
+            <div class="stat-box">
+                <div class="stat-box-val">2<span>:1</span></div>
+                <div class="stat-box-label">BSc Real Estate, Reading</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-val">8<span>+</span></div>
+                <div class="stat-box-label">Submarkets Tracked</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-val">1<span>st</span></div>
+                <div class="stat-box-label">Final Year Project</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-val">0</div>
+                <div class="stat-box-label">Prior Coding Experience</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- PLATFORM -->
+<section class="section" id="platform">
+    <div class="section-eyebrow">The Platform</div>
+    <div class="section-title">What I built and how</div>
+    <div class="section-sub">A full-stack proptech platform built from scratch — data pipeline, machine learning model, AI integration, and professional frontend.</div>
+    <div class="build-grid">
+        <div class="build-card blue">
+            <div class="build-num">01</div>
+            <div class="build-title">Data Research & Pipeline</div>
+            <div class="build-text">Researched and compiled quarterly market data across 8 Central London submarkets from published reports by Savills, CBRE, Colliers, Knight Frank and BNP Paribas. Built a structured CSV pipeline feeding a Python backend.</div>
+            <div class="build-tech">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Pandas</span>
+                <span class="tech-pill">Market Research</span>
+            </div>
+        </div>
+        <div class="build-card purple">
+            <div class="build-num">02</div>
+            <div class="build-title">Machine Learning Forecasting</div>
+            <div class="build-text">Trained a Linear Regression model using scikit-learn to forecast vacancy rates by submarket, using rent, take-up and historical vacancy as features. Model runs at startup and serves predictions via a REST API.</div>
+            <div class="build-tech">
+                <span class="tech-pill">scikit-learn</span>
+                <span class="tech-pill">Linear Regression</span>
+                <span class="tech-pill">Feature Engineering</span>
+            </div>
+        </div>
+        <div class="build-card green">
+            <div class="build-num">03</div>
+            <div class="build-title">FastAPI Backend</div>
+            <div class="build-text">Built a production REST API with FastAPI, deployed on Railway. Endpoints serve predictions, AI commentary, live web data, deal tracking and PDF generation. Handles CORS, environment variables and async requests.</div>
+            <div class="build-tech">
+                <span class="tech-pill">FastAPI</span>
+                <span class="tech-pill">Railway</span>
+                <span class="tech-pill">REST API</span>
+            </div>
+        </div>
+        <div class="build-card cyan">
+            <div class="build-num">04</div>
+            <div class="build-title">Claude AI Integration</div>
+            <div class="build-text">Integrated the Anthropic Claude API to generate real-time market commentary in the style of a Savills research note, and to search the web for the latest published market figures and deal transactions.</div>
+            <div class="build-tech">
+                <span class="tech-pill">Anthropic API</span>
+                <span class="tech-pill">Web Search</span>
+                <span class="tech-pill">Prompt Engineering</span>
+            </div>
+        </div>
+        <div class="build-card amber">
+            <div class="build-num">05</div>
+            <div class="build-title">Frontend & Product Design</div>
+            <div class="build-text">Designed and built the entire frontend in vanilla HTML, CSS and JavaScript — including an interactive SVG submarket schematic, Chart.js data visualisations, animated KPI cards and a freemium access model with password gating.</div>
+            <div class="build-tech">
+                <span class="tech-pill">HTML/CSS/JS</span>
+                <span class="tech-pill">Chart.js</span>
+                <span class="tech-pill">SVG</span>
+                <span class="tech-pill">Vercel</span>
+            </div>
+        </div>
+        <div class="build-card rose">
+            <div class="build-num">06</div>
+            <div class="build-title">PDF Report Generation</div>
+            <div class="build-text">Built an automated PDF report generator using ReportLab that produces a branded, institutional-quality research note on demand — including AI commentary, KPI tables, quarterly data breakdown and a disclaimer footer.</div>
+            <div class="build-tech">
+                <span class="tech-pill">ReportLab</span>
+                <span class="tech-pill">PDF Generation</span>
+                <span class="tech-pill">Document Design</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- SKILLS -->
+<section class="section">
+    <div class="section-eyebrow">Skills Demonstrated</div>
+    <div class="section-title">Technical & professional capability</div>
+    <div class="section-sub">Built through the project and underpinned by a real estate education.</div>
+    <div class="skills-grid">
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(59,130,246,0.1)">🏢</div>
+            <div class="skill-info">
+                <div class="skill-name">Central London Office Markets</div>
+                <div class="skill-detail">Submarkets, rental trends, vacancy dynamics, take-up analysis, agent research</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%;background:#3b82f6"></div></div>
+        </div>
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(34,197,94,0.1)">🐍</div>
+            <div class="skill-info">
+                <div class="skill-name">Python Development</div>
+                <div class="skill-detail">FastAPI, Pandas, scikit-learn, ReportLab, httpx, async programming</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%;background:#22c55e"></div></div>
+        </div>
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(168,85,247,0.1)">✦</div>
+            <div class="skill-info">
+                <div class="skill-name">AI & Prompt Engineering</div>
+                <div class="skill-detail">Claude API integration, web search tools, structured output, cost management</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%;background:#a855f7"></div></div>
+        </div>
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(245,158,11,0.1)">📊</div>
+            <div class="skill-info">
+                <div class="skill-name">Data Analysis & ML</div>
+                <div class="skill-detail">Feature engineering, regression modelling, vacancy forecasting, data visualisation</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%;background:#f59e0b"></div></div>
+        </div>
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(14,165,233,0.1)">🌐</div>
+            <div class="skill-info">
+                <div class="skill-name">Full Stack Deployment</div>
+                <div class="skill-detail">Vercel (frontend), Railway (backend), Git, environment variables, CI/CD</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:72%;background:#0ea5e9"></div></div>
+        </div>
+        <div class="skill-row">
+            <div class="skill-icon" style="background:rgba(244,63,94,0.1)">📋</div>
+            <div class="skill-info">
+                <div class="skill-name">Real Estate Fundamentals</div>
+                <div class="skill-detail">Valuation, development appraisal, property law, asset management, CoStar</div>
+            </div>
+            <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%;background:#f43f5e"></div></div>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- EXPERIENCE -->
+<section class="section" id="experience">
+    <div class="section-eyebrow">Experience</div>
+    <div class="section-title">Education & work history</div>
+    <div class="exp-list">
+
+        <div class="exp-item">
+            <div class="exp-meta">
+                <div class="exp-date">2022 — 2025</div>
+                <div class="exp-company">University of Reading</div>
+                <div class="exp-location">Reading, UK</div>
+            </div>
+            <div class="exp-content">
+                <div class="exp-title">BSc Real Estate — 2:1</div>
+                <ul class="exp-points">
+                    <li>Modules included Real Estate Valuation, Applied Property Law, Development Appraisal and Finance, and Project in Valuation and Asset Management</li>
+                    <li>Final year project received a First Class grade</li>
+                    <li>Developed strong analytical and written skills through complex valuations, development appraisals and market analysis assignments</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-meta">
+                <div class="exp-date">Aug 2024</div>
+                <div class="exp-company">Savills UK</div>
+                <div class="exp-location">Cardiff</div>
+            </div>
+            <div class="exp-content">
+                <div class="exp-title">Work Experience</div>
+                <ul class="exp-points">
+                    <li>Conducted research and analysis on an upcoming multi-million pound development project, supervised by senior colleagues</li>
+                    <li>Attended a client meeting with the project developers, gaining insight into how major schemes are managed at institutional level</li>
+                    <li>Shadowed professionals on site visits, observing client relationship management at a senior level</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-meta">
+                <div class="exp-date">Oct 2025</div>
+                <div class="exp-company">Fletcher Morgan</div>
+                <div class="exp-location">Cardiff</div>
+            </div>
+            <div class="exp-content">
+                <div class="exp-title">Chartered Surveying Experience</div>
+                <ul class="exp-points">
+                    <li>Shadowed a company Director on multiple site visits with current and prospective clients</li>
+                    <li>Assisted with administrative tasks and gained hands-on insight into the day-to-day responsibilities of a Chartered Surveyor</li>
+                    <li>Developed understanding of client management and the practical application of surveying skills</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="exp-item">
+            <div class="exp-meta">
+                <div class="exp-date">Oct 2025</div>
+                <div class="exp-company">PMG Cardiff Ltd</div>
+                <div class="exp-location">Cardiff</div>
+            </div>
+            <div class="exp-content">
+                <div class="exp-title">Residential Property Insight</div>
+                <ul class="exp-points">
+                    <li>Met with company Directors of a specialist high-quality residential lettings business</li>
+                    <li>Gained insight into the operational differences between founder-led firms and larger institutional property companies</li>
+                    <li>Advanced sector knowledge through direct conversation with experienced practitioners</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+    <div class="contact-bg"></div>
+    <div class="contact-content">
+        <div class="section-eyebrow" style="text-align:center;margin-bottom:16px;">Get In Touch</div>
+        <div class="contact-title">Open to opportunities</div>
+        <div class="contact-sub">I'm actively looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If this platform has caught your attention, I'd love to talk.</div>
+        <div class="contact-links">
+            <a href="mailto:dominic.d.mayne@gmail.com" class="contact-link contact-email">
+                ✉ dominic.d.mayne@gmail.com
+            </a>
+            <a href="https://linkedin.com/in/dominicmayne" target="_blank" class="contact-link contact-linkedin">
+                LinkedIn →
+            </a>
+            <a href="tel:07760816483" class="contact-link contact-phone">
+                📞 07760 816483
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-left">© 2025 Dominic Mayne · West End Office Intelligence</div>
+    <div class="footer-right">
+        <div class="footer-badge">BSc Real Estate, Reading</div>
+        <div class="footer-badge footer-badge-claude">✦ Built with Claude</div>
+    </div>
+</footer>
+
+</body>
+</html>
