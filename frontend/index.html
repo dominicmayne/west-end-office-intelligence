@@ -8,8 +8,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; overflow-x: hidden; }
-
-        /* NAV */
         .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(6,13,24,0.92); backdrop-filter: blur(14px); }
         .nav-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #fff; text-decoration: none; letter-spacing: 0.3px; }
         .nav-logo span { color: #3b82f6; }
@@ -18,8 +16,6 @@
         .nav-link:hover { color: #e2e8f0; }
         .nav-cta { background: #3b82f6; color: white; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.2s; }
         .nav-cta:hover { background: #2563eb; }
-
-        /* HERO */
         .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 60px 80px; position: relative; overflow: hidden; gap: 80px; max-width: 1300px; margin: auto; }
         .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 20% 50%, rgba(59,130,246,0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 80% 30%, rgba(168,85,247,0.05) 0%, transparent 60%); pointer-events: none; }
         .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 80px 80px; pointer-events: none; }
@@ -39,23 +35,17 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,0.35); }
         .btn-outline { background: transparent; color: #94a3b8; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s; }
         .btn-outline:hover { border-color: rgba(255,255,255,0.2); color: #e2e8f0; }
-
-        /* HERO RIGHT — stat cards */
         .hero-right { position: relative; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; width: 260px; }
         .stat-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 18px 20px; transition: border-color 0.2s; }
         .stat-card:hover { border-color: rgba(59,130,246,0.2); }
         .stat-card-val { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
         .stat-card-val span { color: #3b82f6; }
         .stat-card-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-
-        /* PROJECTS */
         .projects { padding: 80px 60px; max-width: 1300px; margin: auto; }
         .section-eyebrow { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #3b82f6; margin-bottom: 12px; font-weight: 600; }
         .section-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700; color: #f1f5f9; margin-bottom: 10px; letter-spacing: -0.5px; }
         .section-sub { font-size: 15px; color: #64748b; line-height: 1.8; font-weight: 300; margin-bottom: 48px; max-width: 520px; }
         .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        /* PROJECT CARD */
         .project-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.06); border-radius: 22px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; text-decoration: none; display: block; }
         .project-card:hover { border-color: rgba(59,130,246,0.25); transform: translateY(-4px); }
         .project-card-top { padding: 32px; position: relative; overflow: hidden; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -63,7 +53,7 @@
         .project-card-content { position: relative; }
         .project-live-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
         .project-live-dot { width: 5px; height: 5px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-        .project-soon-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .project-hobby-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; margin-left: 6px; }
         .project-card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; line-height: 1.2; }
         .project-card-sub { font-size: 13px; color: #64748b; line-height: 1.7; font-weight: 300; }
         .project-card-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; position: relative; }
@@ -72,8 +62,6 @@
         .project-card-link { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
         .project-card:hover .project-card-link { gap: 10px; }
         .project-card-domain { font-size: 11px; color: #334155; }
-
-        /* ABOUT STRIP */
         .about-strip { background: #0b1527; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 60px; }
         .about-strip-inner { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .about-text h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: #f1f5f9; margin-bottom: 16px; letter-spacing: -0.3px; line-height: 1.2; }
@@ -86,8 +74,6 @@
         .about-fact-val { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 3px; }
         .about-fact-val span { color: #3b82f6; }
         .about-fact-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-
-        /* CONTACT */
         .contact { padding: 80px 60px; text-align: center; position: relative; overflow: hidden; }
         .contact-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 70%); pointer-events: none; }
         .contact-inner { position: relative; max-width: 520px; margin: auto; }
@@ -100,15 +86,12 @@
         .link-linkedin { background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08); }
         .link-linkedin:hover { color: #e2e8f0; border-color: rgba(255,255,255,0.15); }
         .link-phone { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.15); }
-
-        /* FOOTER */
         .footer { padding: 24px 60px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .footer-left { font-size: 12px; color: #1e293b; }
         .footer-left strong { color: #334155; }
         .footer-right { display: flex; gap: 10px; }
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.06); color: #1e293b; }
-        .footer-badge-claude { background: rgba(168,85,247,0.07); border-color: rgba(168,85,247,0.15); color: #6d28d9; font-weight: 600; }
-
+        .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.15); color: #6d28d9; font-weight: 600; }
         @media (max-width: 900px) {
             .nav { padding: 16px 24px; }
             .nav-right { gap: 12px; }
@@ -138,7 +121,6 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
@@ -186,7 +168,6 @@
     </div>
 </section>
 
-<!-- PROJECTS -->
 <section class="projects" id="projects">
     <div class="section-eyebrow">Portfolio</div>
     <div class="section-title">Projects</div>
@@ -217,32 +198,34 @@
             </div>
         </a>
 
-        <!-- PROJECT 2 — SPURS COMING SOON -->
-        <div class="project-card" style="cursor:default;">
+        <!-- PROJECT 2 — SPURS -->
+        <a href="/spurs" class="project-card">
             <div class="project-card-top">
-                <div class="project-card-bg" style="background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(255,255,255,0.04) 0%, transparent 60%);"></div>
+                <div class="project-card-bg" style="background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(245,158,11,0.06) 0%, transparent 60%);"></div>
                 <div class="project-card-content">
-                    <div class="project-soon-badge">⏳ Coming Soon</div>
+                    <div style="display:flex;align-items:center;gap:0;">
+                        <div class="project-live-badge"><div class="project-live-dot"></div> Live</div>
+                        <div class="project-hobby-badge">⚽ Passion Project</div>
+                    </div>
                     <div class="project-card-title">Tottenham Hotspur Stadium Commercial Intelligence</div>
-                    <div class="project-card-sub">A data-driven analysis of the commercial property and revenue model behind Tottenham Hotspur Stadium — one of Europe's most commercially advanced venues. Covers NFL revenues, event income, hospitality, and comparison with Premier League peers.</div>
+                    <div class="project-card-sub">A data-driven analysis of the commercial property and revenue model behind one of Europe's most commercially advanced venues — NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study.</div>
                     <div class="project-card-pills">
                         <span class="project-pill">Stadium Economics</span>
                         <span class="project-pill">Commercial Real Estate</span>
                         <span class="project-pill">Sports Finance</span>
-                        <span class="project-pill">AI Analytics</span>
+                        <span class="project-pill">Chart.js</span>
                     </div>
                 </div>
             </div>
             <div class="project-card-bottom">
                 <span class="project-card-domain">dominicmayne.com/spurs</span>
-                <span class="project-card-link" style="color:#f59e0b">In Development</span>
+                <span class="project-card-link" style="color:#f59e0b">View Dashboard →</span>
             </div>
-        </div>
+        </a>
 
     </div>
 </section>
 
-<!-- ABOUT STRIP -->
 <section class="about-strip" id="about">
     <div class="about-strip-inner">
         <div class="about-text">
@@ -277,7 +260,6 @@
     </div>
 </section>
 
-<!-- CONTACT -->
 <section class="contact" id="contact">
     <div class="contact-bg"></div>
     <div class="contact-inner">
@@ -293,9 +275,9 @@
 </section>
 
 <footer class="footer">
-    <div class="footer-left">© 2026 <strong>Dominic Mayne</strong> · dominicmayne.com</div>
+    <div class="footer-left">© 2025 <strong>Dominic Mayne</strong> · dominicmayne.com</div>
     <div class="footer-right">
-        <div class="footer-badge">BSc Real Estate, Reading</div>
+        <a href="/about" style="font-size:11px;color:#334155;text-decoration:none;padding:4px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);">About the Builder</a>
         <div class="footer-badge footer-badge-claude">✦ Built with Claude</div>
     </div>
 </footer>

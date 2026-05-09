@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spurs Stadium Intelligence — Dominic Mayne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0e0c;
+            --bg2: #1a1814;
+            --bg3: #221f1a;
+            --border: rgba(255,255,255,0.07);
+            --amber: #f59e0b;
+            --amber-soft: rgba(245,158,11,0.12);
+            --amber-dim: rgba(245,158,11,0.06);
+            --white: #f5f0e8;
+            --text: #d4cfc6;
+            --muted: #7a7468;
+            --dark-muted: #3d3a35;
+            --spurs-navy: #132257;
+            --spurs-white: #f5f0e8;
+        }
+
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+        /* NAV */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 60px; border-bottom: 1px solid var(--border); background: rgba(15,14,12,0.94); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(14px); }
+        .nav-left { display: flex; align-items: center; gap: 20px; }
+        .nav-back { font-size: 12px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.2s; font-weight: 500; }
+        .nav-back:hover { color: var(--text); }
+        .nav-divider { width: 1px; height: 16px; background: var(--border); }
+        .nav-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--white); }
+        .nav-title span { color: var(--amber); }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .nav-badge { font-size: 10px; padding: 4px 12px; border-radius: 999px; font-weight: 600; letter-spacing: 0.5px; }
+        .badge-hobby { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--amber); }
+        .badge-live { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; display: flex; align-items: center; gap: 5px; }
+        .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* HERO */
+        .hero { padding: 64px 60px 48px; max-width: 1300px; margin: auto; position: relative; }
+        .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--amber-soft); border: 1px solid rgba(245,158,11,0.2); color: var(--amber); padding: 5px 14px; border-radius: 999px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; }
+        .hero-grid { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 14px; }
+        .hero h1 .line1 { display: block; color: var(--white); }
+        .hero h1 .line2 { display: block; color: var(--amber); }
+        .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.8; max-width: 560px; font-weight: 300; }
+        .hero-sub strong { color: var(--text); font-weight: 500; }
+        .hero-meta { text-align: right; }
+        .hero-meta-val { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; color: var(--white); line-height: 1; }
+        .hero-meta-val span { color: var(--amber); font-size: 24px; }
+        .hero-meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 500; }
+        .hero-meta-sub { font-size: 11px; color: var(--dark-muted); margin-top: 2px; }
+
+        /* HOBBY NOTE */
+        .hobby-note { margin: 0 60px 32px; max-width: 1180px; margin-left: auto; margin-right: auto; background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.12); border-left: 3px solid var(--amber); border-radius: 10px; padding: 12px 18px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+        .hobby-note strong { color: var(--text); font-weight: 500; }
+
+        /* CONTAINER */
+        .container { max-width: 1300px; margin: auto; padding: 0 60px 80px; }
+
+        /* KPI GRID */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+        .kpi-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 22px; position: relative; overflow: hidden; transition: border-color 0.2s; }
+        .kpi-card:hover { border-color: rgba(245,158,11,0.2); }
+        .kpi-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(245,158,11,0.15), transparent); }
+        .kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 600; }
+        .kpi-value { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 6px; }
+        .kpi-value span { color: var(--amber); }
+        .kpi-sub { font-size: 11px; color: var(--dark-muted); }
+        .kpi-trend { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-top: 8px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+        .trend-up { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .trend-down { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .trend-flat { background: rgba(245,158,11,0.1); color: var(--amber); }
+
+        /* CHARTS ROW */
+        .charts-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 26px; }
+        .chart-card-full { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 26px; margin-bottom: 20px; }
+        .card-header { margin-bottom: 22px; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .card-sub { font-size: 12px; color: var(--muted); font-weight: 300; }
+        canvas { max-height: 300px; }
+
+        /* COMPARISON TABLE */
+        .comparison-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .club-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: border-color 0.2s; }
+        .club-card:hover { border-color: rgba(245,158,11,0.2); }
+        .club-card.featured { border-color: rgba(245,158,11,0.3); background: var(--bg3); }
+        .club-card.featured::before { content: '★ Featured'; display: block; font-size: 9px; color: var(--amber); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 10px; }
+        .club-name { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .club-stadium { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+        .club-stat { margin-bottom: 8px; }
+        .club-stat-label { font-size: 10px; color: var(--dark-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .club-stat-val { font-size: 14px; font-weight: 600; color: var(--text); }
+        .club-stat-bar { height: 3px; background: var(--dark-muted); border-radius: 2px; margin-top: 4px; }
+        .club-stat-fill { height: 3px; border-radius: 2px; background: var(--amber); }
+
+        /* EVENTS TABLE */
+        .events-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 26px; margin-bottom: 20px; }
+        .events-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .events-table th { text-align: left; padding: 8px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; }
+        .events-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; color: var(--text); }
+        .events-table tr:last-child td { border-bottom: none; }
+        .events-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .event-type { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+        .type-nfl { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .type-concert { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .type-boxing { background: rgba(239,68,68,0.12); color: #ef4444; }
+        .type-rugby { background: rgba(34,197,94,0.12); color: #22c55e; }
+        .type-attraction { background: rgba(245,158,11,0.12); color: var(--amber); }
+        .type-conference { background: rgba(148,163,184,0.12); color: #94a3b8; }
+
+        /* INSIGHT */
+        .insight-card { background: var(--bg2); border: 1px solid rgba(245,158,11,0.15); border-left: 3px solid var(--amber); border-radius: 16px; padding: 26px 30px; margin-bottom: 20px; }
+        .insight-label { font-size: 10px; color: var(--amber); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 12px; }
+        .insight-text { font-size: 14px; color: var(--muted); line-height: 1.9; font-weight: 300; }
+        .insight-text strong { color: var(--text); font-weight: 500; }
+
+        /* FOOTER */
+        .footer { border-top: 1px solid var(--border); padding: 24px 60px; max-width: 1300px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .footer-left { font-size: 12px; color: var(--dark-muted); }
+        .footer-left strong { color: var(--muted); }
+        .footer-right { display: flex; gap: 10px; }
+        .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--dark-muted); }
+        .footer-badge-amber { background: var(--amber-dim); border-color: rgba(245,158,11,0.15); color: #92702a; font-weight: 600; }
+
+        @media (max-width: 900px) {
+            .nav { padding: 14px 20px; }
+            .hero { padding: 40px 20px 32px; }
+            .hero-grid { grid-template-columns: 1fr; }
+            .hero-meta { text-align: left; }
+            .hobby-note { margin: 0 20px 24px; }
+            .container { padding: 0 20px 60px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-left">
+        <a href="/" class="nav-back">← dominicmayne.com</a>
+        <div class="nav-divider"></div>
+        <div class="nav-title">Spurs <span>Stadium Intelligence</span></div>
+    </div>
+    <div class="nav-right">
+        <div class="nav-badge badge-hobby">⚽ Passion Project</div>
+        <div class="nav-badge badge-live"><div class="badge-dot"></div>Live</div>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-eyebrow">Stadium Commercial Real Estate · N17</div>
+    <div class="hero-grid">
+        <div>
+            <h1>
+                <span class="line1">Tottenham Hotspur Stadium</span>
+                <span class="line2">Commercial Intelligence</span>
+            </h1>
+            <p class="hero-sub">
+                A data-driven analysis of the commercial property and revenue model behind <strong>one of Europe's most commercially advanced venues</strong> — exploring how a £1.2bn stadium asset generates income far beyond matchday football.
+            </p>
+        </div>
+        <div class="hero-meta">
+            <div class="hero-meta-val">£1.2<span>bn</span></div>
+            <div class="hero-meta-label">Stadium Construction Cost</div>
+            <div class="hero-meta-sub">Opened April 2019</div>
+        </div>
+    </div>
+</div>
+
+<div class="hobby-note">
+    <span>⚽</span>
+    <span><strong>Passion project.</strong> This dashboard was built as a personal interest piece — I'm a lifelong Spurs fan and a Real Estate graduate. Combining both felt natural. All data sourced from Tottenham Hotspur plc annual reports, Deloitte Football Money League and published press releases.</span>
+</div>
+
+<div class="container">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Revenue 2023/24</div>
+            <div class="kpi-value">£<span>527</span>m</div>
+            <div class="kpi-sub">Year ended 30 June 2024</div>
+            <div class="kpi-trend trend-down">▼ 4% vs prior year</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Commercial Revenue</div>
+            <div class="kpi-value">£<span>255</span>m</div>
+            <div class="kpi-sub">Sponsorship, events & attractions</div>
+            <div class="kpi-trend trend-up">▲ 12% vs prior year</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Matchday Revenue</div>
+            <div class="kpi-value">£<span>106</span>m</div>
+            <div class="kpi-sub">£4.5m average per match</div>
+            <div class="kpi-trend trend-down">▼ 10% vs prior year</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Stadium Capacity</div>
+            <div class="kpi-value"><span>62,</span>850</div>
+            <div class="kpi-sub">Largest club ground in London</div>
+            <div class="kpi-trend trend-flat">2nd in Premier League</div>
+        </div>
+    </div>
+
+    <!-- REVENUE CHARTS ROW -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="card-header">
+                <div class="card-title">Revenue by Stream — 5 Year Trend</div>
+                <div class="card-sub">Matchday, commercial and broadcast income (£m)</div>
+            </div>
+            <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="card-header">
+                <div class="card-title">2023/24 Revenue Split</div>
+                <div class="card-sub">Commercial now largest single income stream</div>
+            </div>
+            <canvas id="splitChart"></canvas>
+        </div>
+    </div>
+
+    <!-- COMMERCIAL GROWTH CHART -->
+    <div class="chart-card-full">
+        <div class="card-header">
+            <div class="card-title">Commercial Revenue Growth Since Stadium Opening</div>
+            <div class="card-sub">Stadium opened April 2019 — commercial income has grown 39% in five years (£m)</div>
+        </div>
+        <canvas id="commercialChart" style="max-height:220px;"></canvas>
+    </div>
+
+    <!-- STADIUM COMPARISON -->
+    <div class="card-header" style="margin-bottom:16px;">
+        <div class="card-title" style="font-family:'Playfair Display',serif;font-size:18px;color:var(--white);">Premier League Stadium Comparison</div>
+        <div class="card-sub" style="font-size:13px;color:var(--muted);margin-top:4px;">Tottenham Hotspur Stadium as a commercial property asset vs peers</div>
+    </div>
+    <div class="comparison-grid">
+        <div class="club-card featured">
+            <div class="club-name">Tottenham Hotspur</div>
+            <div class="club-stadium">Tottenham Hotspur Stadium · N17</div>
+            <div class="club-stat">
+                <div class="club-stat-label">Capacity</div>
+                <div class="club-stat-val">62,850</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:84%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Construction Cost</div>
+                <div class="club-stat-val">£1.2bn</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:95%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Commercial Revenue</div>
+                <div class="club-stat-val">£255m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:72%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Avg Revenue Per Match</div>
+                <div class="club-stat-val">£4.5m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:88%"></div></div>
+            </div>
+        </div>
+        <div class="club-card">
+            <div class="club-name">Arsenal</div>
+            <div class="club-stadium">Emirates Stadium · N7</div>
+            <div class="club-stat">
+                <div class="club-stat-label">Capacity</div>
+                <div class="club-stat-val">60,704</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:81%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Construction Cost</div>
+                <div class="club-stat-val">£390m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:31%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Commercial Revenue</div>
+                <div class="club-stat-val">£281m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:79%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Avg Revenue Per Match</div>
+                <div class="club-stat-val">£4.1m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:80%"></div></div>
+            </div>
+        </div>
+        <div class="club-card">
+            <div class="club-name">Manchester City</div>
+            <div class="club-stadium">Etihad Stadium · M11</div>
+            <div class="club-stat">
+                <div class="club-stat-label">Capacity</div>
+                <div class="club-stat-val">53,400</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:71%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Construction Cost</div>
+                <div class="club-stat-val">£110m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:9%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Commercial Revenue</div>
+                <div class="club-stat-val">£354m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:100%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Avg Revenue Per Match</div>
+                <div class="club-stat-val">£3.8m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:74%"></div></div>
+            </div>
+        </div>
+        <div class="club-card">
+            <div class="club-name">Liverpool</div>
+            <div class="club-stadium">Anfield · L4</div>
+            <div class="club-stat">
+                <div class="club-stat-label">Capacity</div>
+                <div class="club-stat-val">61,276</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:82%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Construction Cost</div>
+                <div class="club-stat-val">£80m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:6%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Commercial Revenue</div>
+                <div class="club-stat-val">£299m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:84%"></div></div>
+            </div>
+            <div class="club-stat">
+                <div class="club-stat-label">Avg Revenue Per Match</div>
+                <div class="club-stat-val">£3.9m</div>
+                <div class="club-stat-bar"><div class="club-stat-fill" style="width:76%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVENTS TABLE -->
+    <div class="events-card">
+        <div class="card-header">
+            <div class="card-title">Non-Football Revenue Events & Attractions</div>
+            <div class="card-sub">The stadium as a 365-day commercial real estate asset</div>
+        </div>
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event / Attraction</th>
+                    <th>Type</th>
+                    <th>Est. Annual Revenue</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>NFL London Games</strong></td>
+                    <td><span class="event-type type-nfl">NFL</span></td>
+                    <td>£10m+</td>
+                    <td>2 games per season, deal extended to 2030. NFL contributed £10m to construction.</td>
+                </tr>
+                <tr>
+                    <td><strong>Major Concerts</strong></td>
+                    <td><span class="event-type type-concert">Concert</span></td>
+                    <td>£8–15m</td>
+                    <td>Beyoncé, Guns N' Roses, Red Hot Chili Peppers, Lady Gaga. Up to 30 major events per year permitted.</td>
+                </tr>
+                <tr>
+                    <td><strong>Boxing Events</strong></td>
+                    <td><span class="event-type type-boxing">Boxing</span></td>
+                    <td>£5–8m</td>
+                    <td>Anthony Joshua vs Usyk world title fights. Established as premium boxing venue.</td>
+                </tr>
+                <tr>
+                    <td><strong>Rugby — Challenge Cup & Premiership</strong></td>
+                    <td><span class="event-type type-rugby">Rugby</span></td>
+                    <td>£2–4m</td>
+                    <td>Challenge Cup Finals, Saracens Premiership fixtures, Barbarians.</td>
+                </tr>
+                <tr>
+                    <td><strong>F1 Drive London</strong></td>
+                    <td><span class="event-type type-attraction">Attraction</span></td>
+                    <td>£2–3m</td>
+                    <td>Opened Feb 2024. 20,000+ visitors in first year. Karting from £35/session.</td>
+                </tr>
+                <tr>
+                    <td><strong>The Dare Skywalk</strong></td>
+                    <td><span class="event-type type-attraction">Attraction</span></td>
+                    <td>£2–3m</td>
+                    <td>46.8m above pitch. Tickets from £37.40. Award-winning visitor experience.</td>
+                </tr>
+                <tr>
+                    <td><strong>Stadium Tours</strong></td>
+                    <td><span class="event-type type-attraction">Attraction</span></td>
+                    <td>£1–2m</td>
+                    <td>From £29.75 per person. Legend tours at £60. Multiple tour formats.</td>
+                </tr>
+                <tr>
+                    <td><strong>Conference & Events</strong></td>
+                    <td><span class="event-type type-conference">Conference</span></td>
+                    <td>£3–5m</td>
+                    <td>Multiple hospitality suites. 180-bed hotel under construction adjacent to stadium.</td>
+                </tr>
+                <tr>
+                    <td><strong>UEFA Euro 2028</strong></td>
+                    <td><span class="event-type type-rugby">Tournament</span></td>
+                    <td>TBC</td>
+                    <td>Confirmed host venue. Significant one-off commercial opportunity.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- INSIGHT -->
+    <div class="insight-card">
+        <div class="insight-label">⚽ Analyst Note — Dominic Mayne</div>
+        <div class="insight-text">
+            The Tottenham Hotspur Stadium represents one of the most interesting case studies in <strong>sports-anchored mixed-use real estate</strong> in Europe. At a construction cost of £1.2bn — nearly three times that of the Emirates Stadium — it was explicitly designed not as a football ground but as a <strong>year-round commercial asset</strong>. The retractable pitch system, purpose-built NFL spec, and planning permission for up to 30 major non-football events per year all reflect a property investment thesis as much as a sporting one. <strong>Commercial revenue of £255m in 2023/24 now represents 48% of total club income</strong> — the highest proportion among the Big Six — and is growing at 12% year-on-year even as matchday football income fell. The 180-bed hotel currently under construction and the long-term NFL partnership extending to 2030 suggest the commercial real estate story here is far from complete. For a Real Estate graduate, this is as compelling a development case study as any in Central London.
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <div class="footer-left">Built by <strong>Dominic Mayne</strong> · Passion Project · Data: Tottenham Hotspur plc Annual Reports, Deloitte Football Money League · © 2025</div>
+    <div class="footer-right">
+        <div class="footer-badge">BSc Real Estate, Reading</div>
+        <div class="footer-badge footer-badge-amber">✦ Built with Claude</div>
+    </div>
+</div>
+
+<script>
+const amber = '#f59e0b';
+const amberDim = 'rgba(245,158,11,0.15)';
+const blue = '#3b82f6';
+const purple = '#a855f7';
+const green = '#22c55e';
+const gridColor = 'rgba(255,255,255,0.04)';
+const tickColor = '#7a7468';
+
+const baseOpts = {
+    responsive: true,
+    plugins: { legend: { labels: { color: tickColor, font: { size: 11 } } } },
+    scales: {
+        x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+        y: { ticks: { color: tickColor }, grid: { color: gridColor } }
+    }
+};
+
+// REVENUE BY STREAM — 5 year
+new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+        labels: ['2019/20', '2020/21', '2021/22', '2022/23', '2023/24'],
+        datasets: [
+            {
+                label: 'Matchday (£m)',
+                data: [96, 2, 106, 118, 106],
+                backgroundColor: amber,
+                borderRadius: 4,
+                stack: 'a'
+            },
+            {
+                label: 'Commercial (£m)',
+                data: [152, 118, 184, 228, 255],
+                backgroundColor: 'rgba(245,158,11,0.4)',
+                borderRadius: 4,
+                stack: 'a'
+            },
+            {
+                label: 'Broadcast (£m)',
+                data: [128, 119, 154, 148, 166],
+                backgroundColor: 'rgba(245,158,11,0.2)',
+                borderRadius: 4,
+                stack: 'a'
+            }
+        ]
+    },
+    options: {
+        ...baseOpts,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+            x: { ticks: { color: tickColor }, grid: { color: gridColor }, stacked: true },
+            y: { ticks: { color: tickColor }, grid: { color: gridColor }, stacked: true }
+        }
+    }
+});
+
+// REVENUE SPLIT DOUGHNUT
+new Chart(document.getElementById('splitChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Commercial £255m', 'Broadcast £166m', 'Matchday £106m'],
+        datasets: [{
+            data: [255, 166, 106],
+            backgroundColor: [amber, 'rgba(245,158,11,0.45)', 'rgba(245,158,11,0.2)'],
+            borderWidth: 0,
+            hoverOffset: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        cutout: '68%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: tickColor, font: { size: 11 }, padding: 16 }
+            }
+        }
+    }
+});
+
+// COMMERCIAL GROWTH LINE
+new Chart(document.getElementById('commercialChart'), {
+    type: 'line',
+    data: {
+        labels: ['2019/20', '2020/21', '2021/22', '2022/23', '2023/24'],
+        datasets: [{
+            label: 'Commercial Revenue (£m)',
+            data: [152, 118, 184, 228, 255],
+            borderColor: amber,
+            backgroundColor: amberDim,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointBackgroundColor: amber,
+            borderWidth: 2.5
+        }]
+    },
+    options: {
+        ...baseOpts,
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+
+</body>
+</html>
