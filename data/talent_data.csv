@@ -1,0 +1,56 @@
+sector,year,quarter,salary_p50,demand_index,placements,sentiment
+Critical Systems (Data Centre MEP),2023,Q1,68000,6.5,9,Strong
+Critical Systems (Data Centre MEP),2023,Q2,70000,6.8,11,Strong
+Critical Systems (Data Centre MEP),2023,Q3,72000,7.2,13,Tightening
+Critical Systems (Data Centre MEP),2023,Q4,75000,7.6,14,Tightening
+Critical Systems (Data Centre MEP),2024,Q1,78000,8.0,16,Tightening
+Critical Systems (Data Centre MEP),2024,Q2,82000,8.4,18,Tightening
+Critical Systems (Data Centre MEP),2024,Q3,85000,8.7,20,Tightening
+Critical Systems (Data Centre MEP),2024,Q4,88000,8.9,19,Tightening
+Critical Systems (Data Centre MEP),2025,Q1,92000,9.1,22,Tightening
+Critical Systems (Data Centre MEP),2025,Q2,95000,9.3,24,Tightening
+Critical Systems (Data Centre MEP),2025,Q3,98000,9.4,23,Tightening
+Quantity Surveying & Cost Management,2023,Q1,52000,5.8,15,Balanced
+Quantity Surveying & Cost Management,2023,Q2,53000,5.9,16,Balanced
+Quantity Surveying & Cost Management,2023,Q3,54000,6.0,18,Balanced
+Quantity Surveying & Cost Management,2023,Q4,55000,6.1,17,Balanced
+Quantity Surveying & Cost Management,2024,Q1,56000,6.2,19,Improving
+Quantity Surveying & Cost Management,2024,Q2,57500,6.4,20,Improving
+Quantity Surveying & Cost Management,2024,Q3,59000,6.5,21,Improving
+Quantity Surveying & Cost Management,2024,Q4,60000,6.6,20,Improving
+Quantity Surveying & Cost Management,2025,Q1,61500,6.8,22,Improving
+Quantity Surveying & Cost Management,2025,Q2,63000,6.9,23,Improving
+Quantity Surveying & Cost Management,2025,Q3,64500,7.0,24,Strong
+Project Management Consultancy,2023,Q1,58000,6.0,12,Balanced
+Project Management Consultancy,2023,Q2,59000,6.1,13,Balanced
+Project Management Consultancy,2023,Q3,60500,6.3,14,Balanced
+Project Management Consultancy,2023,Q4,61500,6.2,13,Balanced
+Project Management Consultancy,2024,Q1,63000,6.4,15,Improving
+Project Management Consultancy,2024,Q2,64500,6.6,16,Improving
+Project Management Consultancy,2024,Q3,66000,6.8,17,Improving
+Project Management Consultancy,2024,Q4,67500,6.9,16,Improving
+Project Management Consultancy,2025,Q1,69000,7.1,18,Strong
+Project Management Consultancy,2025,Q2,71000,7.3,19,Strong
+Project Management Consultancy,2025,Q3,73000,7.4,20,Strong
+Design Engineering & BIM,2023,Q1,49000,5.2,11,Neutral
+Design Engineering & BIM,2023,Q2,50000,5.3,12,Neutral
+Design Engineering & BIM,2023,Q3,51000,5.5,13,Balanced
+Design Engineering & BIM,2023,Q4,52000,5.6,12,Balanced
+Design Engineering & BIM,2024,Q1,53000,5.8,14,Balanced
+Design Engineering & BIM,2024,Q2,54500,6.0,15,Improving
+Design Engineering & BIM,2024,Q3,56000,6.2,16,Improving
+Design Engineering & BIM,2024,Q4,57000,6.3,15,Improving
+Design Engineering & BIM,2025,Q1,58500,6.5,17,Improving
+Design Engineering & BIM,2025,Q2,60000,6.7,18,Strong
+Design Engineering & BIM,2025,Q3,61500,6.8,19,Strong
+Sustainability & ESG,2023,Q1,47000,5.5,8,Improving
+Sustainability & ESG,2023,Q2,48500,5.8,9,Improving
+Sustainability & ESG,2023,Q3,50000,6.1,10,Improving
+Sustainability & ESG,2023,Q4,51500,6.4,11,Improving
+Sustainability & ESG,2024,Q1,53000,6.7,12,Strong
+Sustainability & ESG,2024,Q2,55000,7.0,13,Strong
+Sustainability & ESG,2024,Q3,57000,7.3,15,Strong
+Sustainability & ESG,2024,Q4,58500,7.5,14,Strong
+Sustainability & ESG,2025,Q1,60500,7.8,16,Tightening
+Sustainability & ESG,2025,Q2,62500,8.0,17,Tightening
+Sustainability & ESG,2025,Q3,64500,8.2,18,Tightening

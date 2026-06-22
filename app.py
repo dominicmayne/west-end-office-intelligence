@@ -163,13 +163,9 @@ def _build_fallback(row):
 @app.get("/deals/{area}")
 async def deals(area: str):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
-
-    # Always return seed deals for this area first
     seed = [d for d in SEED_DEALS if d["area"] == area]
-
     if not api_key:
         return {"deals": seed, "source": "seed", "live": False}
-
     prompt = f"""Search the web for recent notable office lettings and transactions in the {area} submarket of Central London. Look for deals from 2024 and 2025 reported by Savills, CBRE, Knight Frank, Colliers, BNP Paribas, EG Propertylink, CoStar, or property press.
 
 For each deal found return structured data. Return ONLY a JSON array, no other text:
@@ -187,7 +183,6 @@ For each deal found return structured data. Return ONLY a JSON array, no other t
 ]
 
 Return up to 8 deals. If rent is not publicly disclosed use null. Only include deals you are confident about from published sources."""
-
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
@@ -198,24 +193,16 @@ Return up to 8 deals. If rent is not publicly disclosed use null. Only include d
             result = response.json()
             if "content" not in result:
                 return {"deals": seed, "source": "seed", "live": False}
-
             text_content = "".join(b.get("text", "") for b in result["content"] if b.get("type") == "text")
             json_match = re.search(r'\[.*?\]', text_content, re.DOTALL)
             if not json_match:
                 return {"deals": seed, "source": "seed", "live": False}
-
             live_deals = json.loads(json_match.group())
-
-            # Add area to each live deal
             for d in live_deals:
                 d["area"] = area
-
-            # Merge: live deals first, then seed deals not already covered
             live_buildings = {d.get("building", "").lower() for d in live_deals}
             merged = live_deals + [d for d in seed if d.get("building", "").lower() not in live_buildings]
-
             return {"deals": merged[:12], "source": "live", "live": True}
-
     except Exception as e:
         return {"deals": seed, "source": "seed", "live": False, "error": str(e)}
 
@@ -358,6 +345,69 @@ def test():
 @app.get("/area-codes")
 def area_codes():
     return AREA_CODES
+
+# ════════════════════════════════════════════════
+# BUILT ENVIRONMENT TALENT INTELLIGENCE — added on
+# No live AI calls — static seed data + local regression only
+# ════════════════════════════════════════════════
+
+talent_data = pd.read_csv("data/talent_data.csv")
+talent_data["year"] = pd.to_numeric(talent_data["year"])
+talent_data["salary_p50"] = pd.to_numeric(talent_data["salary_p50"])
+talent_data["demand_index"] = pd.to_numeric(talent_data["demand_index"])
+talent_data["placements"] = pd.to_numeric(talent_data["placements"])
+
+TALENT_SECTOR_CODES = {s: i for i, s in enumerate(sorted(talent_data["sector"].unique()))}
+talent_data["sector_code"] = talent_data["sector"].map(TALENT_SECTOR_CODES)
+talent_data["quarter_code"] = talent_data["quarter"].map(QUARTER_CODES)
+
+talent_X = talent_data[["year", "quarter_code", "salary_p50", "sector_code"]]
+talent_y = talent_data["demand_index"]
+talent_model = LinearRegression()
+talent_model.fit(talent_X, talent_y)
+talent_data["predicted"] = talent_model.predict(talent_X)
+
+try:
+    with open("data/moves_seed.json", "r") as f:
+        SEED_MOVES = json.load(f)
+except:
+    SEED_MOVES = []
+
+
+@app.get("/talent/predictions")
+def talent_predictions():
+    def get_signal(v):
+        if v >= 7: return "🟢 Hot Market"
+        elif v >= 4: return "🟡 Balanced"
+        return "🔴 Cooling"
+
+    results = []
+    for _, row in talent_data.iterrows():
+        results.append({
+            "sector": row["sector"],
+            "year": int(row["year"]),
+            "quarter": row["quarter"],
+            "salary_p50": float(row["salary_p50"]),
+            "demand_index": float(row["demand_index"]),
+            "placements": int(row["placements"]),
+            "sentiment": row["sentiment"],
+            "predicted": float(row["predicted"]),
+            "signal": get_signal(row["predicted"]),
+            "insight": f"{row['sector']} shows demand index at {row['predicted']:.1f}/10"
+        })
+    return results
+
+
+@app.get("/talent/moves/{sector}")
+def talent_moves(sector: str):
+    moves = [m for m in SEED_MOVES if m["sector"] == sector]
+    return {"moves": moves, "source": "seed"}
+
+
+@app.get("/talent/sector-codes")
+def talent_sector_codes():
+    return TALENT_SECTOR_CODES
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

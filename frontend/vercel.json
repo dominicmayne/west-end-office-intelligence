@@ -5,6 +5,7 @@
       { "source": "/login", "destination": "/login.html" },
       { "source": "/about", "destination": "/about.html" },
       { "source": "/spurs", "destination": "/spurs.html" },
+      { "source": "/talent-dashboard", "destination": "/talent-dashboard.html" },
       { "source": "/", "destination": "/index.html" }
     ]
-  }
+}
