@@ -5,219 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Salary benchmarking and hiring-demand forecasting across five built-environment recruitment sectors (demonstration project).">
     <title>Built Environment Talent Intelligence</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#f4f0e6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="/assets/chart-theme.js"></script>
     <script src="/assets/data.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
-        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); }
-        .nav-logo { font-size: 15px; font-weight: 700; color: #fff; text-decoration: none; }
-        .nav-logo span { color: #a855f7; }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-        .nav-tag { font-size: 11px; background: rgba(168,85,247,0.15); color: #c084fc; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(168,85,247,0.25); letter-spacing: 1px; text-transform: uppercase; }
-        .hero { padding: 60px 40px 40px; max-width: 1400px; margin: auto; }
-        .hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #a855f7; margin-bottom: 16px; }
-        .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: #64748b; font-size: 15px; max-width: 600px; line-height: 1.8; }
-        .demo-banner { background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.15); border-radius: 12px; padding: 14px 20px; margin: 0 40px 24px; max-width: 1320px; margin-left: auto; margin-right: auto; font-size: 13px; color: #64748b; }
-        .demo-banner strong { color: #94a3b8; }
-        .container { max-width: 1400px; margin: auto; padding: 0 40px 80px; }
-        .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
-        .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
-        .selector { background: #0f1929; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; }
-        .selector:focus { outline: none; border-color: #a855f7; }
-        .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .kpi-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 24px; }
-        .kpi-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; }
-        .kpi-value { font-size: 32px; font-weight: 800; color: #f1f5f9; line-height: 1; margin-bottom: 8px; }
-        .kpi-sub { font-size: 12px; color: #334155; }
-        .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
-        .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
-        .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .chart-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; }
-        .chart-title { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
-        .chart-sub { font-size: 12px; color: #475569; margin-bottom: 20px; }
-        canvas { max-height: 320px; }
-        .chart-full { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-        .moves-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-        .moves-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
-        .moves-sub { font-size: 12px; color: #475569; margin-top: 4px; margin-bottom: 20px; }
-        .moves-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-        .move-card { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 16px; }
-        .move-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; }
-        .move-title-text { font-size: 13px; font-weight: 700; color: #f1f5f9; }
-        .move-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; background: rgba(168,85,247,0.12); color: #c084fc; }
-        .move-company { font-size: 12px; color: #64748b; margin-bottom: 10px; }
-        .move-context { font-size: 12px; color: #94a3b8; line-height: 1.6; margin-bottom: 10px; }
-        .move-footer { display: flex; justify-content: space-between; font-size: 10px; color: #334155; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04); }
-        .moves-empty { text-align: center; padding: 30px; color: #334155; font-size: 13px; }
-        .table-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; overflow-x: auto; margin-bottom: 24px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        td { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; }
-        .sentiment-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .pill-tightening { background: rgba(34,197,94,0.12); color: #22c55e; }
-        .pill-strong { background: rgba(59,130,246,0.12); color: #60a5fa; }
-        .pill-improving { background: rgba(168,85,247,0.12); color: #a855f7; }
-        .pill-balanced { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .pill-neutral { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 28px 40px; max-width: 1400px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .footer-credit { font-size: 12px; color: #334155; }
-        .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; }
-        /* NAV BACK LINK, DATA STATUS, LOADING + EMPTY STATES */
-        .nav-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
-        .nav-back { font-size: 12px; color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
-        .nav-back:hover { color: #e2e8f0; }
-        .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
-        .demo-banner { width: calc(100% - 80px); margin: 0 auto 24px; }
-        .data-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 999px; }
-        .data-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #475569; flex-shrink: 0; }
-        .data-status.is-live .data-status-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
-        .data-status.is-snapshot .data-status-dot { background: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.15); }
-        .skeleton { display: inline-block; width: 90px; height: 30px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .chart-empty { display: flex; align-items: center; justify-content: center; min-height: 180px; font-size: 13px; color: #64748b; text-align: center; border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; }
-        .page-error { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; border-radius: 12px; padding: 14px 18px; font-size: 13px; margin-bottom: 24px; display: none; }
-        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .table-scroll table { min-width: 640px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
-        .kpi-card { transition: border-color 0.2s, transform 0.2s; }
-        .kpi-card:hover { border-color: rgba(168,85,247,0.3); transform: translateY(-2px); }
-        .move-card { transition: border-color 0.2s; }
-        .move-card:hover { border-color: rgba(255,255,255,0.1); }
-        .kpi-sub, .move-footer, .moves-empty, .footer-credit, .footer-badge { color: #64748b; }
-        .footer-credit strong { color: #94a3b8; }
-        a:focus-visible, select:focus-visible { outline: 2px solid #c084fc; outline-offset: 2px; }
-
-        @media (max-width: 900px) {
-            .hero { padding: 40px 20px 24px; }
-            .container { padding: 0 20px 40px; }
-            .nav { padding: 16px 20px; }
-            .hero h1 { font-size: 28px; }
-            .charts-row { grid-template-columns: 1fr; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .demo-banner { width: calc(100% - 40px); margin: 0 auto 20px; }
-        }
-        @media (max-width: 600px) {
-            .nav { padding: 12px 16px; }
-            .nav-divider, .nav-tag { display: none; }
-            .nav-back { font-size: 0; padding: 6px 8px 6px 0; }
-            .nav-back::before { content: "←"; font-size: 18px; line-height: 1; }
-            .hero { padding: 32px 16px 20px; }
-            .hero h1 { font-size: 26px; }
-            .hero p { font-size: 14px; }
-            .hero-eyebrow { line-height: 1.7; }
-            .container { padding: 0 16px 40px; }
-            .demo-banner { width: calc(100% - 32px); padding: 12px 14px; }
-            .controls { gap: 10px; }
-            .controls-label { width: 100%; }
-            .selector { flex: 1 1 100%; max-width: 100%; }
-            .data-status { margin-left: 0; width: 100%; justify-content: center; }
-            .kpi-grid { gap: 10px; }
-            .kpi-card { padding: 16px; border-radius: 14px; }
-            .kpi-value { font-size: 24px; }
-            .chart-card, .chart-full, .moves-card, .table-card { padding: 18px; border-radius: 14px; }
-            .moves-grid { grid-template-columns: 1fr; }
-            .footer { flex-direction: column; align-items: flex-start; padding: 20px 16px; }
-        }
+        .demo-note { margin-bottom: 28px; }
+        .mast-tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
     </style>
 </head>
 <body>
 
-<nav class="nav">
-    <div class="nav-left">
-        <a href="/" class="nav-back" aria-label="Back to dominicmayne.com">← dominicmayne.com</a>
-        <div class="nav-divider"></div>
-        <a href="/talent-dashboard" class="nav-logo">Built Environment <span>Talent Intelligence</span></a>
+<header class="mast is-sticky">
+    <div class="wrap mast-in">
+        <a href="/" class="mark" aria-label="Back to dominicmayne.com"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name hide-sm">Dominic Mayne</span></a>
+        <a href="/talent-dashboard" class="mark-sub" style="text-decoration:none;margin-right:auto;font-size:14px;color:var(--ink)">Built Environment Talent Intelligence</a>
+        <span class="mast-tag hide-sm">Demo platform</span>
     </div>
-    <div class="nav-right">
-        <div class="nav-tag">Demo Platform</div>
-    </div>
-</nav>
+</header>
 
-<div class="hero">
-    <div class="hero-eyebrow">Property · Engineering · Construction · Recruitment Analytics</div>
-    <h1>Built Environment<br>Talent Intelligence</h1>
-    <p>Salary benchmarking and hiring-demand forecasting across five built-environment recruitment sectors — built as a demonstration of how market intelligence tooling could support recruitment client and candidate conversations.</p>
+<main class="wrap">
+
+<div class="dash-head">
+    <div>
+        <div class="kicker">Property <span class="sep">/</span> Engineering <span class="sep">/</span> Construction <span class="sep">/</span> Recruitment Analytics</div>
+        <h1 class="h1">Built Environment <em>Talent</em> Intelligence</h1>
+        <p>Salary benchmarking and hiring-demand forecasting across five built-environment recruitment sectors — built as a demonstration of how market intelligence tooling could support recruitment client and candidate conversations.</p>
+    </div>
+    <p class="note demo-note"><strong>This is an independent demonstration project</strong> — illustrative salary and demand data, modelled in the style of published industry salary surveys and hiring reports.</p>
 </div>
 
-<div class="demo-banner">
-    <strong>This is an independent demonstration project</strong> — illustrative salary and demand data, modelled in the style of published industry salary surveys and hiring reports.
+<div class="toolbar">
+    <span class="toolbar-label">Sector</span>
+    <select id="sectorSelect" class="selector" aria-label="Choose a sector"></select>
+    <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
+</div>
+<div class="page-error" id="pageError"></div>
+
+<div class="kpis" style="--cols:4">
+    <div class="kpi">
+        <div class="kpi-label">Median salary</div>
+        <div class="kpi-value" id="salaryVal"><span class="skeleton"></span></div>
+        <div class="kpi-sub">per annum (latest quarter)</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Demand index</div>
+        <div class="kpi-value" id="demandVal"><span class="skeleton"></span></div>
+        <div class="kpi-sub">AI-predicted average, out of 10</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Latest placements</div>
+        <div class="kpi-value" id="placementsVal"><span class="skeleton"></span></div>
+        <div class="kpi-sub">roles filled (latest quarter)</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Hiring signal</div>
+        <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:24px"></span></div>
+    </div>
 </div>
 
-<div class="container">
-
-    <div class="controls">
-        <span class="controls-label">Sector</span>
-        <select id="sectorSelect" class="selector" aria-label="Choose a sector"></select>
-        <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
+<section class="block cols-2">
+    <div>
+        <div class="block-head"><div><h2 class="block-title">Demand vs median salary</h2><div class="block-sub">Forecast demand overlaid with salary trend</div></div></div>
+        <canvas id="trendChart"></canvas>
     </div>
-    <div class="page-error" id="pageError"></div>
-
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">Median Salary</div>
-            <div class="kpi-value" id="salaryVal"><span class="skeleton"></span></div>
-            <div class="kpi-sub">per annum (latest quarter)</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Demand Index</div>
-            <div class="kpi-value" id="demandVal"><span class="skeleton"></span></div>
-            <div class="kpi-sub">AI-predicted average, out of 10</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Latest Placements</div>
-            <div class="kpi-value" id="placementsVal"><span class="skeleton"></span></div>
-            <div class="kpi-sub">roles filled (latest quarter)</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Hiring Signal</div>
-            <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:20px"></span></div>
-        </div>
+    <div>
+        <div class="block-head"><div><h2 class="block-title">Placements momentum</h2><div class="block-sub">Quarterly roles filled</div></div></div>
+        <canvas id="placementsChart"></canvas>
     </div>
+</section>
 
-    <div class="charts-row">
-        <div class="chart-card">
-            <div class="chart-title">Demand vs Median Salary</div>
-            <div class="chart-sub">Forecast demand overlaid with salary trend</div>
-            <canvas id="trendChart"></canvas>
-        </div>
-        <div class="chart-card">
-            <div class="chart-title">Placements Momentum</div>
-            <div class="chart-sub">Quarterly roles filled</div>
-            <canvas id="placementsChart"></canvas>
-        </div>
+<section class="block">
+    <div class="block-head"><div><h2 class="block-title">All sector comparison — latest quarter</h2><div class="block-sub">Median salary and forecast demand across all 5 tracked sectors</div></div></div>
+    <canvas id="comparisonChart" style="max-height:280px;"></canvas>
+</section>
+
+<section class="block">
+    <div class="block-head"><div><h2 class="block-title">Recent market moves</h2><div class="block-sub" id="movesSub">Notable hires and appointments in this sector</div></div></div>
+    <div id="movesContent"><div class="entries-empty">Loading market moves…</div></div>
+</section>
+
+<section class="block">
+    <div class="block-head"><div><h2 class="block-title">Quarterly data breakdown</h2><div class="block-sub">All data points for selected sector</div></div></div>
+    <div class="table-scroll"><table class="data">
+        <thead><tr><th>Period</th><th class="r">Median salary</th><th class="r">Demand index</th><th class="r">Forecast</th><th class="r">Placements</th><th>Sentiment</th><th>Signal</th></tr></thead>
+        <tbody id="dataTable"></tbody>
+    </table></div>
+</section>
+
+</main>
+
+<footer class="foot">
+    <div class="wrap foot-in">
+        <span>Built by <strong>Dominic Mayne</strong> · Built Environment Talent Intelligence · © 2026</span>
+        <span>Property · Engineering · Construction</span>
     </div>
-
-    <div class="chart-full">
-        <div class="chart-title">All Sector Comparison — Latest Quarter</div>
-        <div class="chart-sub">Median salary and forecast demand across all 5 tracked sectors</div>
-        <canvas id="comparisonChart" style="max-height:280px;"></canvas>
-    </div>
-
-    <div class="moves-card">
-        <div class="moves-title">Recent Market Moves</div>
-        <div class="moves-sub" id="movesSub">Notable hires and appointments in this sector</div>
-        <div id="movesContent"><div class="moves-empty">Loading market moves…</div></div>
-    </div>
-
-    <div class="table-card">
-        <div class="chart-title">Quarterly Data Breakdown</div>
-        <div class="chart-sub">All data points for selected sector</div>
-        <div class="table-scroll"><table>
-            <thead><tr><th>Period</th><th>Median Salary</th><th>Demand Index</th><th>Forecast</th><th>Placements</th><th>Sentiment</th><th>Signal</th></tr></thead>
-            <tbody id="dataTable"></tbody>
-        </table></div>
-    </div>
-
-</div>
-
-<div class="footer">
-    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · Built Environment Talent Intelligence · © 2026</div>
-    <div class="footer-badge">Property · Engineering · Construction</div>
-</div>
+</footer>
 
 <script>
 let trendChart, placementsChart, comparisonChart;
@@ -228,30 +118,30 @@ let currentSector = null;
 
 const esc = SiteData.esc;
 
-function sentimentClass(s) { return 'pill-' + String(s || '').toLowerCase(); }
+function sentimentClass(s) { return 's-' + String(s || '').toLowerCase(); }
 
 function renderMoves(moves, sector) {
     const content = document.getElementById('movesContent');
     document.getElementById('movesSub').textContent = `${moves.length} notable move${moves.length !== 1 ? 's' : ''} tracked in ${sector}`;
     if (!moves.length) {
-        content.innerHTML = `<div class="moves-empty">No market moves tracked for this sector yet.</div>`;
+        content.innerHTML = `<div class="entries-empty">No market moves tracked for this sector yet.</div>`;
         return;
     }
-    content.innerHTML = `<div class="moves-grid">${moves.map(m => `
-        <div class="move-card">
-            <div class="move-top">
-                <div class="move-title-text">${esc(m.person_title || 'Senior Role')}</div>
-                <span class="move-type-badge">${esc(m.move_type || 'New Hire')}</span>
+    content.innerHTML = `<div class="entries">${moves.map(m => `
+        <div class="entry">
+            <div class="entry-top">
+                <div class="entry-title">${esc(m.person_title || 'Senior Role')}</div>
+                <span class="entry-type">${esc(m.move_type || 'New Hire')}</span>
             </div>
-            <div class="move-company">🏢 ${esc(m.company || '')}</div>
-            <div class="move-context">${esc(m.context || '')}</div>
-            <div class="move-footer"><span>${esc(m.seniority || '')}</span><span>${esc(m.date || '')}</span></div>
+            <div class="entry-where">${esc(m.company || '')}</div>
+            <div class="entry-body">${esc(m.context || '')}</div>
+            <div class="entry-foot"><span>${esc(m.seniority || '')}</span><span>${esc(m.date || '')}</span></div>
         </div>
     `).join('')}</div>`;
 }
 
 async function loadMoves(sector) {
-    document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Loading market moves…</div>`;
+    document.getElementById('movesContent').innerHTML = `<div class="entries-empty">Loading market moves…</div>`;
     try {
         const { data } = await SiteData.load(
             `/talent/moves/${encodeURIComponent(sector)}`, 'talent-moves.json',
@@ -261,7 +151,7 @@ async function loadMoves(sector) {
         if (sector !== currentSector) return;
         renderMoves(data.moves || [], sector);
     } catch (e) {
-        document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Market moves couldn't be loaded. Please refresh the page.</div>`;
+        document.getElementById('movesContent').innerHTML = `<div class="entries-empty">Market moves couldn't be loaded. Please refresh the page.</div>`;
     }
 }
 
@@ -295,13 +185,14 @@ function drawCharts(filtered, uniqueSectors) {
         ['trendChart', 'placementsChart', 'comparisonChart'].forEach(chartUnavailable);
         return;
     }
+    const T = window.ChartTheme;
     const labels = filtered.map(d => `${d.year} ${d.quarter}`);
     if (trendChart) trendChart.destroy();
     trendChart = new Chart(document.getElementById('trendChart'), {
         type: 'line',
         data: { labels, datasets: [
-            { label: 'Forecast Demand (/10)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.06)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y' },
-            { label: 'Median Salary (£)', data: filtered.map(d => d.salary_p50), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y1' }
+            { label: 'Forecast Demand (/10)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: T.accent, backgroundColor: T.accent, tension: 0.25, pointRadius: 2.5, pointBackgroundColor: T.accent, yAxisID: 'y' },
+            { label: 'Median Salary (£)', data: filtered.map(d => d.salary_p50), borderColor: T.ink, backgroundColor: T.ink, borderDash: [5, 4], borderWidth: 1.5, tension: 0.25, pointRadius: 0, yAxisID: 'y1' }
         ]},
         options: chartOptions('y', 'y1')
     });
@@ -309,8 +200,8 @@ function drawCharts(filtered, uniqueSectors) {
     if (placementsChart) placementsChart.destroy();
     placementsChart = new Chart(document.getElementById('placementsChart'), {
         type: 'bar',
-        data: { labels, datasets: [{ label: 'Placements', data: filtered.map(d => d.placements), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(168,85,247,0.8)' : 'rgba(168,85,247,0.25)'), borderRadius: 6 }]},
-        options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+        data: { labels, datasets: [{ label: 'Placements', data: filtered.map(d => d.placements), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? T.ink : T.rule), barPercentage: 0.75 }]},
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: T.axis({ grid: { display: false } }), y: T.axis() } }
     });
 
     const latestBySector = uniqueSectors.map(s => { const d = allData.filter(x => x.sector === s); return d[d.length - 1]; });
@@ -325,8 +216,8 @@ function drawCharts(filtered, uniqueSectors) {
     comparisonChart = new Chart(document.getElementById('comparisonChart'), {
         type: 'bar',
         data: { labels: latestBySector.map(d => shortLabel(d.sector)), datasets: [
-            { label: 'Median Salary (£)', data: latestBySector.map(d => d.salary_p50), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
-            { label: 'Forecast Demand (/10)', data: latestBySector.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(168,85,247,0.7)', borderRadius: 6, yAxisID: 'y1' }
+            { label: 'Median Salary (£)', data: latestBySector.map(d => d.salary_p50), backgroundColor: T.ink, yAxisID: 'y', barPercentage: 0.8, categoryPercentage: 0.7 },
+            { label: 'Forecast Demand (/10)', data: latestBySector.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: T.accent, yAxisID: 'y1', barPercentage: 0.8, categoryPercentage: 0.7 }
         ]},
         options: chartOptions('y', 'y1')
     });
@@ -346,13 +237,13 @@ function renderSector(selectedSector) {
     document.getElementById("placementsVal").textContent = latest.placements;
 
     const badge = document.getElementById("signalBadge");
-    if (avgDemand >= 7) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> HOT MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
-    else if (avgDemand >= 4) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> BALANCED'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
-    else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> COOLING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
+    if (avgDemand >= 7) badge.innerHTML = '<span class="signal-dot" style="background:#4c7148"></span> Hot market';
+    else if (avgDemand >= 4) badge.innerHTML = '<span class="signal-dot" style="background:#b98222"></span> Balanced';
+    else badge.innerHTML = '<span class="signal-dot" style="background:#b0482a"></span> Cooling';
 
     try { drawCharts(filtered, uniqueSectors); } catch (e) { console.error(e); }
 
-    document.getElementById("dataTable").innerHTML = filtered.map(row => `<tr><td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.salary_p50.toLocaleString('en-GB')}</td><td>${row.demand_index.toFixed(1)}/10</td><td>${parseFloat(row.predicted).toFixed(2)}/10</td><td>${row.placements}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${esc(row.signal)}</td></tr>`).join('');
+    document.getElementById("dataTable").innerHTML = filtered.map(row => `<tr><td>${row.year} ${row.quarter}</td><td class="r">£${row.salary_p50.toLocaleString('en-GB')}</td><td class="r">${row.demand_index.toFixed(1)}/10</td><td class="r">${parseFloat(row.predicted).toFixed(2)}/10</td><td class="r">${row.placements}</td><td><span class="sentiment ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${SiteData.signal(row.signal)}</td></tr>`).join('');
 }
 
 async function loadDashboard() {
@@ -382,14 +273,15 @@ async function loadDashboard() {
 }
 
 function chartOptions(leftAxis, rightAxis) {
+    const T = window.ChartTheme;
     return {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: T.ink2, font: { size: 12 } } } },
         scales: {
-            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#64748b' }, grid: { drawOnChartArea: false } },
-            x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }
+            [leftAxis]: T.axis({ type: 'linear', position: 'left' }),
+            [rightAxis]: T.axis({ type: 'linear', position: 'right', grid: { drawOnChartArea: false } }),
+            x: T.axis({ grid: { display: false } })
         }
     };
 }

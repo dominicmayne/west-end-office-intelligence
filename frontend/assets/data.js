@@ -75,7 +75,19 @@
         return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
+    // Signals arrive as e.g. "🟢 Attractive". Show the word with a quiet coloured dot instead of the emoji.
+    function signal(value) {
+        const s = String(value == null ? '' : value);
+        let cls = 's-neutral';
+        if (s.includes('\u{1F7E2}')) cls = 's-good';
+        else if (s.includes('\u{1F7E1}')) cls = 's-warn';
+        else if (s.includes('\u{1F534}')) cls = 's-bad';
+        const text = s.replace(/^[\p{Extended_Pictographic}\uFE0F\s]+/u, '');
+        return '<span class="sentiment ' + cls + '">' + esc(text) + '</span>';
+    }
+
     window.SiteData = {
+        signal,
         API,
         load,
         meta,
