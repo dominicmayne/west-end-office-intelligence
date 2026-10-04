@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Leasing analytics and vacancy forecasting across eight Central London office submarkets.">
     <title>West End Office Intelligence Platform</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="/assets/data.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
@@ -157,6 +161,33 @@
         .footer-badges { display: flex; align-items: center; gap: 10px; }
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; }
         .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.2); color: #7c3aed; font-weight: 600; }
+        /* DATA STATUS, LOADING + EMPTY STATES */
+        .nav-back { font-size: 12px; color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
+        .nav-back:hover { color: #e2e8f0; }
+        .nav-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+        .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
+        .free-banner { width: calc(100% - 80px); margin: 0 auto 24px; }
+        .data-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 999px; }
+        .data-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #475569; flex-shrink: 0; }
+        .data-status.is-live .data-status-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
+        .data-status.is-snapshot .data-status-dot { background: #60a5fa; box-shadow: 0 0 0 3px rgba(96,165,250,0.15); }
+        .offline-note { font-size: 12px; color: #64748b; margin: -20px 0 24px; display: none; }
+        .offline-note.show { display: block; }
+        .download-btn:disabled, .live-btn:disabled, .deals-refresh-btn:disabled { opacity: 0.4 !important; cursor: not-allowed !important; }
+        .skeleton { display: inline-block; width: 90px; height: 30px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .chart-empty { display: flex; align-items: center; justify-content: center; min-height: 180px; font-size: 13px; color: #64748b; text-align: center; border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; }
+        .page-error { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; border-radius: 12px; padding: 14px 18px; font-size: 13px; margin-bottom: 24px; display: none; }
+        .insight-panel.summary { border-color: rgba(96,165,250,0.2); border-left-color: #60a5fa; }
+        .insight-panel.summary .insight-label { color: #60a5fa; }
+        .insight-panel.summary .insight-icon { background: rgba(96,165,250,0.1); color: #60a5fa; }
+        .insight-panel.summary .insight-powered { color: #64748b; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-scroll table { min-width: 640px; }
+        a:focus-visible, button:focus-visible, select:focus-visible, .ranking-row:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+        .kpi-sub, .deal-sector, .deal-date, .deal-stat-label, .footer-credit, .footer-badge, .last-updated { color: #64748b; }
+        .footer-credit strong { color: #94a3b8; }
+
         @media (max-width: 900px) {
             .hero { padding: 40px 20px 24px; }
             .container { padding: 0 20px 40px; }
@@ -166,17 +197,53 @@
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
             .footer { padding: 24px 20px; }
             .map-container { grid-template-columns: 1fr; }
-            .free-banner { margin: 0 20px 20px; }
+            .free-banner { width: calc(100% - 40px); margin: 0 auto 20px; }
             .deals-grid { grid-template-columns: 1fr; }
+            .nav-tag, .nav-claude { display: none; }
+        }
+        @media (max-width: 600px) {
+            .nav { padding: 12px 16px; }
+            .nav-divider { display: none; }
+            .nav-back { font-size: 0; padding: 6px 8px 6px 0; }
+            .nav-back::before { content: "←"; font-size: 18px; line-height: 1; }
+            .hero { padding: 32px 16px 20px; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 14px; }
+            .container { padding: 0 16px 40px; }
+            .free-banner { width: calc(100% - 32px); padding: 12px 14px; }
+            .free-banner-btn { width: 100%; text-align: center; }
+            .controls { gap: 10px; }
+            .controls-label { width: 100%; }
+            .selector { flex: 1 1 100%; }
+            .download-btn, .live-btn { flex: 1 1 calc(50% - 5px); justify-content: center; padding: 10px 12px; font-size: 12px; }
+            .data-status { margin-left: 0; width: 100%; justify-content: center; text-align: center; }
+            .kpi-grid { gap: 10px; }
+            .kpi-card { padding: 16px; border-radius: 14px; }
+            .kpi-value { font-size: 24px; }
+            .kpi-label { margin-bottom: 10px; }
+            .kpi-card:last-child { grid-column: 1 / -1; }
+            .heatmap-card, .chart-card, .chart-full, .deals-card, .table-card { padding: 18px; border-radius: 14px; }
+            .insight-panel { padding: 20px; border-radius: 14px; }
+            .insight-header { flex-wrap: wrap; }
+            .insight-powered { margin-left: 0; width: 100%; }
+            .svg-map-wrap { padding: 8px; }
+            .heatmap-toggles { width: 100%; }
+            .heatmap-toggle { flex: 1; }
+            .footer { flex-direction: column; align-items: flex-start; padding: 20px 16px; }
+            .footer-badges { flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
 
 <nav class="nav">
-    <a href="/" class="nav-logo">West End <span>Office Intelligence</span></a>
+    <div class="nav-left">
+        <a href="/" class="nav-back" aria-label="Back to dominicmayne.com">← dominicmayne.com</a>
+        <div class="nav-divider"></div>
+        <a href="/west-end" class="nav-logo">West End <span>Office Intelligence</span></a>
+    </div>
     <div class="nav-right">
-        <div class="nav-tag">Live Market Data</div>
+        <div class="nav-tag">Market Data</div>
         <div class="nav-claude">✦ Powered by Claude</div>
         <span id="navAuthArea"></span>
     </div>
@@ -189,7 +256,7 @@
 </div>
 
 <div class="free-banner" id="freeBanner" style="display:none;">
-    <span>🔒</span>
+    <span aria-hidden="true">🔒</span>
     <div class="free-banner-text"><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
     <a href="/login" class="free-banner-btn">Get Full Access →</a>
 </div>
@@ -198,11 +265,13 @@
 
     <div class="controls">
         <span class="controls-label">Submarket</span>
-        <select id="areaSelect" class="selector"></select>
+        <select id="areaSelect" class="selector" aria-label="Choose a submarket"></select>
         <button id="downloadBtn" class="download-btn" onclick="handleDownload()">⬇ Download Report</button>
         <button id="liveBtn" class="live-btn" onclick="handleLiveData()">⚡ Refresh Live Data</button>
-        <div class="last-updated" id="lastUpdated"></div>
+        <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
     </div>
+    <div class="offline-note" id="offlineNote">Live search and PDF reports need the live API, which isn't reachable right now. Every figure on this page is still available from the latest dataset.</div>
+    <div class="page-error" id="pageError"></div>
 
     <div class="live-banner-data" id="liveBanner">
         <span>⚡</span>
@@ -213,29 +282,29 @@
     <div class="kpi-grid">
         <div class="kpi-card">
             <div class="kpi-label">Prime Rent</div>
-            <div class="kpi-value" id="primeRent">—</div>
+            <div class="kpi-value" id="primeRent"><span class="skeleton"></span></div>
             <div class="kpi-sub">£ per sq ft (latest quarter)</div>
             <div class="kpi-delta" id="rentDelta"></div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Forecast Vacancy</div>
-            <div class="kpi-value" id="avgVacancy">—</div>
+            <div class="kpi-value" id="avgVacancy"><span class="skeleton"></span></div>
             <div class="kpi-sub">AI-predicted average</div>
             <div class="kpi-delta" id="vacancyDelta"></div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Latest Take-Up</div>
-            <div class="kpi-value" id="takeup">—</div>
+            <div class="kpi-value" id="takeup"><span class="skeleton"></span></div>
             <div class="kpi-sub">sq ft leased (latest quarter)</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Market Health</div>
-            <div class="kpi-value" id="healthScore">—</div>
+            <div class="kpi-value" id="healthScore"><span class="skeleton"></span></div>
             <div class="kpi-sub">out of 100</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Investment Signal</div>
-            <div id="signalBadge" class="signal-badge">—</div>
+            <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:20px"></span></div>
         </div>
     </div>
 
@@ -349,16 +418,16 @@
 
     <div class="table-card">
         <div class="chart-header"><div><div class="chart-title">Quarterly Data Breakdown</div><div class="chart-sub">All data points for selected submarket</div></div></div>
-        <table>
+        <div class="table-scroll"><table>
             <thead><tr><th>Period</th><th>Prime Rent (£ psf)</th><th>Vacancy Rate</th><th>Forecast Vacancy</th><th>Take-Up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
             <tbody id="dataTable"></tbody>
-        </table>
+        </table></div>
     </div>
 
 </div>
 
 <div class="footer">
-    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2025</div>
+    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2026</div>
     <div class="footer-badges">
         <div class="footer-badge">Central London Analytics</div>
         <div class="footer-badge footer-badge-claude">✦ Powered by Claude</div>
@@ -371,30 +440,60 @@ let allData = [];
 let mapMode = 'vacancy';
 let currentArea = null;
 let currentDeals = [];
+let dataSource = null;     // 'live' | 'snapshot'
+let snapshotMeta = null;
 
-const API = 'https://west-end-office-intelligence-production.up.railway.app';
-const isLoggedIn = sessionStorage.getItem('weoi_auth') === 'true';
+const API = SiteData.API;
+const esc = SiteData.esc;
+const isLoggedIn = (() => { try { return sessionStorage.getItem('weoi_auth') === 'true'; } catch (e) { return false; } })();
 
 function setupAuth() {
     const navArea = document.getElementById('navAuthArea');
     if (isLoggedIn) {
-        navArea.innerHTML = `<a href="#" class="nav-auth-btn nav-signout" onclick="signOut()">Sign Out</a>`;
+        navArea.innerHTML = `<a href="#" class="nav-auth-btn nav-signout" onclick="signOut(); return false;">Sign Out</a>`;
         document.getElementById('freeBanner').style.display = 'none';
     } else {
         navArea.innerHTML = `<a href="/login" class="nav-auth-btn nav-signin">Sign In →</a>`;
         document.getElementById('freeBanner').style.display = 'flex';
-        document.getElementById('downloadBtn').style.opacity = '0.4';
-        document.getElementById('downloadBtn').style.cursor = 'not-allowed';
-        document.getElementById('liveBtn').style.opacity = '0.4';
-        document.getElementById('liveBtn').style.cursor = 'not-allowed';
-        document.getElementById('dealsRefreshBtn').style.opacity = '0.4';
-        document.getElementById('dealsRefreshBtn').style.cursor = 'not-allowed';
+        ['downloadBtn', 'liveBtn', 'dealsRefreshBtn'].forEach(id => {
+            const el = document.getElementById(id);
+            el.style.opacity = '0.4';
+            el.title = 'Sign in to use this feature';
+        });
     }
 }
 
 function signOut() {
-    sessionStorage.removeItem('weoi_auth');
+    try { sessionStorage.removeItem('weoi_auth'); } catch (e) {}
     window.location.reload();
+}
+
+// Live-only features (PDF report, live search) are switched off cleanly when the API can't be reached.
+function applyApiAvailability() {
+    const offline = dataSource !== 'live';
+    const note = document.getElementById('offlineNote');
+    [['downloadBtn', '⬇ Download Report'], ['liveBtn', '⚡ Refresh Live Data'], ['dealsRefreshBtn', '🔍 Search Latest Deals']].forEach(([id, label]) => {
+        const btn = document.getElementById(id);
+        btn.disabled = offline;
+        btn.textContent = label;
+        if (offline) btn.title = 'Unavailable while the live API is offline';
+    });
+    note.classList.toggle('show', offline);
+}
+
+function setDataStatus(latest) {
+    const box = document.getElementById('dataStatus');
+    const text = document.getElementById('lastUpdated');
+    box.classList.toggle('is-live', dataSource === 'live');
+    box.classList.toggle('is-snapshot', dataSource === 'snapshot');
+    if (dataSource === 'live') {
+        text.textContent = `Live API · data to ${latest.year} ${latest.quarter}`;
+        box.title = 'Figures loaded from the live API';
+    } else {
+        const built = snapshotMeta ? ` · snapshot ${SiteData.formatDate(snapshotMeta.generated)}` : '';
+        text.textContent = `Data to ${latest.year} ${latest.quarter}${built}`;
+        box.title = 'The live API is unreachable, so this page is showing the saved dataset snapshot';
+    }
 }
 
 function handleDownload() {
@@ -436,34 +535,34 @@ function renderDeals(deals, source, area) {
     }
 
     if (!deals.length) {
-        content.innerHTML = `<div class="deals-empty">No deals data available for this submarket yet.</div>`;
+        content.innerHTML = `<div class="deals-empty">No deals tracked for ${esc(area)} yet — check back after the next data update.</div>`;
         return;
     }
 
     content.innerHTML = `<div class="deals-grid">${deals.map(deal => `
         <div class="deal-card">
             <div class="deal-top">
-                <div class="deal-occupier">${deal.occupier || 'Undisclosed'}</div>
-                <span class="deal-type-badge ${getDealTypeClass(deal.type)}">${deal.type || 'Letting'}</span>
+                <div class="deal-occupier">${esc(deal.occupier || 'Undisclosed')}</div>
+                <span class="deal-type-badge ${getDealTypeClass(deal.type)}">${esc(deal.type || 'Letting')}</span>
             </div>
-            <div class="deal-building">📍 ${deal.building || 'Address undisclosed'}</div>
+            <div class="deal-building">📍 ${esc(deal.building || 'Address undisclosed')}</div>
             <div class="deal-stats">
                 <div class="deal-stat">
                     <div class="deal-stat-label">Size</div>
-                    <div class="deal-stat-val">${deal.size_sqft ? deal.size_sqft.toLocaleString() + ' sq ft' : 'Undisclosed'}</div>
+                    <div class="deal-stat-val">${deal.size_sqft ? Number(deal.size_sqft).toLocaleString('en-GB') + ' sq ft' : 'Undisclosed'}</div>
                 </div>
                 <div class="deal-stat">
                     <div class="deal-stat-label">Rent</div>
-                    <div class="deal-stat-val green">${deal.rent_psf ? '£' + deal.rent_psf + ' psf' : 'Confidential'}</div>
+                    <div class="deal-stat-val green">${deal.rent_psf ? '£' + esc(deal.rent_psf) + ' psf' : 'Confidential'}</div>
                 </div>
                 <div class="deal-stat">
                     <div class="deal-stat-label">Grade</div>
-                    <div class="deal-stat-val">${deal.grade || 'A'}</div>
+                    <div class="deal-stat-val">${esc(deal.grade || 'A')}</div>
                 </div>
             </div>
             <div class="deal-footer">
-                <span class="deal-sector">${deal.sector || 'Unknown sector'}</span>
-                <span class="deal-date">${deal.date || ''}</span>
+                <span class="deal-sector">${esc(deal.sector || 'Unknown sector')}</span>
+                <span class="deal-date">${esc(deal.date || '')}</span>
             </div>
         </div>
     `).join('')}</div>`;
@@ -473,27 +572,28 @@ async function loadDeals(area, forceRefresh = false) {
     const content = document.getElementById('dealsContent');
     const btn = document.getElementById('dealsRefreshBtn');
 
-    if (forceRefresh && isLoggedIn) {
-        content.innerHTML = `<div class="deals-loading">🔍 Searching web for latest deals in ${area}...</div>`;
+    if (forceRefresh) {
+        content.innerHTML = `<div class="deals-loading">🔍 Searching the web for the latest deals in ${esc(area)}…</div>`;
         btn.disabled = true;
         btn.textContent = '⏳ Searching...';
     } else {
-        content.innerHTML = `<div class="deals-loading">Loading deals data...</div>`;
+        content.innerHTML = `<div class="deals-loading">Loading deals…</div>`;
     }
 
     try {
-        const response = await fetch(`${API}/deals/${encodeURIComponent(area)}`);
-        const result = await response.json();
-        currentDeals = result.deals || [];
-        renderDeals(currentDeals, result.source, area);
-    } catch(e) {
-        content.innerHTML = `<div class="deals-empty">Unable to load deals data. Please try again.</div>`;
+        const { data } = await SiteData.load(
+            `/deals/${encodeURIComponent(area)}`, 'deals.json',
+            snap => snap[area] || { deals: [], source: 'seed' },
+            d => d && Array.isArray(d.deals)
+        );
+        if (area !== currentArea) return; // user moved on
+        currentDeals = data.deals || [];
+        renderDeals(currentDeals, data.source, area);
+    } catch (e) {
+        content.innerHTML = `<div class="deals-empty">Deals data couldn't be loaded. Please refresh the page.</div>`;
     }
 
-    if (forceRefresh) {
-        btn.disabled = false;
-        btn.textContent = '🔍 Search Latest Deals';
-    }
+    if (forceRefresh) applyApiAvailability();
 }
 
 function getVacancyColor(v) {
@@ -523,13 +623,16 @@ function setMapMode(mode) {
     updateRankings();
 }
 
+function areaRows(area) { return allData.filter(d => d.area === area); }
+function avgPredicted(rows) { return rows.reduce((a, b) => a + b.predicted, 0) / rows.length; }
+
 function updateSchematic() {
     if (!allData.length) return;
     const uniqueAreas = [...new Set(allData.map(d => d.area))];
     uniqueAreas.forEach(area => {
-        const areaData = allData.filter(d => d.area === area);
-        const latest = areaData[areaData.length - 1];
-        const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
+        const rows = areaRows(area);
+        const latest = rows[rows.length - 1];
+        const avgVacancy = avgPredicted(rows);
         const color = mapMode === 'vacancy' ? getVacancyColor(avgVacancy) : getRentColor(latest.rent_psf);
         const zoneEl = document.getElementById(`zone-${area}`);
         if (zoneEl) {
@@ -551,44 +654,94 @@ function updateSchematic() {
 function updateRankings() {
     if (!allData.length) return;
     const uniqueAreas = [...new Set(allData.map(d => d.area))];
-    let ranked = uniqueAreas.map(area => {
-        const areaData = allData.filter(d => d.area === area);
-        const latest = areaData[areaData.length - 1];
-        const avgVacancy = areaData.reduce((a,b) => a + b.predicted, 0) / areaData.length;
-        return { area, vacancy: avgVacancy, rent: latest.rent_psf };
+    const ranked = uniqueAreas.map(area => {
+        const rows = areaRows(area);
+        return { area, vacancy: avgPredicted(rows), rent: rows[rows.length - 1].rent_psf };
     });
-    ranked.sort((a,b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
+    ranked.sort((a, b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
     const maxVal = Math.max(...ranked.map(r => mapMode === 'vacancy' ? r.vacancy : r.rent));
     document.getElementById('rankingsList').innerHTML = ranked.map(r => {
         const val = mapMode === 'vacancy' ? r.vacancy : r.rent;
         const color = mapMode === 'vacancy' ? getVacancyColor(r.vacancy) : getRentColor(r.rent);
         const barWidth = Math.round((val / maxVal) * 50);
         const displayVal = mapMode === 'vacancy' ? `${r.vacancy.toFixed(1)}%` : `£${r.rent}`;
-        return `<div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" onclick="selectArea('${r.area}')"><span class="ranking-name">${r.area}</span><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div><span class="ranking-val" style="color:${color}">${displayVal}</span></div>`;
+        return `<div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" role="button" tabindex="0" data-area="${esc(r.area)}"><span class="ranking-name">${esc(r.area)}</span><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div><span class="ranking-val" style="color:${color}">${displayVal}</span></div>`;
     }).join('');
 }
 
+// Ranking rows use data attributes (an inline onclick broke on "St James's").
+document.getElementById('rankingsList').addEventListener('click', e => {
+    const row = e.target.closest('.ranking-row');
+    if (row) selectArea(row.dataset.area);
+});
+document.getElementById('rankingsList').addEventListener('keydown', e => {
+    const row = e.target.closest('.ranking-row');
+    if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectArea(row.dataset.area); }
+});
+
 function selectArea(area) {
-    currentArea = area;
+    if (!allData.length) return;
     document.getElementById("areaSelect").value = area;
-    updateSchematic();
-    updateRankings();
-    loadDashboard(area);
+    renderArea(area);
     document.querySelector('.kpi-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function sentimentClass(s) { return 'pill-' + s.toLowerCase(); }
+function sentimentClass(s) { return 'pill-' + String(s || '').toLowerCase(); }
 
-function animateValue(el, end, suffix = '', decimals = 0) {
+function animateValue(el, end, { prefix = '', suffix = '', decimals = 0 } = {}) {
     const duration = 800;
     const startTime = performance.now();
+    const token = (el._animToken || 0) + 1;
+    el._animToken = token;
     function update(now) {
+        if (el._animToken !== token) return;
         const progress = Math.min((now - startTime) / duration, 1);
         const ease = 1 - Math.pow(1 - progress, 3);
-        el.textContent = suffix + (end * ease).toFixed(decimals);
+        el.textContent = prefix + (end * ease).toFixed(decimals) + suffix;
         if (progress < 1) requestAnimationFrame(update);
     }
     requestAnimationFrame(update);
+}
+
+// A short factual summary built from the dataset. Shown instead of AI commentary when Claude isn't available.
+function buildDataSummary(area) {
+    const rows = areaRows(area);
+    if (!rows.length) return '';
+    const first = rows[0], latest = rows[rows.length - 1];
+    const rentChange = latest.rent_psf - first.rent_psf;
+    const avgTakeup = rows.reduce((a, b) => a + b.takeup_sqft, 0) / rows.length;
+    const avgVac = avgPredicted(rows);
+    const vacStart = first.vacancy, vacEnd = latest.vacancy;
+    const fmt = n => Math.round(n).toLocaleString('en-GB');
+    const parts = [
+        `Across ${rows.length} quarters from ${first.year} ${first.quarter} to ${latest.year} ${latest.quarter}, prime rent in ${area} moved from £${first.rent_psf} to £${latest.rent_psf} psf (${rentChange >= 0 ? '+' : '−'}£${Math.abs(rentChange)} psf).`,
+        `Recorded vacancy went from ${vacStart.toFixed(1)}% to ${vacEnd.toFixed(1)}%, and the model's forecast vacancy averages ${avgVac.toFixed(1)}% over the period.`,
+        `Take-up in the latest quarter was ${fmt(latest.takeup_sqft)} sq ft, ${latest.takeup_sqft >= avgTakeup ? 'above' : 'below'} the ${fmt(avgTakeup)} sq ft quarterly average for the period.`,
+        `Latest market sentiment is recorded as “${latest.sentiment}”.`
+    ];
+    return parts.join(' ');
+}
+
+function renderSummaryPanel(area, reason) {
+    document.getElementById('insightWrapper').innerHTML = `
+        <div class="insight-panel summary">
+            <div class="insight-header"><div class="insight-icon">≡</div><div class="insight-label">Data Summary</div><div class="insight-powered">Generated from the dataset · not AI commentary</div></div>
+            <div class="insight-text">${esc(buildDataSummary(area))}</div>
+            ${reason ? `<div class="kpi-sub" style="margin-top:10px">${esc(reason)}</div>` : ''}
+        </div>`;
+}
+
+function renderCommentaryPanel(inner) {
+    document.getElementById('insightWrapper').innerHTML = `
+        <div class="insight-panel">
+            <div class="insight-header"><div class="insight-icon">✦</div><div class="insight-label">AI Market Commentary</div><div class="insight-powered">Powered by Claude · Anthropic</div></div>
+            <div class="insight-text" id="insight">${inner}</div>
+        </div>`;
+}
+
+function looksLikeCommentary(text) {
+    if (!text || typeof text !== 'string' || text.length < 60) return false;
+    return !/^(API key not configured|API error|Commentary unavailable|No data available)/i.test(text.trim());
 }
 
 async function loadCommentary(area) {
@@ -596,21 +749,26 @@ async function loadCommentary(area) {
         document.getElementById('insightWrapper').innerHTML = `
             <div class="insight-panel locked-overlay">
                 <div class="insight-header"><div class="insight-icon">✦</div><div class="insight-label">AI Market Commentary</div><div class="insight-powered">Powered by Claude · Anthropic</div></div>
-                <div class="insight-text blurred">Prime rents in ${area} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
+                <div class="insight-text blurred">Prime rents in ${esc(area)} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
                 <div class="lock-mask"><a href="/login" class="lock-badge">🔒 Sign in to read AI commentary →</a></div>
             </div>`;
         return;
     }
-    const insightEl = document.getElementById('insight');
-    if (insightEl) insightEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    if (dataSource !== 'live') {
+        renderSummaryPanel(area, 'AI commentary needs the live API, which is offline right now.');
+        return;
+    }
+    renderCommentaryPanel('<div class="typing-indicator"><span></span><span></span><span></span></div>');
     try {
-        const response = await fetch(`${API}/commentary/${encodeURIComponent(area)}`);
-        const result = await response.json();
-        const el = document.getElementById('insight');
-        if (el) el.textContent = result.commentary;
-    } catch(e) {
-        const el = document.getElementById('insight');
-        if (el) el.textContent = "Commentary temporarily unavailable.";
+        const result = await SiteData.fetchJSON(`${API}/commentary/${encodeURIComponent(area)}`, 30000);
+        if (area !== currentArea) return;
+        if (looksLikeCommentary(result.commentary)) {
+            renderCommentaryPanel(esc(result.commentary));
+        } else {
+            renderSummaryPanel(area, 'AI commentary is unavailable at the moment.');
+        }
+    } catch (e) {
+        if (area === currentArea) renderSummaryPanel(area, 'AI commentary is unavailable at the moment.');
     }
 }
 
@@ -620,46 +778,47 @@ async function fetchLiveData() {
     const banner = document.getElementById("liveBanner");
     btn.textContent = "⏳ Searching...";
     btn.disabled = true;
-    btn.style.opacity = "0.7";
     banner.style.display = "none";
     banner.className = "live-banner-data";
     try {
-        const response = await fetch(`${API}/live-data/${encodeURIComponent(area)}`);
-        const result = await response.json();
+        const result = await SiteData.fetchJSON(`${API}/live-data/${encodeURIComponent(area)}`, 70000);
         banner.style.display = "flex";
         if (result.live) {
             document.getElementById("primeRent").textContent = `£${result.rent_psf}`;
-            let parts = [];
+            const parts = [];
             if (result.rent_change && result.rent_change !== 0) parts.push(`Rent ${result.rent_change > 0 ? '▲' : '▼'} £${Math.abs(result.rent_change)} psf`);
             if (result.vacancy_change && result.vacancy_change !== 0) parts.push(`Vacancy ${result.vacancy_change > 0 ? '▲' : '▼'} ${Math.abs(result.vacancy_change)}%`);
             if (parts.length === 0) parts.push("Confirmed current");
             if (result.notes) parts.push(result.notes);
-            document.getElementById("liveBannerText").textContent = `⚡ Live · ${result.period} · ${parts.join(' · ')}`;
+            document.getElementById("liveBannerText").textContent = `Live · ${result.period} · ${parts.join(' · ')}`;
             document.getElementById("liveBannerSource").textContent = `${result.source} · ${result.confidence} confidence`;
-            document.getElementById("lastUpdated").textContent = `⚡ Live: ${result.period}`;
+            document.getElementById("lastUpdated").textContent = `Live: ${result.period}`;
         } else {
-            banner.className = "live-banner-data error";
-            document.getElementById("liveBannerText").textContent = `Live search unavailable — showing baseline. ${result.error || ''}`;
+            document.getElementById("liveBannerText").textContent = "Live market search isn't available right now — the figures shown are from the latest dataset.";
             document.getElementById("liveBannerSource").textContent = "";
         }
-    } catch(e) {
+    } catch (e) {
         banner.style.display = "flex";
-        banner.className = "live-banner-data error";
-        document.getElementById("liveBannerText").textContent = "Live data fetch failed.";
+        document.getElementById("liveBannerText").textContent = "Live market search didn't respond — the figures shown are from the latest dataset.";
+        document.getElementById("liveBannerSource").textContent = "";
     }
     btn.textContent = "⚡ Refresh Live Data";
     btn.disabled = false;
-    btn.style.opacity = "1";
 }
 
 async function downloadReport() {
     const area = document.getElementById("areaSelect").value;
     const btn = document.getElementById("downloadBtn");
+    const banner = document.getElementById("liveBanner");
     btn.textContent = "⏳ Generating...";
-    btn.style.opacity = "0.7";
     btn.disabled = true;
     try {
-        const response = await fetch(`${API}/report/${encodeURIComponent(area)}`);
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 60000);
+        const response = await fetch(`${API}/report/${encodeURIComponent(area)}`, { signal: ctrl.signal });
+        clearTimeout(timer);
+        const type = response.headers.get('content-type') || '';
+        if (!response.ok || !type.includes('pdf')) throw new Error('not a pdf');
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -669,121 +828,152 @@ async function downloadReport() {
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
-    } catch(e) {
-        alert("Report generation failed. Please try again.");
+    } catch (e) {
+        banner.className = "live-banner-data";
+        banner.style.display = "flex";
+        document.getElementById("liveBannerText").textContent = "The PDF report couldn't be generated just now. Please try again later.";
+        document.getElementById("liveBannerSource").textContent = "";
     }
     btn.textContent = "⬇ Download Report";
-    btn.style.opacity = "1";
     btn.disabled = false;
 }
 
-async function loadDashboard(selectedArea = null) {
+function chartUnavailable(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || canvas.dataset.empty) return;
+    canvas.dataset.empty = '1';
+    canvas.style.display = 'none';
+    const note = document.createElement('div');
+    note.className = 'chart-empty';
+    note.textContent = 'Chart couldn’t load (the charting library was blocked). The figures are in the table below.';
+    canvas.after(note);
+}
+
+function drawCharts(filtered, uniqueAreas) {
+    if (!SiteData.hasCharts()) {
+        ['trendChart', 'takeupChart', 'comparisonChart'].forEach(chartUnavailable);
+        return;
+    }
+    const labels = filtered.map(d => `${d.year} ${d.quarter}`);
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: { labels, datasets: [
+            { label: 'Forecast Vacancy (%)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
+            { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
+        ]},
+        options: chartOptions('y', 'y1')
+    });
+    if (takeupChart) takeupChart.destroy();
+    takeupChart = new Chart(document.getElementById('takeupChart'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Take-Up (sq ft)', data: filtered.map(d => d.takeup_sqft), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'), borderRadius: 6, borderSkipped: false }]},
+        options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+    const latestByArea = uniqueAreas.map(area => { const d = areaRows(area); return d[d.length - 1]; });
+    if (comparisonChart) comparisonChart.destroy();
+    comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+        type: 'bar',
+        data: { labels: latestByArea.map(d => d.area), datasets: [
+            { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
+            { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
+        ]},
+        options: chartOptions('y', 'y1')
+    });
+}
+
+function renderArea(selectedArea) {
+    currentArea = selectedArea;
+    const uniqueAreas = [...new Set(allData.map(d => d.area))].sort();
+    updateSchematic();
+    updateRankings();
+    loadDeals(selectedArea);
+
+    const filtered = areaRows(selectedArea);
+    const latest = filtered[filtered.length - 1];
+    const prev = filtered[filtered.length - 2];
+    setDataStatus(latest);
+    document.getElementById("liveBanner").style.display = "none";
+
+    animateValue(document.getElementById("primeRent"), latest.rent_psf, { prefix: '£' });
+    const avgVacancy = avgPredicted(filtered);
+    animateValue(document.getElementById("avgVacancy"), avgVacancy, { suffix: '%', decimals: 2 });
+    document.getElementById("takeup").textContent = latest.takeup_sqft.toLocaleString('en-GB');
+    const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
+    animateValue(document.getElementById("healthScore"), score, { suffix: '/100' });
+    const rentDelta = document.getElementById("rentDelta");
+    const vacDelta = document.getElementById("vacancyDelta");
+    if (prev) {
+        const rentChange = latest.rent_psf - prev.rent_psf;
+        rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
+        rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
+        const vacChange = latest.predicted - prev.predicted;
+        vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange).toFixed(2) + '% vs prev quarter';
+        vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
+    } else {
+        rentDelta.textContent = ''; vacDelta.textContent = '';
+    }
+    const badge = document.getElementById("signalBadge");
+    if (avgVacancy < 5) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
+    else if (avgVacancy < 7) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
+    else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
+
+    clearTimeout(window.commentaryTimer);
+    window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), dataSource === 'live' ? 800 : 0);
+
+    try { drawCharts(filtered, uniqueAreas); } catch (e) { console.error(e); }
+
+    const tbody = document.getElementById("dataTable");
+    tbody.innerHTML = filtered.map(row => `<tr><td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.rent_psf}</td><td>${(row.vacancy ?? row.predicted).toFixed(1)}%</td><td>${parseFloat(row.predicted).toFixed(2)}%</td><td>${row.takeup_sqft.toLocaleString('en-GB')}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${esc(row.signal)}</td></tr>`).join('');
+}
+
+async function loadDashboard() {
     try {
-        const response = await fetch(`${API}/predictions`);
-        allData = await response.json();
+        const [{ data, source }, meta] = await Promise.all([
+            SiteData.load('/predictions', 'predictions.json', null, d => Array.isArray(d) && d.length > 0),
+            SiteData.meta()
+        ]);
+        allData = data;
+        dataSource = source;
+        snapshotMeta = meta;
+        applyApiAvailability();
+
         const uniqueAreas = [...new Set(allData.map(d => d.area))].sort();
         const selector = document.getElementById("areaSelect");
-        if (selector.options.length === 0) {
-            uniqueAreas.forEach(area => {
-                const opt = document.createElement("option");
-                opt.value = area; opt.textContent = area;
-                selector.appendChild(opt);
-            });
-            selectedArea = uniqueAreas[0];
-        }
-        if (!selectedArea) selectedArea = selector.value;
-        selector.value = selectedArea;
-        currentArea = selectedArea;
-        updateSchematic();
-        updateRankings();
-
-        // Load deals for this area
-        loadDeals(selectedArea);
-
-        const filtered = allData.filter(d => d.area === selectedArea);
-        const latest = filtered[filtered.length - 1];
-        const prev = filtered[filtered.length - 2];
-        document.getElementById("lastUpdated").textContent = `Last updated: ${latest.year} ${latest.quarter}`;
-        animateValue(document.getElementById("primeRent"), latest.rent_psf, '£', 0);
-        const avgVacancy = filtered.reduce((a,b) => a + b.predicted, 0) / filtered.length;
-        const avgVacancyEl = document.getElementById("avgVacancy");
-        animateValue(avgVacancyEl, avgVacancy, '', 2);
-        setTimeout(() => avgVacancyEl.textContent += '%', 820);
-        document.getElementById("takeup").textContent = latest.takeup_sqft.toLocaleString();
-        const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
-        const healthEl = document.getElementById("healthScore");
-        animateValue(healthEl, score, '', 0);
-        setTimeout(() => healthEl.textContent += '/100', 820);
-        if (prev) {
-            const rentChange = latest.rent_psf - prev.rent_psf;
-            const rentDelta = document.getElementById("rentDelta");
-            rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
-            rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
-            const vacChange = (latest.predicted - prev.predicted).toFixed(2);
-            const vacDelta = document.getElementById("vacancyDelta");
-            vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange) + '% vs prev quarter';
-            vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
-        }
-        const badge = document.getElementById("signalBadge");
-        if (avgVacancy < 5) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
-        else if (avgVacancy < 7) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
-        else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
-
-        clearTimeout(window.commentaryTimer);
-        window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), 1500);
-
-        const labels = filtered.map(d => `${d.year} ${d.quarter}`);
-        if (trendChart) trendChart.destroy();
-        trendChart = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels, datasets: [
-                { label: 'Forecast Vacancy (%)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
-                { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
-            ]},
-            options: chartOptions('y', 'y1')
-        });
-        if (takeupChart) takeupChart.destroy();
-        takeupChart = new Chart(document.getElementById('takeupChart'), {
-            type: 'bar',
-            data: { labels, datasets: [{ label: 'Take-Up (sq ft)', data: filtered.map(d => d.takeup_sqft), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'), borderRadius: 6, borderSkipped: false }]},
-            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
-        });
-        const latestByArea = uniqueAreas.map(area => { const d = allData.filter(x => x.area === area); return d[d.length - 1]; });
-        if (comparisonChart) comparisonChart.destroy();
-        comparisonChart = new Chart(document.getElementById('comparisonChart'), {
-            type: 'bar',
-            data: { labels: latestByArea.map(d => d.area), datasets: [
-                { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
-                { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
-            ]},
-            options: chartOptions('y', 'y1')
-        });
-        const tbody = document.getElementById("dataTable");
-        tbody.innerHTML = '';
-        filtered.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.rent_psf}</td><td>${row.vacancy?.toFixed(1) ?? row.predicted?.toFixed(1)}%</td><td>${parseFloat(row.predicted).toFixed(2)}%</td><td>${row.takeup_sqft.toLocaleString()}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${row.sentiment}</span></td><td>${row.signal}</td>`;
-            tbody.appendChild(tr);
-        });
-    } catch(e) { console.error(e); }
+        selector.innerHTML = uniqueAreas.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('');
+        let initial = uniqueAreas[0];
+        const fromHash = decodeURIComponent(location.hash.slice(1));
+        if (uniqueAreas.includes(fromHash)) initial = fromHash;
+        selector.value = initial;
+        renderArea(initial);
+    } catch (e) {
+        console.error(e);
+        const err = document.getElementById('pageError');
+        err.style.display = 'block';
+        err.textContent = "Market data couldn't be loaded. Please check your connection and refresh the page.";
+        document.getElementById('lastUpdated').textContent = 'Data unavailable';
+    }
 }
 
 function chartOptions(leftAxis, rightAxis) {
     return {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
         scales: {
-            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#475569' }, grid: { drawOnChartArea: false } },
-            x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
+            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#64748b' }, grid: { drawOnChartArea: false } },
+            x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }
         }
     };
 }
 
 setupAuth();
 loadDashboard();
-document.getElementById("areaSelect").addEventListener("change", e => loadDashboard(e.target.value));
+document.getElementById("areaSelect").addEventListener("change", e => {
+    renderArea(e.target.value);
+    history.replaceState(null, '', '#' + encodeURIComponent(e.target.value));
+});
 </script>
 
 </body>
