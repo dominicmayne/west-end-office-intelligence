@@ -5,434 +5,267 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Leasing analytics and vacancy forecasting across eight Central London office submarkets.">
     <title>West End Office Intelligence Platform</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#f4f0e6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="/assets/chart-theme.js"></script>
     <script src="/assets/data.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
-        .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(6,13,24,0.95); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); }
-        .nav-logo { font-size: 15px; font-weight: 700; color: #fff; text-decoration: none; }
-        .nav-logo span { color: #3b82f6; }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-        .nav-tag { font-size: 11px; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(59,130,246,0.25); letter-spacing: 1px; text-transform: uppercase; }
-        .nav-claude { font-size: 11px; background: rgba(168,85,247,0.12); color: #a855f7; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(168,85,247,0.25); letter-spacing: 1px; text-transform: uppercase; }
-        .nav-auth-btn { font-size: 12px; padding: 6px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; }
-        .nav-signin { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
-        .nav-signin:hover { background: rgba(59,130,246,0.2); }
-        .nav-signout { background: rgba(255,255,255,0.05); color: #64748b; border: 1px solid rgba(255,255,255,0.08); }
-        .nav-signout:hover { color: #94a3b8; }
-        .hero { padding: 60px 40px 40px; max-width: 1400px; margin: auto; }
-        .hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #3b82f6; margin-bottom: 16px; }
-        .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: #64748b; font-size: 15px; max-width: 600px; line-height: 1.8; }
-        .free-banner { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 14px 20px; margin: 0 40px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 1320px; margin-left: auto; margin-right: auto; }
-        .free-banner-text { font-size: 13px; color: #64748b; flex: 1; }
-        .free-banner-text strong { color: #94a3b8; }
-        .free-banner-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
-        .container { max-width: 1400px; margin: auto; padding: 0 40px 80px; }
-        .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
-        .controls-label { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
-        .selector { background: #0f1929; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: border-color 0.2s; }
-        .selector:focus { outline: none; border-color: #3b82f6; }
-        .download-btn { background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
-        .download-btn:hover { opacity: 0.85; }
-        .download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .live-btn { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
-        .live-btn:hover { opacity: 0.85; }
-        .live-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .last-updated { margin-left: auto; font-size: 12px; color: #334155; }
-        .live-banner-data { background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2); border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; color: #38bdf8; display: none; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .live-banner-data.error { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #f87171; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .kpi-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 24px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
-        .kpi-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
-        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); opacity: 0; transition: opacity 0.2s; }
-        .kpi-card:hover::before { opacity: 1; }
-        .kpi-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; }
-        .kpi-value { font-size: 32px; font-weight: 800; color: #f1f5f9; line-height: 1; margin-bottom: 8px; }
-        .kpi-sub { font-size: 12px; color: #334155; }
-        .kpi-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 10px; padding: 3px 8px; border-radius: 6px; }
-        .delta-up { background: rgba(34,197,94,0.1); color: #22c55e; }
-        .delta-down { background: rgba(239,68,68,0.1); color: #ef4444; }
-        .signal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-top: 6px; }
-        .signal-dot { width: 7px; height: 7px; border-radius: 50%; }
-        .heatmap-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-        .heatmap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-        .heatmap-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
-        .heatmap-sub { font-size: 12px; color: #475569; margin-top: 4px; }
-        .heatmap-toggles { display: flex; gap: 8px; }
-        .heatmap-toggle { background: #0f1929; border: 1px solid rgba(255,255,255,0.08); color: #64748b; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-        .heatmap-toggle.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #60a5fa; font-weight: 600; }
-        .map-container { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
-        .svg-map-wrap { background: #060d18; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); padding: 20px; display: flex; align-items: center; justify-content: center; }
-        svg#schematic { width: 100%; max-width: 580px; height: auto; display: block; margin: auto; }
-        .zone { cursor: pointer; transition: all 0.2s; }
-        .zone:hover { filter: brightness(1.3); }
-        .zone-label { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 700; }
-        .zone-sublabel { pointer-events: none; font-family: 'Inter', Arial, sans-serif; font-weight: 400; }
-        .map-side-panel { display: flex; flex-direction: column; gap: 12px; }
-        .map-legend { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 16px; }
-        .map-legend-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #475569; margin-bottom: 12px; font-weight: 600; }
-        .legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 11px; color: #64748b; }
-        .legend-swatch { width: 28px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-        .map-rankings { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 16px; flex: 1; }
-        .map-rankings-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #475569; margin-bottom: 12px; font-weight: 600; }
-        .ranking-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 6px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: background 0.15s; border-radius: 6px; }
-        .ranking-row:last-child { border-bottom: none; }
-        .ranking-row:hover { background: rgba(255,255,255,0.03); }
-        .ranking-row.active-row { background: rgba(59,130,246,0.08); }
-        .ranking-name { font-size: 12px; color: #cbd5e1; font-weight: 500; }
-        .ranking-val { font-size: 11px; font-weight: 700; }
-        .ranking-bar-wrap { width: 50px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 0 8px; }
-        .ranking-bar { height: 4px; border-radius: 2px; transition: width 0.4s; }
-        .charts-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .chart-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-        .chart-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
-        .chart-sub { font-size: 12px; color: #475569; margin-top: 4px; }
-        canvas { max-height: 320px; }
-        .chart-full { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+        .kpi-grid { scroll-margin-top: 80px; }
+        .free-banner { display: none; align-items: center; gap: 12px 24px; flex-wrap: wrap; justify-content: space-between; background: var(--paper-2); border-left: 2px solid var(--accent); padding: 14px 18px; margin-bottom: 28px; font-size: 14.5px; color: var(--ink-2); }
+        .free-banner strong { color: var(--ink); font-weight: 500; }
+        .offline-note { font-size: 13.5px; color: var(--ink-3); margin: -14px 0 28px; display: none; max-width: 52em; }
+        .offline-note.show { display: block; }
+        .toolbar .btn { padding: 9px 14px; font-size: 13.5px; }
+        .live-banner-data { display: none; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; border-left: 2px solid var(--ink); padding: 8px 0 8px 16px; margin-bottom: 28px; font-size: 14px; color: var(--ink-2); }
+        .live-banner-data .src { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
 
-        /* DEALS TRACKER */
-        .deals-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-        .deals-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-        .deals-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
-        .deals-sub { font-size: 12px; color: #475569; margin-top: 4px; }
-        .deals-refresh-btn { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .deals-refresh-btn:hover { background: rgba(34,197,94,0.18); }
-        .deals-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .deals-source-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; padding: 3px 10px; border-radius: 999px; font-weight: 600; margin-bottom: 16px; }
-        .source-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
-        .source-seed { background: rgba(148,163,184,0.1); color: #64748b; border: 1px solid rgba(148,163,184,0.15); }
-        .deals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-        .deal-card { background: #060d18; border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 16px; transition: border-color 0.2s; }
-        .deal-card:hover { border-color: rgba(255,255,255,0.1); }
-        .deal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .deal-occupier { font-size: 13px; font-weight: 700; color: #f1f5f9; line-height: 1.3; }
-        .deal-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; flex-shrink: 0; margin-left: 8px; }
-        .type-prelet { background: rgba(168,85,247,0.12); color: #a855f7; }
-        .type-letting { background: rgba(59,130,246,0.12); color: #60a5fa; }
-        .type-sublet { background: rgba(245,158,11,0.12); color: #f59e0b; }
-        .type-renewal { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .deal-building { font-size: 12px; color: #64748b; margin-bottom: 12px; }
-        .deal-stats { display: flex; gap: 12px; flex-wrap: wrap; }
-        .deal-stat { display: flex; flex-direction: column; }
-        .deal-stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #334155; margin-bottom: 2px; }
-        .deal-stat-val { font-size: 13px; font-weight: 700; color: #94a3b8; }
-        .deal-stat-val.green { color: #22c55e; }
-        .deal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04); }
-        .deal-sector { font-size: 10px; color: #334155; }
-        .deal-date { font-size: 10px; color: #334155; }
-        .deals-loading { text-align: center; padding: 40px; color: #334155; font-size: 13px; }
-        .deals-empty { text-align: center; padding: 40px; color: #334155; font-size: 13px; }
+        /* Schematic */
+        .map-container { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
+        .svg-map-wrap { border: 1px solid var(--rule); background: #f8f5ee; padding: 16px; }
+        svg#schematic { width: 100%; max-width: 600px; height: auto; display: block; margin: auto; }
+        .zone { cursor: pointer; }
+        .zone rect { transition: fill 0.2s, stroke-width 0.2s; }
+        .zone:hover rect { stroke-width: 2.5; }
+        .zone-label { pointer-events: none; font-family: var(--serif); font-weight: 500; }
+        .zone-sublabel { pointer-events: none; font-family: var(--mono); font-weight: 500; }
+        .seg { display: inline-flex; border: 1px solid var(--ink); }
+        .seg button { font: inherit; font-size: 13px; padding: 7px 14px; background: transparent; border: 0; color: var(--ink-2); cursor: pointer; }
+        .seg button + button { border-left: 1px solid var(--ink); }
+        .seg button.active { background: var(--ink); color: var(--paper); }
+        .map-side-panel { display: flex; flex-direction: column; gap: 28px; }
+        .side-title { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 8px; border-bottom: 1px solid var(--ink); margin-bottom: 4px; }
+        .legend-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13.5px; color: var(--ink-2); }
+        .legend-swatch { width: 22px; height: 10px; flex-shrink: 0; }
+        .ranking-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) 56px 58px; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); cursor: pointer; font-size: 14px; }
+        .ranking-row::before { content: counter(r); counter-increment: r; font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+        #rankingsList { counter-reset: r; }
+        .ranking-row:hover .ranking-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+        .ranking-row.active-row { background: var(--paper-2); box-shadow: -8px 0 0 var(--paper-2), 8px 0 0 var(--paper-2); }
+        .ranking-row.active-row .ranking-name { font-weight: 500; }
+        .ranking-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-bar-wrap { height: 4px; background: var(--rule-soft); }
+        .ranking-bar { height: 4px; transition: width 0.4s; }
+        .ranking-val { font-family: var(--mono); font-size: 12.5px; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-        /* INSIGHT */
-        .insight-panel { background: #0b1527; border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid #a855f7; border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
-        .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .insight-icon { width: 36px; height: 36px; background: rgba(168,85,247,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .insight-label { font-size: 11px; color: #a855f7; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
-        .insight-powered { margin-left: auto; font-size: 11px; color: #4b3f6b; }
-        .insight-text { font-size: 14px; color: #94a3b8; line-height: 2; }
-        .typing-indicator { display: inline-flex; gap: 4px; align-items: center; padding: 4px 0; }
-        .typing-indicator span { width: 6px; height: 6px; background: #a855f7; border-radius: 50%; animation: bounce 1.2s infinite; opacity: 0.6; }
+        /* Commentary */
+        .insight-panel { border-top: 1px solid var(--ink); padding-top: 14px; position: relative; }
+        .insight-header { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; margin-bottom: 16px; }
+        .insight-label { font-family: var(--serif); font-size: 24px; }
+        .insight-powered { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+        .insight-text { font-family: var(--serif); font-size: 19px; line-height: 1.6; color: var(--ink); max-width: 44em; }
+        .insight-text::first-letter { font-size: 1.15em; }
+        .insight-reason { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
+        .typing-indicator { display: inline-flex; gap: 5px; align-items: center; padding: 6px 0; }
+        .typing-indicator span { width: 6px; height: 6px; background: var(--ink-3); border-radius: 50%; animation: blink 1.2s infinite; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
-        .locked-overlay { position: relative; }
-        .locked-overlay .lock-mask { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, #060d18 80%); border-radius: 18px; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 28px; }
-        .lock-badge { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 600; text-decoration: none; }
-        .blurred { filter: blur(4px); pointer-events: none; user-select: none; }
-        .table-card { background: #0b1527; border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; padding: 28px; overflow-x: auto; margin-bottom: 24px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        td { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
-        .sentiment-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .pill-tightening { background: rgba(34,197,94,0.12); color: #22c55e; }
-        .pill-strong { background: rgba(59,130,246,0.12); color: #60a5fa; }
-        .pill-improving { background: rgba(168,85,247,0.12); color: #a855f7; }
-        .pill-active { background: rgba(245,158,11,0.12); color: #f59e0b; }
-        .pill-balanced { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .pill-neutral { background: rgba(148,163,184,0.12); color: #94a3b8; }
-        .footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 28px 40px; max-width: 1400px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .footer-credit { font-size: 12px; color: #334155; }
-        .footer-credit strong { color: #475569; }
-        .footer-badges { display: flex; align-items: center; gap: 10px; }
-        .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; }
-        .footer-badge-claude { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.2); color: #7c3aed; font-weight: 600; }
-        /* DATA STATUS, LOADING + EMPTY STATES */
-        .nav-back { font-size: 12px; color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
-        .nav-back:hover { color: #e2e8f0; }
-        .nav-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
-        .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
-        .free-banner { width: calc(100% - 80px); margin: 0 auto 24px; }
-        .data-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 999px; }
-        .data-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #475569; flex-shrink: 0; }
-        .data-status.is-live .data-status-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
-        .data-status.is-snapshot .data-status-dot { background: #60a5fa; box-shadow: 0 0 0 3px rgba(96,165,250,0.15); }
-        .offline-note { font-size: 12px; color: #64748b; margin: -20px 0 24px; display: none; }
-        .offline-note.show { display: block; }
-        .download-btn:disabled, .live-btn:disabled, .deals-refresh-btn:disabled { opacity: 0.4 !important; cursor: not-allowed !important; }
-        .skeleton { display: inline-block; width: 90px; height: 30px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .chart-empty { display: flex; align-items: center; justify-content: center; min-height: 180px; font-size: 13px; color: #64748b; text-align: center; border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; }
-        .page-error { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; border-radius: 12px; padding: 14px 18px; font-size: 13px; margin-bottom: 24px; display: none; }
-        .insight-panel.summary { border-color: rgba(96,165,250,0.2); border-left-color: #60a5fa; }
-        .insight-panel.summary .insight-label { color: #60a5fa; }
-        .insight-panel.summary .insight-icon { background: rgba(96,165,250,0.1); color: #60a5fa; }
-        .insight-panel.summary .insight-powered { color: #64748b; }
-        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .table-scroll table { min-width: 640px; }
-        a:focus-visible, button:focus-visible, select:focus-visible, .ranking-row:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
-        .kpi-sub, .deal-sector, .deal-date, .deal-stat-label, .footer-credit, .footer-badge, .last-updated { color: #64748b; }
-        .footer-credit strong { color: #94a3b8; }
+        @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+        .locked-overlay .lock-mask { position: absolute; inset: 60px 0 0 0; background: linear-gradient(to bottom, rgba(244,240,230,0) 0%, var(--paper) 72%); display: flex; align-items: flex-end; padding-bottom: 6px; }
+        .blurred { filter: blur(3.5px); pointer-events: none; user-select: none; }
 
-        @media (max-width: 900px) {
-            .hero { padding: 40px 20px 24px; }
-            .container { padding: 0 20px 40px; }
-            .nav { padding: 16px 20px; }
-            .hero h1 { font-size: 28px; }
-            .charts-row { grid-template-columns: 1fr; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .footer { padding: 24px 20px; }
-            .map-container { grid-template-columns: 1fr; }
-            .free-banner { width: calc(100% - 40px); margin: 0 auto 20px; }
-            .deals-grid { grid-template-columns: 1fr; }
-            .nav-tag, .nav-claude { display: none; }
+        @media (max-width: 980px) {
+            .map-container { grid-template-columns: 1fr; gap: 32px; }
         }
-        @media (max-width: 600px) {
-            .nav { padding: 12px 16px; }
-            .nav-divider { display: none; }
-            .nav-back { font-size: 0; padding: 6px 8px 6px 0; }
-            .nav-back::before { content: "←"; font-size: 18px; line-height: 1; }
-            .hero { padding: 32px 16px 20px; }
-            .hero h1 { font-size: 26px; }
-            .hero p { font-size: 14px; }
-            .container { padding: 0 16px 40px; }
-            .free-banner { width: calc(100% - 32px); padding: 12px 14px; }
-            .free-banner-btn { width: 100%; text-align: center; }
-            .controls { gap: 10px; }
-            .controls-label { width: 100%; }
-            .selector { flex: 1 1 100%; }
-            .download-btn, .live-btn { flex: 1 1 calc(50% - 5px); justify-content: center; padding: 10px 12px; font-size: 12px; }
-            .data-status { margin-left: 0; width: 100%; justify-content: center; text-align: center; }
-            .kpi-grid { gap: 10px; }
-            .kpi-card { padding: 16px; border-radius: 14px; }
-            .kpi-value { font-size: 24px; }
-            .kpi-label { margin-bottom: 10px; }
-            .kpi-card:last-child { grid-column: 1 / -1; }
-            .heatmap-card, .chart-card, .chart-full, .deals-card, .table-card { padding: 18px; border-radius: 14px; }
-            .insight-panel { padding: 20px; border-radius: 14px; }
-            .insight-header { flex-wrap: wrap; }
+        @media (max-width: 640px) {
+            .toolbar .btn { flex: 1 1 calc(50% - 5px); justify-content: center; }
+            .svg-map-wrap { padding: 6px; }
+            .seg { width: 100%; }
+            .seg button { flex: 1; }
+            .insight-text { font-size: 17px; }
             .insight-powered { margin-left: 0; width: 100%; }
-            .svg-map-wrap { padding: 8px; }
-            .heatmap-toggles { width: 100%; }
-            .heatmap-toggle { flex: 1; }
-            .footer { flex-direction: column; align-items: flex-start; padding: 20px 16px; }
-            .footer-badges { flex-wrap: wrap; }
+            .free-banner .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-<nav class="nav">
-    <div class="nav-left">
-        <a href="/" class="nav-back" aria-label="Back to dominicmayne.com">← dominicmayne.com</a>
-        <div class="nav-divider"></div>
-        <a href="/west-end" class="nav-logo">West End <span>Office Intelligence</span></a>
+<header class="mast is-sticky">
+    <div class="wrap mast-in">
+        <a href="/" class="mark" aria-label="Back to dominicmayne.com"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name hide-sm">Dominic Mayne</span></a>
+        <a href="/west-end" class="mark-sub" style="text-decoration:none;margin-right:auto;font-size:14px;color:var(--ink)">West End Office Intelligence</a>
+        <nav class="mast-nav" aria-label="Account">
+            <span id="navAuthArea"></span>
+        </nav>
     </div>
-    <div class="nav-right">
-        <div class="nav-tag">Market Data</div>
-        <div class="nav-claude">✦ Powered by Claude</div>
-        <span id="navAuthArea"></span>
-    </div>
-</nav>
+</header>
 
-<div class="hero">
-    <div class="hero-eyebrow">Central London · Submarket Analytics</div>
-    <h1>West End Office<br>Intelligence Platform</h1>
-    <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
+<main class="wrap">
+
+<div class="dash-head">
+    <div>
+        <div class="kicker">Central London <span class="sep">/</span> Submarket Analytics</div>
+        <h1 class="h1">West End Office <em>Intelligence</em> Platform</h1>
+        <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
+    </div>
+    <p class="small">Commentary on this page is written by Claude (Anthropic) when you're signed in and the live API is up. Otherwise a plain summary is built from the dataset.</p>
 </div>
 
-<div class="free-banner" id="freeBanner" style="display:none;">
-    <span aria-hidden="true">🔒</span>
-    <div class="free-banner-text"><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
-    <a href="/login" class="free-banner-btn">Get Full Access →</a>
+<div class="free-banner" id="freeBanner">
+    <div><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
+    <a href="/login" class="btn btn-sm btn-solid">Get full access <span class="arrow">→</span></a>
 </div>
 
-<div class="container">
+<div class="toolbar">
+    <span class="toolbar-label">Submarket</span>
+    <select id="areaSelect" class="selector" aria-label="Choose a submarket"></select>
+    <button id="downloadBtn" class="btn" onclick="handleDownload()">Download report</button>
+    <button id="liveBtn" class="btn" onclick="handleLiveData()">Refresh live data</button>
+    <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
+</div>
+<div class="offline-note" id="offlineNote">Live search and PDF reports need the live API, which isn't reachable right now. Every figure on this page is still available from the latest dataset.</div>
+<div class="page-error" id="pageError"></div>
 
-    <div class="controls">
-        <span class="controls-label">Submarket</span>
-        <select id="areaSelect" class="selector" aria-label="Choose a submarket"></select>
-        <button id="downloadBtn" class="download-btn" onclick="handleDownload()">⬇ Download Report</button>
-        <button id="liveBtn" class="live-btn" onclick="handleLiveData()">⚡ Refresh Live Data</button>
-        <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
-    </div>
-    <div class="offline-note" id="offlineNote">Live search and PDF reports need the live API, which isn't reachable right now. Every figure on this page is still available from the latest dataset.</div>
-    <div class="page-error" id="pageError"></div>
-
-    <div class="live-banner-data" id="liveBanner">
-        <span>⚡</span>
-        <span id="liveBannerText"></span>
-        <span id="liveBannerSource" style="margin-left:auto;font-size:11px;opacity:0.7;"></span>
-    </div>
-
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">Prime Rent</div>
-            <div class="kpi-value" id="primeRent"><span class="skeleton"></span></div>
-            <div class="kpi-sub">£ per sq ft (latest quarter)</div>
-            <div class="kpi-delta" id="rentDelta"></div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Forecast Vacancy</div>
-            <div class="kpi-value" id="avgVacancy"><span class="skeleton"></span></div>
-            <div class="kpi-sub">AI-predicted average</div>
-            <div class="kpi-delta" id="vacancyDelta"></div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Latest Take-Up</div>
-            <div class="kpi-value" id="takeup"><span class="skeleton"></span></div>
-            <div class="kpi-sub">sq ft leased (latest quarter)</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Market Health</div>
-            <div class="kpi-value" id="healthScore"><span class="skeleton"></span></div>
-            <div class="kpi-sub">out of 100</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Investment Signal</div>
-            <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:20px"></span></div>
-        </div>
-    </div>
-
-    <!-- SCHEMATIC MAP -->
-    <div class="heatmap-card">
-        <div class="heatmap-header">
-            <div>
-                <div class="heatmap-title">Central London Submarket Schematic</div>
-                <div class="heatmap-sub">Click any zone to load submarket analytics</div>
-            </div>
-            <div class="heatmap-toggles">
-                <button class="heatmap-toggle active" id="toggleVacancy" onclick="setMapMode('vacancy')">Vacancy Rate</button>
-                <button class="heatmap-toggle" id="toggleRent" onclick="setMapMode('rent')">Prime Rent</button>
-            </div>
-        </div>
-        <div class="map-container">
-            <div class="svg-map-wrap">
-                <svg id="schematic" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg">
-                    <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></pattern></defs>
-                    <rect width="560" height="480" fill="url(#grid)"/>
-                    <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="rgba(59,130,246,0.2)" stroke-width="8" stroke-linecap="round"/>
-                    <text x="240" y="445" fill="rgba(59,130,246,0.3)" font-size="9" font-family="Inter,Arial" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
-                    <rect x="18" y="160" width="90" height="110" rx="12" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
-                    <text x="63" y="218" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Hyde Park</text>
-                    <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
-                    <text x="200" y="52" fill="rgba(34,197,94,0.2)" font-size="8" font-family="Inter,Arial" text-anchor="middle" font-style="italic">Regent's Park</text>
-                    <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Marylebone</text><text x="177" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Marylebone">—</text></g>
-                    <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Fitzrovia</text><text x="307" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Fitzrovia">—</text></g>
-                    <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="437" y="118" class="zone-label" font-size="12" fill="white" text-anchor="middle">Midtown</text><text x="437" y="134" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Midtown">—</text></g>
-                    <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Mayfair</text><text x="177" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Mayfair">—</text></g>
-                    <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="228" class="zone-label" font-size="12" fill="white" text-anchor="middle">Soho</text><text x="307" y="244" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Soho">—</text></g>
-                    <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="437" y="222" class="zone-label" font-size="11" fill="white" text-anchor="middle">Covent</text><text x="437" y="236" class="zone-label" font-size="11" fill="white" text-anchor="middle">Garden</text><text x="437" y="252" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Covent Garden">—</text></g>
-                    <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="177" y="334" class="zone-label" font-size="11" fill="white" text-anchor="middle">St James's</text><text x="177" y="362" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-St James's">—</text></g>
-                    <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="10" fill="#334155" stroke="#475569" stroke-width="1.5" opacity="0.9"/><text x="307" y="338" class="zone-label" font-size="12" fill="white" text-anchor="middle">Victoria</text><text x="307" y="354" class="zone-sublabel" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle" id="val-Victoria">—</text></g>
-                    <line x1="236" y1="123" x2="248" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="366" y1="123" x2="378" y2="123" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="177" y1="168" x2="177" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="307" y1="168" x2="307" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="437" y1="168" x2="437" y2="188" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="236" y1="233" x2="248" y2="233" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="366" y1="233" x2="378" y2="233" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="177" y1="278" x2="177" y2="298" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="307" y1="278" x2="307" y2="298" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <line x1="236" y1="343" x2="248" y2="343" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                    <text x="516" y="68" fill="rgba(255,255,255,0.15)" font-size="10" font-family="Inter,Arial" text-anchor="middle" font-weight="700">N</text>
-                    <line x1="516" y1="72" x2="516" y2="58" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-                    <polygon points="516,52 513,62 516,60 519,62" fill="rgba(255,255,255,0.15)"/>
-                </svg>
-            </div>
-            <div class="map-side-panel">
-                <div class="map-legend">
-                    <div class="map-legend-title" id="legendTitle">Vacancy Rate</div>
-                    <div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> Below 5% — Strong</div>
-                    <div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> 5–7% — Monitor</div>
-                    <div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Above 7% — Weakening</div>
-                </div>
-                <div class="map-rankings">
-                    <div class="map-rankings-title" id="rankingsTitle">Ranked by Vacancy</div>
-                    <div id="rankingsList"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="charts-row">
-        <div class="chart-card">
-            <div class="chart-header"><div><div class="chart-title">Vacancy vs Prime Rent</div><div class="chart-sub">Forecast vacancy overlaid with prime rent trend</div></div></div>
-            <canvas id="trendChart"></canvas>
-        </div>
-        <div class="chart-card">
-            <div class="chart-header"><div><div class="chart-title">Take-Up Momentum</div><div class="chart-sub">Quarterly leasing volume (sq ft)</div></div></div>
-            <canvas id="takeupChart"></canvas>
-        </div>
-    </div>
-
-    <div class="chart-full">
-        <div class="chart-header"><div><div class="chart-title">All Submarket Comparison — Latest Quarter</div><div class="chart-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div></div></div>
-        <canvas id="comparisonChart" style="max-height:280px;"></canvas>
-    </div>
-
-    <!-- DEALS TRACKER -->
-    <div class="deals-card" id="dealsCard">
-        <div class="deals-header">
-            <div>
-                <div class="deals-title">Recent Deals Tracker</div>
-                <div class="deals-sub" id="dealsSub">Notable transactions in this submarket</div>
-            </div>
-            <button class="deals-refresh-btn" id="dealsRefreshBtn" onclick="handleDealsRefresh()">
-                🔍 Search Latest Deals
-            </button>
-        </div>
-        <div id="dealsSourceBadge"></div>
-        <div id="dealsContent">
-            <div class="deals-loading">Loading deals data...</div>
-        </div>
-    </div>
-
-    <!-- AI COMMENTARY -->
-    <div id="insightWrapper">
-        <div class="insight-panel">
-            <div class="insight-header">
-                <div class="insight-icon">✦</div>
-                <div class="insight-label">AI Market Commentary</div>
-                <div class="insight-powered">Powered by Claude · Anthropic</div>
-            </div>
-            <div class="insight-text" id="insight">
-                <div class="typing-indicator"><span></span><span></span><span></span></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="table-card">
-        <div class="chart-header"><div><div class="chart-title">Quarterly Data Breakdown</div><div class="chart-sub">All data points for selected submarket</div></div></div>
-        <div class="table-scroll"><table>
-            <thead><tr><th>Period</th><th>Prime Rent (£ psf)</th><th>Vacancy Rate</th><th>Forecast Vacancy</th><th>Take-Up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
-            <tbody id="dataTable"></tbody>
-        </table></div>
-    </div>
-
+<div class="live-banner-data" id="liveBanner">
+    <span id="liveBannerText"></span>
+    <span id="liveBannerSource" class="src"></span>
 </div>
 
-<div class="footer">
-    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2026</div>
-    <div class="footer-badges">
-        <div class="footer-badge">Central London Analytics</div>
-        <div class="footer-badge footer-badge-claude">✦ Powered by Claude</div>
+<div class="kpis kpi-grid" style="--cols:5">
+    <div class="kpi">
+        <div class="kpi-label">Prime rent</div>
+        <div class="kpi-value" id="primeRent"><span class="skeleton"></span></div>
+        <div class="kpi-sub">£ per sq ft (latest quarter)</div>
+        <div class="kpi-delta" id="rentDelta"></div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Forecast vacancy</div>
+        <div class="kpi-value" id="avgVacancy"><span class="skeleton"></span></div>
+        <div class="kpi-sub">AI-predicted average</div>
+        <div class="kpi-delta" id="vacancyDelta"></div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Latest take-up</div>
+        <div class="kpi-value" id="takeup"><span class="skeleton"></span></div>
+        <div class="kpi-sub">sq ft leased (latest quarter)</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Market health</div>
+        <div class="kpi-value" id="healthScore"><span class="skeleton"></span></div>
+        <div class="kpi-sub">out of 100</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Investment signal</div>
+        <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:24px"></span></div>
     </div>
 </div>
+
+<!-- SCHEMATIC MAP -->
+<section class="block">
+    <div class="block-head">
+        <div>
+            <h2 class="block-title">Central London submarket schematic</h2>
+            <div class="block-sub">Click any zone to load submarket analytics</div>
+        </div>
+        <div class="seg" role="group" aria-label="Colour the map by">
+            <button class="heatmap-toggle active" id="toggleVacancy" onclick="setMapMode('vacancy')">Vacancy rate</button>
+            <button class="heatmap-toggle" id="toggleRent" onclick="setMapMode('rent')">Prime rent</button>
+        </div>
+    </div>
+    <div class="map-container">
+        <div class="svg-map-wrap">
+            <svg id="schematic" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg">
+                <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(28,27,24,0.06)" stroke-width="0.6"/></pattern></defs>
+                <rect width="560" height="480" fill="url(#grid)"/>
+                <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="#c4cdcb" stroke-width="10" stroke-linecap="round"/>
+                <text x="240" y="448" fill="#7d8a88" font-size="9" font-family="IBM Plex Mono, monospace" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
+                <rect x="18" y="160" width="90" height="110" rx="3" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
+                <text x="63" y="218" fill="#5e7a5a" font-size="10" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">Hyde Park</text>
+                <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
+                <text x="200" y="52" fill="#5e7a5a" font-size="10" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">Regent's Park</text>
+                <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Marylebone</text><text x="177" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Marylebone">—</text></g>
+                <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Fitzrovia</text><text x="307" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Fitzrovia">—</text></g>
+                <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Midtown</text><text x="437" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Midtown">—</text></g>
+                <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="228" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Mayfair</text><text x="177" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Mayfair">—</text></g>
+                <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="228" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Soho</text><text x="307" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Soho">—</text></g>
+                <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="221" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Covent</text><text x="437" y="237" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Garden</text><text x="437" y="255" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Covent Garden">—</text></g>
+                <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="338" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">St James's</text><text x="177" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-St James's">—</text></g>
+                <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="338" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Victoria</text><text x="307" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Victoria">—</text></g>
+                <text x="516" y="70" fill="#6f695d" font-size="11" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">N</text>
+                <line x1="516" y1="58" x2="516" y2="40" stroke="#6f695d" stroke-width="1"/>
+                <polygon points="516,34 512.5,44 516,42 519.5,44" fill="#6f695d"/>
+            </svg>
+        </div>
+        <div class="map-side-panel">
+            <div class="map-legend">
+                <div class="side-title" id="legendTitle">Vacancy rate</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> Below 5% — Strong</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> 5–7% — Monitor</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Above 7% — Weakening</div>
+            </div>
+            <div class="map-rankings">
+                <div class="side-title" id="rankingsTitle">Ranked by vacancy</div>
+                <div id="rankingsList"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="block cols-2">
+    <div>
+        <div class="block-head"><div><h2 class="block-title">Vacancy vs prime rent</h2><div class="block-sub">Forecast vacancy overlaid with prime rent trend</div></div></div>
+        <canvas id="trendChart"></canvas>
+    </div>
+    <div>
+        <div class="block-head"><div><h2 class="block-title">Take-up momentum</h2><div class="block-sub">Quarterly leasing volume (sq ft)</div></div></div>
+        <canvas id="takeupChart"></canvas>
+    </div>
+</section>
+
+<section class="block">
+    <div class="block-head"><div><h2 class="block-title">All submarket comparison — latest quarter</h2><div class="block-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div></div></div>
+    <canvas id="comparisonChart" style="max-height:280px;"></canvas>
+</section>
+
+<!-- DEALS TRACKER -->
+<section class="block" id="dealsCard">
+    <div class="block-head">
+        <div>
+            <h2 class="block-title">Recent deals tracker</h2>
+            <div class="block-sub"><span id="dealsSub">Notable transactions in this submarket</span> <span id="dealsSourceBadge"></span></div>
+        </div>
+        <button class="btn btn-sm" id="dealsRefreshBtn" onclick="handleDealsRefresh()">Search latest deals</button>
+    </div>
+    <div id="dealsContent">
+        <div class="entries-empty">Loading deals data…</div>
+    </div>
+</section>
+
+<!-- AI COMMENTARY -->
+<section class="block" id="insightWrapper">
+    <div class="insight-panel">
+        <div class="insight-header">
+            <h2 class="insight-label">AI market commentary</h2>
+            <div class="insight-powered">Written by Claude (Anthropic)</div>
+        </div>
+        <div class="insight-text" id="insight">
+            <div class="typing-indicator"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+</section>
+
+<section class="block">
+    <div class="block-head"><div><h2 class="block-title">Quarterly data breakdown</h2><div class="block-sub">All data points for selected submarket</div></div></div>
+    <div class="table-scroll"><table class="data">
+        <thead><tr><th>Period</th><th class="r">Prime rent (£ psf)</th><th class="r">Vacancy rate</th><th class="r">Forecast vacancy</th><th class="r">Take-up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
+        <tbody id="dataTable"></tbody>
+    </table></div>
+</section>
+
+</main>
+
+<footer class="foot">
+    <div class="wrap foot-in">
+        <span>Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2026</span>
+        <span class="foot-links"><span>Central London analytics</span><span>Powered by Claude</span></span>
+    </div>
+</footer>
 
 <script>
 let trendChart, takeupChart, comparisonChart;
@@ -450,10 +283,10 @@ const isLoggedIn = (() => { try { return sessionStorage.getItem('weoi_auth') ===
 function setupAuth() {
     const navArea = document.getElementById('navAuthArea');
     if (isLoggedIn) {
-        navArea.innerHTML = `<a href="#" class="nav-auth-btn nav-signout" onclick="signOut(); return false;">Sign Out</a>`;
+        navArea.innerHTML = `<a href="#" class="btn btn-sm" onclick="signOut(); return false;">Sign out</a>`;
         document.getElementById('freeBanner').style.display = 'none';
     } else {
-        navArea.innerHTML = `<a href="/login" class="nav-auth-btn nav-signin">Sign In →</a>`;
+        navArea.innerHTML = `<a href="/login" class="btn btn-sm btn-solid">Sign in <span class="arrow">→</span></a>`;
         document.getElementById('freeBanner').style.display = 'flex';
         ['downloadBtn', 'liveBtn', 'dealsRefreshBtn'].forEach(id => {
             const el = document.getElementById(id);
@@ -472,7 +305,7 @@ function signOut() {
 function applyApiAvailability() {
     const offline = dataSource !== 'live';
     const note = document.getElementById('offlineNote');
-    [['downloadBtn', '⬇ Download Report'], ['liveBtn', '⚡ Refresh Live Data'], ['dealsRefreshBtn', '🔍 Search Latest Deals']].forEach(([id, label]) => {
+    [['downloadBtn', 'Download report'], ['liveBtn', 'Refresh live data'], ['dealsRefreshBtn', 'Search latest deals']].forEach(([id, label]) => {
         const btn = document.getElementById(id);
         btn.disabled = offline;
         btn.textContent = label;
@@ -512,15 +345,6 @@ function handleDealsRefresh() {
 }
 
 // ── DEALS ──
-function getDealTypeClass(type) {
-    if (!type) return 'type-letting';
-    const t = type.toLowerCase();
-    if (t.includes('pre')) return 'type-prelet';
-    if (t.includes('sub')) return 'type-sublet';
-    if (t.includes('renew')) return 'type-renewal';
-    return 'type-letting';
-}
-
 function renderDeals(deals, source, area) {
     const content = document.getElementById('dealsContent');
     const sourceBadge = document.getElementById('dealsSourceBadge');
@@ -529,41 +353,29 @@ function renderDeals(deals, source, area) {
     sub.textContent = `${deals.length} notable transaction${deals.length !== 1 ? 's' : ''} tracked in ${area}`;
 
     if (source === 'live') {
-        sourceBadge.innerHTML = `<span class="deals-source-badge source-live">⚡ Live — Claude web search</span>`;
+        sourceBadge.innerHTML = `· <span class="kicker kicker-accent">Live — Claude web search</span>`;
     } else {
-        sourceBadge.innerHTML = `<span class="deals-source-badge source-seed">📋 Curated research data</span>`;
+        sourceBadge.innerHTML = `· <span class="kicker">Curated research data</span>`;
     }
 
     if (!deals.length) {
-        content.innerHTML = `<div class="deals-empty">No deals tracked for ${esc(area)} yet — check back after the next data update.</div>`;
+        content.innerHTML = `<div class="entries-empty">No deals tracked for ${esc(area)} yet — check back after the next data update.</div>`;
         return;
     }
 
-    content.innerHTML = `<div class="deals-grid">${deals.map(deal => `
-        <div class="deal-card">
-            <div class="deal-top">
-                <div class="deal-occupier">${esc(deal.occupier || 'Undisclosed')}</div>
-                <span class="deal-type-badge ${getDealTypeClass(deal.type)}">${esc(deal.type || 'Letting')}</span>
+    content.innerHTML = `<div class="entries">${deals.map(deal => `
+        <div class="entry">
+            <div class="entry-top">
+                <div class="entry-title">${esc(deal.occupier || 'Undisclosed')}</div>
+                <span class="entry-type">${esc(deal.type || 'Letting')}</span>
             </div>
-            <div class="deal-building">📍 ${esc(deal.building || 'Address undisclosed')}</div>
-            <div class="deal-stats">
-                <div class="deal-stat">
-                    <div class="deal-stat-label">Size</div>
-                    <div class="deal-stat-val">${deal.size_sqft ? Number(deal.size_sqft).toLocaleString('en-GB') + ' sq ft' : 'Undisclosed'}</div>
-                </div>
-                <div class="deal-stat">
-                    <div class="deal-stat-label">Rent</div>
-                    <div class="deal-stat-val green">${deal.rent_psf ? '£' + esc(deal.rent_psf) + ' psf' : 'Confidential'}</div>
-                </div>
-                <div class="deal-stat">
-                    <div class="deal-stat-label">Grade</div>
-                    <div class="deal-stat-val">${esc(deal.grade || 'A')}</div>
-                </div>
+            <div class="entry-where">${esc(deal.building || 'Address undisclosed')}</div>
+            <div class="entry-stats">
+                <div><div class="entry-stat-label">Size</div><div class="entry-stat-val">${deal.size_sqft ? Number(deal.size_sqft).toLocaleString('en-GB') + ' sq ft' : 'Undisclosed'}</div></div>
+                <div><div class="entry-stat-label">Rent</div><div class="entry-stat-val">${deal.rent_psf ? '£' + esc(deal.rent_psf) + ' psf' : 'Confidential'}</div></div>
+                <div><div class="entry-stat-label">Grade</div><div class="entry-stat-val">${esc(deal.grade || 'A')}</div></div>
             </div>
-            <div class="deal-footer">
-                <span class="deal-sector">${esc(deal.sector || 'Unknown sector')}</span>
-                <span class="deal-date">${esc(deal.date || '')}</span>
-            </div>
+            <div class="entry-foot"><span>${esc(deal.sector || 'Unknown sector')}</span><span>${esc(deal.date || '')}</span></div>
         </div>
     `).join('')}</div>`;
 }
@@ -573,11 +385,11 @@ async function loadDeals(area, forceRefresh = false) {
     const btn = document.getElementById('dealsRefreshBtn');
 
     if (forceRefresh) {
-        content.innerHTML = `<div class="deals-loading">🔍 Searching the web for the latest deals in ${esc(area)}…</div>`;
+        content.innerHTML = `<div class="entries-empty">Searching the web for the latest deals in ${esc(area)}…</div>`;
         btn.disabled = true;
-        btn.textContent = '⏳ Searching...';
+        btn.textContent = 'Searching…';
     } else {
-        content.innerHTML = `<div class="deals-loading">Loading deals…</div>`;
+        content.innerHTML = `<div class="entries-empty">Loading deals…</div>`;
     }
 
     try {
@@ -590,22 +402,22 @@ async function loadDeals(area, forceRefresh = false) {
         currentDeals = data.deals || [];
         renderDeals(currentDeals, data.source, area);
     } catch (e) {
-        content.innerHTML = `<div class="deals-empty">Deals data couldn't be loaded. Please refresh the page.</div>`;
+        content.innerHTML = `<div class="entries-empty">Deals data couldn't be loaded. Please refresh the page.</div>`;
     }
 
     if (forceRefresh) applyApiAvailability();
 }
 
 function getVacancyColor(v) {
-    if (v < 5) return '#22c55e';
-    if (v < 7) return '#f59e0b';
-    return '#ef4444';
+    if (v < 5) return '#4c7148';
+    if (v < 7) return '#b98222';
+    return '#b0482a';
 }
 
 function getRentColor(r) {
-    if (r >= 150) return '#22c55e';
-    if (r >= 100) return '#f59e0b';
-    return '#ef4444';
+    if (r >= 150) return '#4c7148';
+    if (r >= 100) return '#b98222';
+    return '#b0482a';
 }
 
 function setMapMode(mode) {
@@ -614,11 +426,11 @@ function setMapMode(mode) {
     document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
     const legend = document.querySelector('.map-legend');
     if (mode === 'vacancy') {
-        legend.innerHTML = `<div class="map-legend-title">Vacancy Rate</div><div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Above 7% — Weakening</div>`;
+        legend.innerHTML = `<div class="side-title">Vacancy rate</div><div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Above 7% — Weakening</div>`;
     } else {
-        legend.innerHTML = `<div class="map-legend-title">Prime Rent</div><div class="legend-row"><div class="legend-swatch" style="background:#22c55e"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#f59e0b"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#ef4444"></div> Below £100 psf — Value</div>`;
+        legend.innerHTML = `<div class="side-title">Prime rent</div><div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Below £100 psf — Value</div>`;
     }
-    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by Vacancy' : 'Ranked by Prime Rent';
+    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by vacancy' : 'Ranked by prime rent';
     updateSchematic();
     updateRankings();
 }
@@ -686,7 +498,7 @@ function selectArea(area) {
     document.querySelector('.kpi-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function sentimentClass(s) { return 'pill-' + String(s || '').toLowerCase(); }
+function sentimentClass(s) { return 's-' + String(s || '').toLowerCase(); }
 
 function animateValue(el, end, { prefix = '', suffix = '', decimals = 0 } = {}) {
     const duration = 800;
@@ -725,16 +537,16 @@ function buildDataSummary(area) {
 function renderSummaryPanel(area, reason) {
     document.getElementById('insightWrapper').innerHTML = `
         <div class="insight-panel summary">
-            <div class="insight-header"><div class="insight-icon">≡</div><div class="insight-label">Data Summary</div><div class="insight-powered">Generated from the dataset · not AI commentary</div></div>
+            <div class="insight-header"><h2 class="insight-label">Data summary</h2><div class="insight-powered">Generated from the dataset · not AI commentary</div></div>
             <div class="insight-text">${esc(buildDataSummary(area))}</div>
-            ${reason ? `<div class="kpi-sub" style="margin-top:10px">${esc(reason)}</div>` : ''}
+            ${reason ? `<div class="insight-reason">${esc(reason)}</div>` : ''}
         </div>`;
 }
 
 function renderCommentaryPanel(inner) {
     document.getElementById('insightWrapper').innerHTML = `
         <div class="insight-panel">
-            <div class="insight-header"><div class="insight-icon">✦</div><div class="insight-label">AI Market Commentary</div><div class="insight-powered">Powered by Claude · Anthropic</div></div>
+            <div class="insight-header"><h2 class="insight-label">AI market commentary</h2><div class="insight-powered">Written by Claude (Anthropic)</div></div>
             <div class="insight-text" id="insight">${inner}</div>
         </div>`;
 }
@@ -748,9 +560,9 @@ async function loadCommentary(area) {
     if (!isLoggedIn) {
         document.getElementById('insightWrapper').innerHTML = `
             <div class="insight-panel locked-overlay">
-                <div class="insight-header"><div class="insight-icon">✦</div><div class="insight-label">AI Market Commentary</div><div class="insight-powered">Powered by Claude · Anthropic</div></div>
+                <div class="insight-header"><h2 class="insight-label">AI market commentary</h2><div class="insight-powered">Written by Claude (Anthropic)</div></div>
                 <div class="insight-text blurred">Prime rents in ${esc(area)} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
-                <div class="lock-mask"><a href="/login" class="lock-badge">🔒 Sign in to read AI commentary →</a></div>
+                <div class="lock-mask"><a href="/login" class="btn btn-solid">Sign in to read AI commentary <span class="arrow">→</span></a></div>
             </div>`;
         return;
     }
@@ -776,7 +588,7 @@ async function fetchLiveData() {
     const area = document.getElementById("areaSelect").value;
     const btn = document.getElementById("liveBtn");
     const banner = document.getElementById("liveBanner");
-    btn.textContent = "⏳ Searching...";
+    btn.textContent = "Searching…";
     btn.disabled = true;
     banner.style.display = "none";
     banner.className = "live-banner-data";
@@ -802,7 +614,7 @@ async function fetchLiveData() {
         document.getElementById("liveBannerText").textContent = "Live market search didn't respond — the figures shown are from the latest dataset.";
         document.getElementById("liveBannerSource").textContent = "";
     }
-    btn.textContent = "⚡ Refresh Live Data";
+    btn.textContent = "Refresh live data";
     btn.disabled = false;
 }
 
@@ -810,7 +622,7 @@ async function downloadReport() {
     const area = document.getElementById("areaSelect").value;
     const btn = document.getElementById("downloadBtn");
     const banner = document.getElementById("liveBanner");
-    btn.textContent = "⏳ Generating...";
+    btn.textContent = "Generating…";
     btn.disabled = true;
     try {
         const ctrl = new AbortController();
@@ -834,7 +646,7 @@ async function downloadReport() {
         document.getElementById("liveBannerText").textContent = "The PDF report couldn't be generated just now. Please try again later.";
         document.getElementById("liveBannerSource").textContent = "";
     }
-    btn.textContent = "⬇ Download Report";
+    btn.textContent = "Download report";
     btn.disabled = false;
 }
 
@@ -854,29 +666,30 @@ function drawCharts(filtered, uniqueAreas) {
         ['trendChart', 'takeupChart', 'comparisonChart'].forEach(chartUnavailable);
         return;
     }
+    const T = window.ChartTheme;
     const labels = filtered.map(d => `${d.year} ${d.quarter}`);
     if (trendChart) trendChart.destroy();
     trendChart = new Chart(document.getElementById('trendChart'), {
         type: 'line',
         data: { labels, datasets: [
-            { label: 'Forecast Vacancy (%)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.06)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#3b82f6', yAxisID: 'y' },
-            { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#22c55e', yAxisID: 'y1' }
+            { label: 'Forecast Vacancy (%)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: T.accent, backgroundColor: T.accent, tension: 0.25, pointRadius: 2.5, pointBackgroundColor: T.accent, yAxisID: 'y' },
+            { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: T.ink, backgroundColor: T.ink, borderDash: [5, 4], borderWidth: 1.5, tension: 0.25, pointRadius: 0, yAxisID: 'y1' }
         ]},
         options: chartOptions('y', 'y1')
     });
     if (takeupChart) takeupChart.destroy();
     takeupChart = new Chart(document.getElementById('takeupChart'), {
         type: 'bar',
-        data: { labels, datasets: [{ label: 'Take-Up (sq ft)', data: filtered.map(d => d.takeup_sqft), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(59,130,246,0.8)' : 'rgba(59,130,246,0.25)'), borderRadius: 6, borderSkipped: false }]},
-        options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+        data: { labels, datasets: [{ label: 'Take-Up (sq ft)', data: filtered.map(d => d.takeup_sqft), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? T.ink : T.rule), barPercentage: 0.75 }]},
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: T.axis({ grid: { display: false } }), y: T.axis({ ticks: { color: T.ink3, callback: v => (v / 1000) + 'k' } }) } }
     });
     const latestByArea = uniqueAreas.map(area => { const d = areaRows(area); return d[d.length - 1]; });
     if (comparisonChart) comparisonChart.destroy();
     comparisonChart = new Chart(document.getElementById('comparisonChart'), {
         type: 'bar',
         data: { labels: latestByArea.map(d => d.area), datasets: [
-            { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
-            { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6, yAxisID: 'y1' }
+            { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: T.ink, yAxisID: 'y', barPercentage: 0.8, categoryPercentage: 0.7 },
+            { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: T.accent, yAxisID: 'y1', barPercentage: 0.8, categoryPercentage: 0.7 }
         ]},
         options: chartOptions('y', 'y1')
     });
@@ -914,9 +727,9 @@ function renderArea(selectedArea) {
         rentDelta.textContent = ''; vacDelta.textContent = '';
     }
     const badge = document.getElementById("signalBadge");
-    if (avgVacancy < 5) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> STRONG MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
-    else if (avgVacancy < 7) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> MONITOR'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
-    else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> WEAKENING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
+    if (avgVacancy < 5) badge.innerHTML = '<span class="signal-dot" style="background:#4c7148"></span> Strong market';
+    else if (avgVacancy < 7) badge.innerHTML = '<span class="signal-dot" style="background:#b98222"></span> Monitor';
+    else badge.innerHTML = '<span class="signal-dot" style="background:#b0482a"></span> Weakening';
 
     clearTimeout(window.commentaryTimer);
     window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), dataSource === 'live' ? 800 : 0);
@@ -924,7 +737,7 @@ function renderArea(selectedArea) {
     try { drawCharts(filtered, uniqueAreas); } catch (e) { console.error(e); }
 
     const tbody = document.getElementById("dataTable");
-    tbody.innerHTML = filtered.map(row => `<tr><td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.rent_psf}</td><td>${(row.vacancy ?? row.predicted).toFixed(1)}%</td><td>${parseFloat(row.predicted).toFixed(2)}%</td><td>${row.takeup_sqft.toLocaleString('en-GB')}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${esc(row.signal)}</td></tr>`).join('');
+    tbody.innerHTML = filtered.map(row => `<tr><td>${row.year} ${row.quarter}</td><td class="r">£${row.rent_psf}</td><td class="r">${(row.vacancy ?? row.predicted).toFixed(1)}%</td><td class="r">${parseFloat(row.predicted).toFixed(2)}%</td><td class="r">${row.takeup_sqft.toLocaleString('en-GB')}</td><td><span class="sentiment ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${SiteData.signal(row.signal)}</td></tr>`).join('');
 }
 
 async function loadDashboard() {
@@ -956,14 +769,15 @@ async function loadDashboard() {
 }
 
 function chartOptions(leftAxis, rightAxis) {
+    const T = window.ChartTheme;
     return {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: T.ink2, font: { size: 12 } } } },
         scales: {
-            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#64748b' }, grid: { drawOnChartArea: false } },
-            x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }
+            [leftAxis]: T.axis({ type: 'linear', position: 'left' }),
+            [rightAxis]: T.axis({ type: 'linear', position: 'right', grid: { drawOnChartArea: false } }),
+            x: T.axis({ grid: { display: false } })
         }
     };
 }
