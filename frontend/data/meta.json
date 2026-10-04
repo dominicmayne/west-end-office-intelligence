@@ -1,0 +1,7 @@
+{
+ "generated": "2026-10-04T12:21:01Z",
+ "generated_date": "2026-10-04",
+ "office_latest_period": "2025 Q3",
+ "talent_latest_period": "2025 Q3",
+ "note": "Built by scripts/build_snapshot.py from the data/ folder using the same model as the API."
+}

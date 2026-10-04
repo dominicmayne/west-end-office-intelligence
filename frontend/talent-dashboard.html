@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Salary benchmarking and hiring-demand forecasting across five built-environment recruitment sectors (demonstration project).">
     <title>Built Environment Talent Intelligence</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="/assets/data.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', Arial, sans-serif; background: #060d18; color: #e5e7eb; min-height: 100vh; }
@@ -61,6 +65,32 @@
         .footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 28px 40px; max-width: 1400px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .footer-credit { font-size: 12px; color: #334155; }
         .footer-badge { font-size: 11px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.07); color: #334155; }
+        /* NAV BACK LINK, DATA STATUS, LOADING + EMPTY STATES */
+        .nav-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+        .nav-back { font-size: 12px; color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
+        .nav-back:hover { color: #e2e8f0; }
+        .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.08); }
+        .demo-banner { width: calc(100% - 80px); margin: 0 auto 24px; }
+        .data-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 999px; }
+        .data-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #475569; flex-shrink: 0; }
+        .data-status.is-live .data-status-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
+        .data-status.is-snapshot .data-status-dot { background: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.15); }
+        .skeleton { display: inline-block; width: 90px; height: 30px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .chart-empty { display: flex; align-items: center; justify-content: center; min-height: 180px; font-size: 13px; color: #64748b; text-align: center; border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; }
+        .page-error { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; border-radius: 12px; padding: 14px 18px; font-size: 13px; margin-bottom: 24px; display: none; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-scroll table { min-width: 640px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .kpi-card { transition: border-color 0.2s, transform 0.2s; }
+        .kpi-card:hover { border-color: rgba(168,85,247,0.3); transform: translateY(-2px); }
+        .move-card { transition: border-color 0.2s; }
+        .move-card:hover { border-color: rgba(255,255,255,0.1); }
+        .kpi-sub, .move-footer, .moves-empty, .footer-credit, .footer-badge { color: #64748b; }
+        .footer-credit strong { color: #94a3b8; }
+        a:focus-visible, select:focus-visible { outline: 2px solid #c084fc; outline-offset: 2px; }
+
         @media (max-width: 900px) {
             .hero { padding: 40px 20px 24px; }
             .container { padding: 0 20px 40px; }
@@ -68,14 +98,40 @@
             .hero h1 { font-size: 28px; }
             .charts-row { grid-template-columns: 1fr; }
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .demo-banner { margin: 0 20px 20px; }
+            .demo-banner { width: calc(100% - 40px); margin: 0 auto 20px; }
+        }
+        @media (max-width: 600px) {
+            .nav { padding: 12px 16px; }
+            .nav-divider, .nav-tag { display: none; }
+            .nav-back { font-size: 0; padding: 6px 8px 6px 0; }
+            .nav-back::before { content: "←"; font-size: 18px; line-height: 1; }
+            .hero { padding: 32px 16px 20px; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 14px; }
+            .hero-eyebrow { line-height: 1.7; }
+            .container { padding: 0 16px 40px; }
+            .demo-banner { width: calc(100% - 32px); padding: 12px 14px; }
+            .controls { gap: 10px; }
+            .controls-label { width: 100%; }
+            .selector { flex: 1 1 100%; max-width: 100%; }
+            .data-status { margin-left: 0; width: 100%; justify-content: center; }
+            .kpi-grid { gap: 10px; }
+            .kpi-card { padding: 16px; border-radius: 14px; }
+            .kpi-value { font-size: 24px; }
+            .chart-card, .chart-full, .moves-card, .table-card { padding: 18px; border-radius: 14px; }
+            .moves-grid { grid-template-columns: 1fr; }
+            .footer { flex-direction: column; align-items: flex-start; padding: 20px 16px; }
         }
     </style>
 </head>
 <body>
 
 <nav class="nav">
-    <a href="/" class="nav-logo">Built Environment <span>Talent Intelligence</span></a>
+    <div class="nav-left">
+        <a href="/" class="nav-back" aria-label="Back to dominicmayne.com">← dominicmayne.com</a>
+        <div class="nav-divider"></div>
+        <a href="/talent-dashboard" class="nav-logo">Built Environment <span>Talent Intelligence</span></a>
+    </div>
     <div class="nav-right">
         <div class="nav-tag">Demo Platform</div>
     </div>
@@ -95,29 +151,30 @@
 
     <div class="controls">
         <span class="controls-label">Sector</span>
-        <select id="sectorSelect" class="selector"></select>
-        <div class="last-updated" id="lastUpdated"></div>
+        <select id="sectorSelect" class="selector" aria-label="Choose a sector"></select>
+        <div class="data-status" id="dataStatus"><span class="data-status-dot"></span><span id="lastUpdated">Loading data…</span></div>
     </div>
+    <div class="page-error" id="pageError"></div>
 
     <div class="kpi-grid">
         <div class="kpi-card">
             <div class="kpi-label">Median Salary</div>
-            <div class="kpi-value" id="salaryVal">—</div>
+            <div class="kpi-value" id="salaryVal"><span class="skeleton"></span></div>
             <div class="kpi-sub">per annum (latest quarter)</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Demand Index</div>
-            <div class="kpi-value" id="demandVal">—</div>
+            <div class="kpi-value" id="demandVal"><span class="skeleton"></span></div>
             <div class="kpi-sub">AI-predicted average, out of 10</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Latest Placements</div>
-            <div class="kpi-value" id="placementsVal">—</div>
+            <div class="kpi-value" id="placementsVal"><span class="skeleton"></span></div>
             <div class="kpi-sub">roles filled (latest quarter)</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Hiring Signal</div>
-            <div id="signalBadge" class="signal-badge">—</div>
+            <div id="signalBadge" class="signal-badge"><span class="skeleton" style="width:120px;height:20px"></span></div>
         </div>
     </div>
 
@@ -143,32 +200,35 @@
     <div class="moves-card">
         <div class="moves-title">Recent Market Moves</div>
         <div class="moves-sub" id="movesSub">Notable hires and appointments in this sector</div>
-        <div id="movesContent"></div>
+        <div id="movesContent"><div class="moves-empty">Loading market moves…</div></div>
     </div>
 
     <div class="table-card">
         <div class="chart-title">Quarterly Data Breakdown</div>
         <div class="chart-sub">All data points for selected sector</div>
-        <table>
+        <div class="table-scroll"><table>
             <thead><tr><th>Period</th><th>Median Salary</th><th>Demand Index</th><th>Forecast</th><th>Placements</th><th>Sentiment</th><th>Signal</th></tr></thead>
             <tbody id="dataTable"></tbody>
-        </table>
+        </table></div>
     </div>
 
 </div>
 
 <div class="footer">
-    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · Built Environment Talent Intelligence · © 2025</div>
+    <div class="footer-credit">Built by <strong>Dominic Mayne</strong> · Built Environment Talent Intelligence · © 2026</div>
     <div class="footer-badge">Property · Engineering · Construction</div>
 </div>
 
 <script>
 let trendChart, placementsChart, comparisonChart;
 let allData = [];
+let dataSource = null;
+let snapshotMeta = null;
+let currentSector = null;
 
-const API = 'https://west-end-office-intelligence-production.up.railway.app';
+const esc = SiteData.esc;
 
-function sentimentClass(s) { return 'pill-' + s.toLowerCase(); }
+function sentimentClass(s) { return 'pill-' + String(s || '').toLowerCase(); }
 
 function renderMoves(moves, sector) {
     const content = document.getElementById('movesContent');
@@ -180,113 +240,165 @@ function renderMoves(moves, sector) {
     content.innerHTML = `<div class="moves-grid">${moves.map(m => `
         <div class="move-card">
             <div class="move-top">
-                <div class="move-title-text">${m.person_title || 'Senior Role'}</div>
-                <span class="move-type-badge">${m.move_type || 'New Hire'}</span>
+                <div class="move-title-text">${esc(m.person_title || 'Senior Role')}</div>
+                <span class="move-type-badge">${esc(m.move_type || 'New Hire')}</span>
             </div>
-            <div class="move-company">🏢 ${m.company || ''}</div>
-            <div class="move-context">${m.context || ''}</div>
-            <div class="move-footer"><span>${m.seniority || ''}</span><span>${m.date || ''}</span></div>
+            <div class="move-company">🏢 ${esc(m.company || '')}</div>
+            <div class="move-context">${esc(m.context || '')}</div>
+            <div class="move-footer"><span>${esc(m.seniority || '')}</span><span>${esc(m.date || '')}</span></div>
         </div>
     `).join('')}</div>`;
 }
 
 async function loadMoves(sector) {
-    document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Loading...</div>`;
+    document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Loading market moves…</div>`;
     try {
-        const response = await fetch(`${API}/talent/moves/${encodeURIComponent(sector)}`);
-        const result = await response.json();
-        renderMoves(result.moves || [], sector);
-    } catch(e) {
-        document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Unable to load market moves.</div>`;
+        const { data } = await SiteData.load(
+            `/talent/moves/${encodeURIComponent(sector)}`, 'talent-moves.json',
+            snap => snap[sector] || { moves: [] },
+            d => d && Array.isArray(d.moves)
+        );
+        if (sector !== currentSector) return;
+        renderMoves(data.moves || [], sector);
+    } catch (e) {
+        document.getElementById('movesContent').innerHTML = `<div class="moves-empty">Market moves couldn't be loaded. Please refresh the page.</div>`;
     }
 }
 
-async function loadDashboard(selectedSector = null) {
+function setDataStatus(latest) {
+    const box = document.getElementById('dataStatus');
+    const text = document.getElementById('lastUpdated');
+    box.classList.toggle('is-live', dataSource === 'live');
+    box.classList.toggle('is-snapshot', dataSource === 'snapshot');
+    if (dataSource === 'live') {
+        text.textContent = `Live API · data to ${latest.year} ${latest.quarter}`;
+    } else {
+        const built = snapshotMeta ? ` · snapshot ${SiteData.formatDate(snapshotMeta.generated)}` : '';
+        text.textContent = `Data to ${latest.year} ${latest.quarter}${built}`;
+        box.title = 'The live API is unreachable, so this page is showing the saved dataset snapshot';
+    }
+}
+
+function chartUnavailable(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || canvas.dataset.empty) return;
+    canvas.dataset.empty = '1';
+    canvas.style.display = 'none';
+    const note = document.createElement('div');
+    note.className = 'chart-empty';
+    note.textContent = 'Chart couldn’t load (the charting library was blocked). The figures are in the table below.';
+    canvas.after(note);
+}
+
+function drawCharts(filtered, uniqueSectors) {
+    if (!SiteData.hasCharts()) {
+        ['trendChart', 'placementsChart', 'comparisonChart'].forEach(chartUnavailable);
+        return;
+    }
+    const labels = filtered.map(d => `${d.year} ${d.quarter}`);
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: { labels, datasets: [
+            { label: 'Forecast Demand (/10)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.06)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y' },
+            { label: 'Median Salary (£)', data: filtered.map(d => d.salary_p50), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y1' }
+        ]},
+        options: chartOptions('y', 'y1')
+    });
+
+    if (placementsChart) placementsChart.destroy();
+    placementsChart = new Chart(document.getElementById('placementsChart'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Placements', data: filtered.map(d => d.placements), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(168,85,247,0.8)' : 'rgba(168,85,247,0.25)'), borderRadius: 6 }]},
+        options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+
+    const latestBySector = uniqueSectors.map(s => { const d = allData.filter(x => x.sector === s); return d[d.length - 1]; });
+    // Long sector names are split onto two lines so they fit under the bars.
+    const shortLabel = name => {
+        const words = name.replace(/\s*\(.*\)$/, '').split(' ');
+        if (words.length <= 2) return name.replace(/\s*\(.*\)$/, '');
+        const mid = Math.ceil(words.length / 2);
+        return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+    };
+    if (comparisonChart) comparisonChart.destroy();
+    comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+        type: 'bar',
+        data: { labels: latestBySector.map(d => shortLabel(d.sector)), datasets: [
+            { label: 'Median Salary (£)', data: latestBySector.map(d => d.salary_p50), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
+            { label: 'Forecast Demand (/10)', data: latestBySector.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(168,85,247,0.7)', borderRadius: 6, yAxisID: 'y1' }
+        ]},
+        options: chartOptions('y', 'y1')
+    });
+}
+
+function renderSector(selectedSector) {
+    currentSector = selectedSector;
+    const uniqueSectors = [...new Set(allData.map(d => d.sector))].sort();
+    loadMoves(selectedSector);
+
+    const filtered = allData.filter(d => d.sector === selectedSector);
+    const latest = filtered[filtered.length - 1];
+    setDataStatus(latest);
+    document.getElementById("salaryVal").textContent = `£${latest.salary_p50.toLocaleString('en-GB')}`;
+    const avgDemand = filtered.reduce((a, b) => a + b.predicted, 0) / filtered.length;
+    document.getElementById("demandVal").textContent = `${avgDemand.toFixed(1)}/10`;
+    document.getElementById("placementsVal").textContent = latest.placements;
+
+    const badge = document.getElementById("signalBadge");
+    if (avgDemand >= 7) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> HOT MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
+    else if (avgDemand >= 4) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> BALANCED'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
+    else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> COOLING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
+
+    try { drawCharts(filtered, uniqueSectors); } catch (e) { console.error(e); }
+
+    document.getElementById("dataTable").innerHTML = filtered.map(row => `<tr><td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.salary_p50.toLocaleString('en-GB')}</td><td>${row.demand_index.toFixed(1)}/10</td><td>${parseFloat(row.predicted).toFixed(2)}/10</td><td>${row.placements}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${esc(row.signal)}</td></tr>`).join('');
+}
+
+async function loadDashboard() {
     try {
-        const response = await fetch(`${API}/talent/predictions`);
-        allData = await response.json();
+        const [{ data, source }, meta] = await Promise.all([
+            SiteData.load('/talent/predictions', 'talent-predictions.json', null, d => Array.isArray(d) && d.length > 0),
+            SiteData.meta()
+        ]);
+        allData = data;
+        dataSource = source;
+        snapshotMeta = meta;
         const uniqueSectors = [...new Set(allData.map(d => d.sector))].sort();
         const selector = document.getElementById("sectorSelect");
-        if (selector.options.length === 0) {
-            uniqueSectors.forEach(s => {
-                const opt = document.createElement("option");
-                opt.value = s; opt.textContent = s;
-                selector.appendChild(opt);
-            });
-            selectedSector = uniqueSectors[0];
-        }
-        if (!selectedSector) selectedSector = selector.value;
-        selector.value = selectedSector;
-
-        loadMoves(selectedSector);
-
-        const filtered = allData.filter(d => d.sector === selectedSector);
-        const latest = filtered[filtered.length - 1];
-        document.getElementById("lastUpdated").textContent = `Last updated: ${latest.year} ${latest.quarter}`;
-        document.getElementById("salaryVal").textContent = `£${latest.salary_p50.toLocaleString()}`;
-        const avgDemand = filtered.reduce((a,b) => a + b.predicted, 0) / filtered.length;
-        document.getElementById("demandVal").textContent = `${avgDemand.toFixed(1)}/10`;
-        document.getElementById("placementsVal").textContent = latest.placements;
-
-        const badge = document.getElementById("signalBadge");
-        if (avgDemand >= 7) { badge.innerHTML = '<span class="signal-dot" style="background:#22c55e"></span> HOT MARKET'; badge.style.cssText = 'background:rgba(34,197,94,0.1);color:#22c55e;'; }
-        else if (avgDemand >= 4) { badge.innerHTML = '<span class="signal-dot" style="background:#facc15"></span> BALANCED'; badge.style.cssText = 'background:rgba(250,204,21,0.1);color:#facc15;'; }
-        else { badge.innerHTML = '<span class="signal-dot" style="background:#ef4444"></span> COOLING'; badge.style.cssText = 'background:rgba(239,68,68,0.1);color:#ef4444;'; }
-
-        const labels = filtered.map(d => `${d.year} ${d.quarter}`);
-        if (trendChart) trendChart.destroy();
-        trendChart = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels, datasets: [
-                { label: 'Forecast Demand (/10)', data: filtered.map(d => d.predicted.toFixed(2)), borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.06)', fill: true, tension: 0.4, pointRadius: 4, yAxisID: 'y' },
-                { label: 'Median Salary (£)', data: filtered.map(d => d.salary_p50), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.04)', fill: true, tension: 0.4, pointRadius: 4, yAxisID: 'y1' }
-            ]},
-            options: chartOptions('y', 'y1')
-        });
-
-        if (placementsChart) placementsChart.destroy();
-        placementsChart = new Chart(document.getElementById('placementsChart'), {
-            type: 'bar',
-            data: { labels, datasets: [{ label: 'Placements', data: filtered.map(d => d.placements), backgroundColor: labels.map((_, i) => i === labels.length - 1 ? 'rgba(168,85,247,0.8)' : 'rgba(168,85,247,0.25)'), borderRadius: 6 }]},
-            options: { responsive: true, plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
-        });
-
-        const latestBySector = uniqueSectors.map(s => { const d = allData.filter(x => x.sector === s); return d[d.length - 1]; });
-        if (comparisonChart) comparisonChart.destroy();
-        comparisonChart = new Chart(document.getElementById('comparisonChart'), {
-            type: 'bar',
-            data: { labels: latestBySector.map(d => d.sector), datasets: [
-                { label: 'Median Salary (£)', data: latestBySector.map(d => d.salary_p50), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 6, yAxisID: 'y' },
-                { label: 'Forecast Demand (/10)', data: latestBySector.map(d => parseFloat(d.predicted).toFixed(2)), backgroundColor: 'rgba(168,85,247,0.7)', borderRadius: 6, yAxisID: 'y1' }
-            ]},
-            options: chartOptions('y', 'y1')
-        });
-
-        const tbody = document.getElementById("dataTable");
-        tbody.innerHTML = '';
-        filtered.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><strong>${row.year} ${row.quarter}</strong></td><td>£${row.salary_p50.toLocaleString()}</td><td>${row.demand_index.toFixed(1)}/10</td><td>${parseFloat(row.predicted).toFixed(2)}/10</td><td>${row.placements}</td><td><span class="sentiment-pill ${sentimentClass(row.sentiment)}">${row.sentiment}</span></td><td>${row.signal}</td>`;
-            tbody.appendChild(tr);
-        });
-    } catch(e) { console.error(e); }
+        selector.innerHTML = uniqueSectors.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+        let initial = uniqueSectors[0];
+        const fromHash = decodeURIComponent(location.hash.slice(1));
+        if (uniqueSectors.includes(fromHash)) initial = fromHash;
+        selector.value = initial;
+        renderSector(initial);
+    } catch (e) {
+        console.error(e);
+        const err = document.getElementById('pageError');
+        err.style.display = 'block';
+        err.textContent = "Talent data couldn't be loaded. Please check your connection and refresh the page.";
+        document.getElementById('lastUpdated').textContent = 'Data unavailable';
+    }
 }
 
 function chartOptions(leftAxis, rightAxis) {
     return {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#64748b', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
         scales: {
-            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } },
-            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#475569' }, grid: { drawOnChartArea: false } },
-            x: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.03)' } }
+            [leftAxis]: { type: 'linear', position: 'left', ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            [rightAxis]: { type: 'linear', position: 'right', ticks: { color: '#64748b' }, grid: { drawOnChartArea: false } },
+            x: { ticks: { color: '#64748b', maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,255,255,0.03)' } }
         }
     };
 }
 
 loadDashboard();
-document.getElementById("sectorSelect").addEventListener("change", e => loadDashboard(e.target.value));
+document.getElementById("sectorSelect").addEventListener("change", e => {
+    renderSector(e.target.value);
+    history.replaceState(null, '', '#' + encodeURIComponent(e.target.value));
+});
 </script>
 
 </body>
