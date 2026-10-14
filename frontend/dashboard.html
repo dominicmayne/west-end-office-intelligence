@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Leasing analytics and vacancy forecasting across eight Central London office submarkets.">
     <title>West End Office Intelligence Platform</title>
+    <link rel="canonical" href="https://www.dominicmayne.com/west-end">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -25,59 +26,82 @@
         .live-banner-data { display: none; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; background: var(--paper-2); border-radius: 12px; padding: 10px 16px; margin-bottom: 28px; font-size: 14px; color: var(--ink-2); }
         .live-banner-data .src { margin-left: auto; font-family: var(--sans); font-size: 12px; color: var(--ink-3); }
 
-        /* Schematic */
+        /* Heat map */
         .map-container { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
-        .svg-map-wrap { border: 1px solid var(--rule); background: var(--surface); border-radius: var(--radius); padding: 16px; }
-        svg#schematic { color: var(--ink); width: 100%; max-width: 600px; height: auto; display: block; margin: auto; }
-        .zone { cursor: pointer; }
-        .zone rect { transition: fill 0.2s, stroke-width 0.2s; }
-        .zone:hover rect { stroke-width: 2.5; }
-        .zone-label { pointer-events: none; font-family: var(--display); font-weight: 600; }
-        .zone-sublabel { pointer-events: none; font-family: var(--sans); font-weight: 500; }
+        .svg-map-wrap { position: relative; border: 1px solid var(--rule); background: var(--surface); border-radius: var(--radius); padding: 12px; overflow: hidden; }
+        svg#schematic { width: 100%; height: auto; display: block; }
+        #schematic .park { fill: color-mix(in srgb, #3f9b52 13%, var(--surface)); }
+        #schematic .river { fill: none; stroke: color-mix(in srgb, #4d8fd6 24%, var(--surface)); stroke-width: 22; stroke-linecap: round; }
+        #schematic .ctx-label { font: 500 10.5px var(--sans); fill: color-mix(in srgb, #3f9b52 70%, var(--ink-3)); }
+        #schematic .river-label { fill: color-mix(in srgb, #4d8fd6 75%, var(--ink-3)); transform-box: fill-box; }
+        #schematic .blob { opacity: 0.9; transition: fill 0.6s var(--spring, ease); }
+        #schematic .zone { fill-opacity: 0.42; stroke: var(--surface); stroke-width: 2.5; cursor: pointer; outline: none; transition: fill 0.6s var(--spring, ease), fill-opacity 0.25s; }
+        #schematic .zone:hover, #schematic .zone:focus-visible { fill-opacity: 0.75; }
+        #schematic .zone-sel { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; pointer-events: none; }
+        #schematic .zone-labels { pointer-events: none; }
+        #schematic .zone-label { font: 600 15px var(--display); fill: var(--ink); letter-spacing: -0.01em; }
+        #schematic .zone-value { font: 500 13px var(--sans); fill: var(--ink); opacity: 0.78; font-variant-numeric: tabular-nums; }
+        #schematic .is-deep { fill: #fff; }
+        #schematic .street-label { font: 600 7.5px var(--sans); letter-spacing: 0.14em; fill: var(--ink-3); opacity: 0.8; }
+        .map-tip { position: absolute; left: 0; top: 0; min-width: 196px; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: var(--shadow); border: 1px solid var(--rule-soft); font-size: 13px; pointer-events: none; opacity: 0; scale: 0.96; transition: opacity 0.18s, scale 0.3s var(--spring, ease); }
+        .map-tip.show { opacity: 1; scale: 1; }
+        .map-tip strong { font-family: var(--display); font-size: 15px; }
+        .map-tip .tip-when { float: right; color: var(--ink-3); font-size: 12px; margin-left: 12px; line-height: 22px; }
+        .map-tip dl { display: grid; grid-template-columns: repeat(3, auto); gap: 12px; margin: 8px 0 0; }
+        .map-tip dt { color: var(--ink-3); font-size: 11.5px; }
+        .map-tip dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .scale { position: relative; padding: 10px 0 4px; }
+        .scale-bar { height: 10px; border-radius: 5px; }
+        .scale-marks { position: absolute; inset: 0; }
+        .scale-mark { position: absolute; top: 6px; width: 2px; height: 18px; margin-left: -1px; border-radius: 1px; background: var(--ink); opacity: 0.35; transition: left 0.6s var(--spring, ease); }
+        .scale-mark.on { opacity: 1; width: 3px; margin-left: -1.5px; }
+        .scale-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 4px; }
         .seg { display: inline-flex; gap: 2px; padding: 2px; background: var(--paper-3); border-radius: 10px; }
         .seg button { font: inherit; font-size: 13px; font-weight: 500; padding: 6px 14px; background: transparent; border: 0; border-radius: 8px; transition: background-color 0.2s, box-shadow 0.2s; color: var(--ink-2); cursor: pointer; }
         
         .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
         .map-side-panel { display: flex; flex-direction: column; gap: 28px; }
         .side-title { font-family: var(--sans); font-size: 11.5px; letter-spacing: 0; color: var(--ink-3); padding-bottom: 8px; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
-        .legend-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13.5px; color: var(--ink-2); }
-        .legend-swatch { width: 22px; height: 10px; flex-shrink: 0; }
-        .ranking-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) 56px 58px; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); cursor: pointer; font-size: 14px; }
+        .ranking-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) 64px 52px; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); cursor: pointer; font-size: 14px; }
         .ranking-row::before { content: counter(r); counter-increment: r; font-family: var(--sans); font-size: 11px; color: var(--ink-3); }
         #rankingsList { counter-reset: r; }
         .ranking-row:hover .ranking-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
         .ranking-row.active-row { background: var(--paper-2); box-shadow: -8px 0 0 var(--paper-2), 8px 0 0 var(--paper-2); }
         .ranking-row.active-row .ranking-name { font-weight: 500; }
         .ranking-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ranking-bar-wrap { height: 4px; background: var(--rule-soft); }
-        .ranking-bar { height: 4px; transition: width 0.4s; }
+        .ranking-bar-wrap { height: 4px; border-radius: 2px; background: var(--rule-soft); overflow: hidden; }
+        .ranking-bar { height: 4px; border-radius: 2px; transition: width 0.6s var(--spring, ease); }
         .ranking-val { font-family: var(--sans); font-size: 12.5px; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-        /* Commentary */
+        /* Summary */
         .insight-panel { border-top: 1px solid var(--rule); padding-top: 14px; position: relative; }
         .insight-header { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; margin-bottom: 16px; }
         .insight-label { font-family: var(--display); font-size: 24px; }
-        .insight-powered { margin-left: auto; font-family: var(--sans); font-size: 11.5px; color: var(--ink-3); }
         .insight-text { font-family: var(--display); font-size: 19px; line-height: 1.6; color: var(--ink); max-width: 44em; }
         .insight-text::first-letter { font-size: 1.15em; }
         .accuracy { margin-top: 12px; line-height: 1.5; }
-        .insight-reason { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
-        .typing-indicator { display: inline-flex; gap: 5px; align-items: center; padding: 6px 0; }
-        .typing-indicator span { width: 6px; height: 6px; background: var(--ink-3); border-radius: 50%; animation: blink 1.2s infinite; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+
+        /* Method */
+        #method { scroll-margin-top: 80px; }
+        .method { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+        .m-step { border-top: 1px solid var(--rule); padding-top: 18px; }
+        .m-num { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.04em; color: var(--accent); margin-bottom: 16px; }
+        .m-step h3 { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.2; margin-bottom: 10px; }
+        .m-step p { font-size: 15px; color: var(--ink-2); line-height: 1.6; }
+        .mast .short { display: none; }
 
         @media (max-width: 980px) {
+            .method { grid-template-columns: 1fr; gap: 28px; }
             .map-container { grid-template-columns: 1fr; gap: 32px; }
         }
         @media (max-width: 640px) {
             .toolbar .btn { flex: 1 1 calc(50% - 5px); justify-content: center; }
-            .svg-map-wrap { padding: 6px; }
+            .svg-map-wrap { padding: 4px; }
             .seg { width: 100%; }
             .seg button { flex: 1; }
             .insight-text { font-size: 17px; }
-            .insight-powered { margin-left: 0; width: 100%; }
+            .mast .long { display: none; }
+            .mast .short { display: inline; }
         }
     </style>
 </head>
@@ -89,7 +113,7 @@
         <a href="/west-end" class="mark-sub" style="text-decoration:none;margin-right:auto;font-size:14px;color:var(--ink)">West End Office Intelligence</a>
         <nav class="mast-nav" aria-label="Account">
             <a href="/about" class="hide-sm">About the builder</a>
-            <a href="/west-end#method" class="btn btn-sm">How it works</a>
+            <a href="#method" class="btn btn-sm"><span class="long">How the forecast works</span><span class="short">Method</span></a>
         </nav>
     </div>
 </header>
@@ -100,9 +124,8 @@
     <div>
         <div class="kicker">Central London <span class="sep">/</span> Submarket Analytics</div>
         <h1 class="h1">West End Office <em>Intelligence</em> Platform</h1>
-        <p>Leasing analytics, a backtested vacancy forecast and AI commentary across eight Central London office submarkets.</p>
+        <p>Leasing analytics and a backtested vacancy forecast across eight Central London office submarkets.</p>
     </div>
-    <p class="small">Commentary on this page is written by Claude (Anthropic) when the live API is up. Otherwise a plain summary is built from the dataset.</p>
 </div>
 
 <div class="toolbar">
@@ -149,12 +172,12 @@
     </div>
 </div>
 
-<!-- SCHEMATIC MAP -->
+<!-- HEAT MAP -->
 <section class="block">
     <div class="block-head">
         <div>
-            <h2 class="block-title">Central London submarket schematic</h2>
-            <div class="block-sub">Click any zone to load submarket analytics</div>
+            <h2 class="block-title">The West End, by submarket</h2>
+            <div class="block-sub">Latest quarter. Hover for figures, click to load a submarket.</div>
         </div>
         <div class="seg" role="group" aria-label="Colour the map by">
             <button class="heatmap-toggle active" id="toggleVacancy" onclick="setMapMode('vacancy')">Vacancy rate</button>
@@ -162,35 +185,15 @@
         </div>
     </div>
     <div class="map-container">
-        <div class="svg-map-wrap">
-            <svg id="schematic" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg">
-                <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(28,27,24,0.06)" stroke-width="0.6"/></pattern></defs>
-                <rect width="560" height="480" fill="url(#grid)"/>
-                <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="#c4cdcb" stroke-width="10" stroke-linecap="round"/>
-                <text x="240" y="448" fill="#7d8a88" font-size="9" font-family="Inter, -apple-system, sans-serif" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
-                <rect x="18" y="160" width="90" height="110" rx="3" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
-                <text x="63" y="218" fill="#5e7a5a" font-size="10" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">Hyde Park</text>
-                <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
-                <text x="200" y="52" fill="#5e7a5a" font-size="10" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">Regent's Park</text>
-                <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Marylebone</text><text x="177" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Marylebone">—</text></g>
-                <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Fitzrovia</text><text x="307" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Fitzrovia">—</text></g>
-                <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Midtown</text><text x="437" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Midtown">—</text></g>
-                <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="228" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Mayfair</text><text x="177" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Mayfair">—</text></g>
-                <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="228" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Soho</text><text x="307" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Soho">—</text></g>
-                <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="221" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Covent</text><text x="437" y="237" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Garden</text><text x="437" y="255" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Covent Garden">—</text></g>
-                <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="338" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">St James's</text><text x="177" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-St James's">—</text></g>
-                <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="338" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Victoria</text><text x="307" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Victoria">—</text></g>
-                <text x="516" y="70" fill="#6f695d" font-size="11" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">N</text>
-                <line x1="516" y1="58" x2="516" y2="40" stroke="#6f695d" stroke-width="1"/>
-                <polygon points="516,34 512.5,44 516,42 519.5,44" fill="#6f695d"/>
-            </svg>
+        <div class="svg-map-wrap" id="mapWrap">
+            <svg id="schematic" viewBox="0 0 600 470" role="group" aria-label="Map of eight West End office submarkets, coloured by the selected measure"></svg>
+            <div class="map-tip" id="mapTip" role="status" aria-live="polite"></div>
         </div>
         <div class="map-side-panel">
             <div class="map-legend">
                 <div class="side-title" id="legendTitle">Vacancy rate</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> Below 5% — Strong</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> 5–7% — Monitor</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Above 7% — Weakening</div>
+                <div class="scale" id="mapScale"><div class="scale-bar" id="scaleBar"></div><div class="scale-marks" id="scaleMarks"></div></div>
+                <div class="scale-ends"><span id="scaleLo"></span><span id="scaleHi"></span></div>
             </div>
             <div class="map-rankings">
                 <div class="side-title" id="rankingsTitle">Ranked by vacancy</div>
@@ -231,18 +234,8 @@
     </div>
 </section>
 
-<!-- AI COMMENTARY -->
-<section class="block" id="insightWrapper">
-    <div class="insight-panel">
-        <div class="insight-header">
-            <h2 class="insight-label">AI market commentary</h2>
-            <div class="insight-powered">Written by Claude (Anthropic)</div>
-        </div>
-        <div class="insight-text" id="insight">
-            <div class="typing-indicator"><span></span><span></span><span></span></div>
-        </div>
-    </div>
-</section>
+<!-- SUMMARY -->
+<section class="block" id="insightWrapper"></section>
 
 <section class="block">
     <div class="block-head"><div><h2 class="block-title">Quarterly data breakdown</h2><div class="block-sub">All data points for selected submarket</div></div></div>
@@ -252,12 +245,21 @@
     </table></div>
 </section>
 
+<section class="block" id="method">
+    <div class="block-head"><div><h2 class="block-title">How the forecast works</h2><div class="block-sub">A forecast is only worth something if it beats the obvious guess, so this one is tested the hard way.</div></div></div>
+    <div class="method">
+        <div class="m-step"><div class="m-num">1</div><h3>What it predicts</h3><p>Next quarter's change in vacancy for each submarket, from two signals: last quarter's change (momentum) and take-up against that submarket's own average. A ridge regression, rolled forward four quarters.</p></div>
+        <div class="m-step"><div class="m-num">2</div><h3>How it's tested</h3><p>Walk-forward backtesting. For each past quarter the model is trained only on the quarters before it, then asked to predict it. <span data-bt="tests">40</span> predictions in all.</p></div>
+        <div class="m-step"><div class="m-num">3</div><h3>How it scored</h3><p>Off by <strong data-bt="mae">0.30</strong> vacancy points on average, against <strong data-bt="naive">0.37</strong> for assuming nothing changes. Small data, honest result, and the limits are written into the code.</p></div>
+    </div>
+</section>
+
 </main>
 
 <footer class="foot">
     <div class="wrap foot-in">
         <span>Built by <strong>Dominic Mayne</strong> · West End Office Intelligence Platform · © 2026</span>
-        <span class="foot-links"><span>Central London analytics</span><span>Powered by Claude</span></span>
+        <span class="foot-links"><a href="/">Home</a><a href="/work">Work</a><a href="/about">About</a></span>
     </div>
 </footer>
 
@@ -323,7 +325,7 @@ function renderDeals(deals, source, area) {
     sub.textContent = `${deals.length} notable transaction${deals.length !== 1 ? 's' : ''} tracked in ${area}`;
 
     if (source === 'live') {
-        sourceBadge.innerHTML = `· <span class="kicker kicker-accent">Live — Claude web search</span>`;
+        sourceBadge.innerHTML = `· <span class="kicker kicker-accent">Live web search</span>`;
     } else {
         sourceBadge.innerHTML = `· <span class="kicker">Curated research data</span>`;
     }
@@ -378,33 +380,6 @@ async function loadDeals(area, forceRefresh = false) {
     if (forceRefresh) applyApiAvailability();
 }
 
-function getVacancyColor(v) {
-    if (v < 5) return '#2fa560';
-    if (v < 7) return '#d68910';
-    return '#e5483d';
-}
-
-function getRentColor(r) {
-    if (r >= 150) return '#2fa560';
-    if (r >= 100) return '#d68910';
-    return '#e5483d';
-}
-
-function setMapMode(mode) {
-    mapMode = mode;
-    document.getElementById('toggleVacancy').classList.toggle('active', mode === 'vacancy');
-    document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
-    const legend = document.querySelector('.map-legend');
-    if (mode === 'vacancy') {
-        legend.innerHTML = `<div class="side-title">Vacancy rate</div><div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Above 7% — Weakening</div>`;
-    } else {
-        legend.innerHTML = `<div class="side-title">Prime rent</div><div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Below £100 psf — Value</div>`;
-    }
-    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by vacancy' : 'Ranked by prime rent';
-    updateSchematic();
-    updateRankings();
-}
-
 function areaRows(area) { return allData.filter(d => d.area === area); }
 function latestVacancy(rows) { return rows[rows.length - 1].vacancy; }
 // Next-quarter forecast; falls back to the latest recorded figure if the forecast didn't load.
@@ -413,65 +388,183 @@ function nextVacancy(area) {
     return f && f.length ? f[0].vacancy : latestVacancy(areaRows(area));
 }
 
+// ── Heat map ──
+// Submarket outlines are simplified from the real streets that bound them
+// (Oxford Street, Regent Street, Charing Cross Road, Piccadilly, the Mall),
+// so neighbours share edges. North is up.
+const MAP_SHAPES = {
+    'Marylebone':    { d: 'M60 70 L150 64 L255 60 L258 120 L255 180 L160 176 L70 170 Z', at: [160, 118] },
+    'Fitzrovia':     { d: 'M255 60 L350 58 L352 120 L345 184 L255 180 L258 120 Z', at: [303, 118] },
+    'Midtown':       { d: 'M350 58 L470 66 L560 80 L572 160 L540 215 L470 212 L420 200 L345 184 L352 120 Z', at: [458, 132] },
+    'Mayfair':       { d: 'M70 170 L160 176 L255 180 L262 220 L272 262 L230 292 L170 320 L90 300 Z', at: [172, 238] },
+    'Soho':          { d: 'M255 180 L345 184 L360 232 L352 282 L300 276 L272 262 L262 220 Z', at: [308, 228] },
+    'Covent Garden': { d: 'M345 184 L420 200 L470 212 L540 215 L520 262 L460 300 L400 318 L352 282 L360 232 Z', at: [440, 254], lines: ['Covent', 'Garden'] },
+    "St James's":    { d: 'M272 262 L300 276 L352 282 L400 318 L380 350 L300 352 L240 330 L230 292 Z', at: [312, 314] },
+    'Victoria':      { d: 'M170 320 L210 380 L245 392 L300 400 L395 390 L410 440 L398 470 L180 470 L130 420 Z', at: [282, 436] },
+};
+const MAP_SCALES = {
+    vacancy: { lo: 2, hi: 8, stops: ['#1f9d5a', '#e3a92a', '#e0483e'], fmt: v => v.toFixed(1) + '%', ends: ['2% · tight', '8% · loose'], title: 'Vacancy rate' },
+    rent:    { lo: 80, hi: 190, stops: ['#9fb6ff', '#4d6cf0', '#2a1a9c'], fmt: v => '£' + Math.round(v), ends: ['£80 psf', '£190 psf'], title: 'Prime rent' },
+};
+
+function mixHex(a, b, t) {
+    const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+    const ch = s => Math.round(((pa >> s) & 255) * (1 - t) + ((pb >> s) & 255) * t);
+    return `rgb(${ch(16)}, ${ch(8)}, ${ch(0)})`;
+}
+function scaleColor(mode, v) {
+    const { lo, hi, stops } = MAP_SCALES[mode];
+    const t = Math.min(1, Math.max(0, (v - lo) / (hi - lo))) * (stops.length - 1);
+    const i = Math.min(stops.length - 2, Math.floor(t));
+    return mixHex(stops[i], stops[i + 1], t - i);
+}
+function mapValue(area) {
+    const latest = areaRows(area).slice(-1)[0];
+    return mapMode === 'vacancy' ? latest.vacancy : latest.rent_psf;
+}
+// Kept for the signal badge and anything else that wants a vacancy colour.
+function getVacancyColor(v) { return scaleColor('vacancy', v); }
+
+function buildMap() {
+    const svg = document.getElementById('schematic');
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (name, attrs, parent) => {
+        const n = document.createElementNS(NS, name);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        if (parent) parent.appendChild(n);
+        return n;
+    };
+    const defs = el('defs', {}, svg);
+    el('feGaussianBlur', { stdDeviation: 30 }, el('filter', { id: 'heatBlur', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs));
+    const land = el('clipPath', { id: 'landClip' }, defs);
+    Object.values(MAP_SHAPES).forEach(s => el('path', { d: s.d }, land));
+
+    // Context: parks, river and the streets that name the edges.
+    const ctx = el('g', { class: 'map-ctx', 'aria-hidden': 'true' }, svg);
+    el('path', { class: 'park', d: 'M90 62 C 96 8 300 -4 322 56 C 250 62 160 66 90 62 Z' }, ctx);
+    el('path', { class: 'park', d: 'M0 150 L70 170 L90 300 L170 320 L130 420 L0 430 Z' }, ctx);
+    el('path', { class: 'park', d: 'M230 292 L170 320 L210 380 L245 392 L240 330 Z' }, ctx);
+    el('path', { class: 'park', d: 'M245 392 L240 330 L300 352 L380 350 L395 390 L300 400 Z' }, ctx);
+    el('path', { class: 'river', d: 'M610 258 C 560 276 520 300 480 320 C 446 338 432 362 428 396 C 425 430 432 452 444 480' }, ctx);
+    [['Regent’s Park', 206, 36], ['Hyde Park', 44, 300], ['Green Park', 212, 344], ['St James’s Park', 318, 380], ['River Thames', 520, 330]].forEach(([t, x, y]) => {
+        el('text', { x, y, class: t.startsWith('River') ? 'ctx-label river-label' : 'ctx-label', 'text-anchor': 'middle' }, ctx).textContent = t;
+    });
+
+    // Heat: one soft blob per submarket, blurred together and kept inside the land.
+    const heat = el('g', { 'clip-path': 'url(#landClip)', 'aria-hidden': 'true' }, svg);
+    const blobs = el('g', { filter: 'url(#heatBlur)' }, heat);
+
+    const zones = el('g', { class: 'zones' }, svg);
+    const labels = el('g', { class: 'zone-labels', 'aria-hidden': 'true' }, svg);
+    const sel = el('path', { class: 'zone-sel' }, svg);
+    [['OXFORD STREET', 96, 166, 3.6], ['PICCADILLY', 216, 288, -29.6], ['THE MALL', 296, 345, 0]].forEach(([t, x, y, r]) => {
+        el('text', { x, y, class: 'street-label', transform: `rotate(${r} ${x} ${y})` }, labels).textContent = t;
+    });
+
+    Object.entries(MAP_SHAPES).forEach(([area, s]) => {
+        el('circle', { cx: s.at[0], cy: s.at[1] + 6, r: 78, class: 'blob', 'data-area': area }, blobs);
+        const z = el('path', { d: s.d, class: 'zone', 'data-area': area, tabindex: 0, role: 'button' }, zones);
+        const t = el('text', { x: s.at[0], y: s.at[1] - (s.lines ? 14 : 4), 'text-anchor': 'middle', class: 'zone-label', 'data-area': area }, labels);
+        (s.lines || [area]).forEach((line, i) => { el('tspan', { x: s.at[0], dy: i ? 17 : 0 }, t).textContent = line; });
+        el('text', { x: s.at[0], y: s.at[1] + (s.lines ? 22 : 16), 'text-anchor': 'middle', class: 'zone-value', 'data-area': area }, labels);
+        z.addEventListener('click', () => pickArea(area));
+        z.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickArea(area); } });
+        z.addEventListener('pointerenter', () => showTip(area, s));
+        z.addEventListener('focus', () => showTip(area, s));
+        z.addEventListener('pointerleave', hideTip);
+        z.addEventListener('blur', hideTip);
+    });
+    sel.dataset.ready = '1';
+}
+
+function pickArea(area) {
+    document.getElementById('areaSelect').value = area;
+    history.replaceState(null, '', '#' + encodeURIComponent(area));
+    renderArea(area);
+}
+
+function showTip(area, s) {
+    const rows = areaRows(area);
+    if (!rows.length) return;
+    const latest = rows[rows.length - 1];
+    const tip = document.getElementById('mapTip');
+    const next = nextVacancy(area);
+    tip.innerHTML = `<strong>${esc(area)}</strong><span class="tip-when">${esc(latest.year)} ${esc(latest.quarter)}</span>
+        <dl><div><dt>Vacancy</dt><dd>${latest.vacancy.toFixed(1)}%</dd></div><div><dt>Prime rent</dt><dd>£${esc(latest.rent_psf)}</dd></div><div><dt>Forecast</dt><dd>${next.toFixed(1)}%</dd></div></dl>`;
+    // Place above the label, kept inside the map.
+    const wrap = document.getElementById('mapWrap'), svg = document.getElementById('schematic');
+    const k = svg.clientWidth / 600, box = svg.getBoundingClientRect(), wb = wrap.getBoundingClientRect();
+    const x = box.left - wb.left + s.at[0] * k, y = box.top - wb.top + s.at[1] * k;
+    tip.classList.add('show');
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(wb.width - w - 8, x - w / 2)) + 'px';
+    tip.style.top = Math.max(8, y - h - 30 * k) + 'px';
+}
+function hideTip() { document.getElementById('mapTip').classList.remove('show'); }
+
+function setMapMode(mode) {
+    mapMode = mode;
+    document.getElementById('toggleVacancy').classList.toggle('active', mode === 'vacancy');
+    document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
+    document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by vacancy, lowest first' : 'Ranked by prime rent, highest first';
+    updateSchematic();
+    updateRankings();
+}
+
 function updateSchematic() {
     if (!allData.length) return;
-    const uniqueAreas = [...new Set(allData.map(d => d.area))];
-    uniqueAreas.forEach(area => {
-        const rows = areaRows(area);
-        const latest = rows[rows.length - 1];
-        const avgVacancy = latestVacancy(rows);
-        const color = mapMode === 'vacancy' ? getVacancyColor(avgVacancy) : getRentColor(latest.rent_psf);
-        const zoneEl = document.getElementById(`zone-${area}`);
-        if (zoneEl) {
-            const rect = zoneEl.querySelector('rect');
-            if (rect) {
-                rect.setAttribute('fill', area === currentArea ? color + '66' : color + '33');
-                rect.setAttribute('stroke', color);
-                rect.setAttribute('stroke-width', area === currentArea ? '3' : '1.5');
-            }
-        }
-        const valEl = document.getElementById(`val-${area}`);
-        if (valEl) {
-            valEl.textContent = mapMode === 'vacancy' ? `${avgVacancy.toFixed(1)}% vacancy` : `£${latest.rent_psf} psf`;
-            valEl.setAttribute('fill', color);
-        }
+    const svg = document.getElementById('schematic');
+    if (!svg.firstChild) buildMap();
+    const sc = MAP_SCALES[mapMode];
+    Object.keys(MAP_SHAPES).forEach(area => {
+        if (!areaRows(area).length) return;
+        const v = mapValue(area), color = scaleColor(mapMode, v);
+        svg.querySelector(`.blob[data-area="${CSS.escape(area)}"]`).style.fill = color;
+        const z = svg.querySelector(`.zone[data-area="${CSS.escape(area)}"]`);
+        z.style.fill = color;
+        z.classList.toggle('is-selected', area === currentArea);
+        z.setAttribute('aria-label', `${area}: ${sc.fmt(v)}${mapMode === 'rent' ? ' per sq ft' : ' vacancy'}`);
+        z.setAttribute('aria-pressed', area === currentArea);
+        svg.querySelector(`.zone-value[data-area="${CSS.escape(area)}"]`).textContent = sc.fmt(v) + (mapMode === 'rent' ? ' psf' : '');
+        // White text where the colour runs deep (top of the rent scale).
+        const deep = mapMode === 'rent' && (v - sc.lo) / (sc.hi - sc.lo) > 0.6;
+        svg.querySelectorAll(`[data-area="${CSS.escape(area)}"]:is(.zone-label, .zone-value)`).forEach(t => t.classList.toggle('is-deep', deep));
     });
+    const sel = svg.querySelector('.zone-sel');
+    if (MAP_SHAPES[currentArea]) sel.setAttribute('d', MAP_SHAPES[currentArea].d);
+
+    // Legend: the continuous scale, with a tick for each submarket.
+    document.getElementById('legendTitle').textContent = sc.title;
+    document.getElementById('scaleBar').style.background = `linear-gradient(90deg, ${sc.stops.join(', ')})`;
+    document.getElementById('scaleLo').textContent = sc.ends[0];
+    document.getElementById('scaleHi').textContent = sc.ends[1];
+    document.getElementById('scaleMarks').innerHTML = Object.keys(MAP_SHAPES).filter(a => areaRows(a).length).map(a => {
+        const pct = Math.min(100, Math.max(0, (mapValue(a) - sc.lo) / (sc.hi - sc.lo) * 100));
+        return `<span class="scale-mark${a === currentArea ? ' on' : ''}" style="left:${pct.toFixed(1)}%" title="${esc(a)}"></span>`;
+    }).join('');
 }
 
 function updateRankings() {
     if (!allData.length) return;
-    const uniqueAreas = [...new Set(allData.map(d => d.area))];
-    const ranked = uniqueAreas.map(area => {
-        const rows = areaRows(area);
-        return { area, vacancy: latestVacancy(rows), rent: rows[rows.length - 1].rent_psf };
-    });
-    ranked.sort((a, b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
-    const maxVal = Math.max(...ranked.map(r => mapMode === 'vacancy' ? r.vacancy : r.rent));
+    const sc = MAP_SCALES[mapMode];
+    const ranked = Object.keys(MAP_SHAPES).filter(a => areaRows(a).length).map(area => ({ area, v: mapValue(area) }));
+    ranked.sort((a, b) => mapMode === 'vacancy' ? a.v - b.v : b.v - a.v);
     document.getElementById('rankingsList').innerHTML = ranked.map(r => {
-        const val = mapMode === 'vacancy' ? r.vacancy : r.rent;
-        const color = mapMode === 'vacancy' ? getVacancyColor(r.vacancy) : getRentColor(r.rent);
-        const barWidth = Math.round((val / maxVal) * 50);
-        const displayVal = mapMode === 'vacancy' ? `${r.vacancy.toFixed(1)}%` : `£${r.rent}`;
-        return `<div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" role="button" tabindex="0" data-area="${esc(r.area)}"><span class="ranking-name">${esc(r.area)}</span><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${barWidth}px;background:${color}"></div></div><span class="ranking-val" style="color:${color}">${displayVal}</span></div>`;
+        const color = scaleColor(mapMode, r.v);
+        const pct = Math.round(Math.max(0.06, (r.v - sc.lo) / (sc.hi - sc.lo)) * 100);
+        return `<div class="ranking-row ${r.area === currentArea ? 'active-row' : ''}" role="button" tabindex="0" data-area="${esc(r.area)}"><span class="ranking-name">${esc(r.area)}</span><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${pct}%;background:${color}"></div></div><span class="ranking-val">${sc.fmt(r.v)}</span></div>`;
     }).join('');
 }
 
 // Ranking rows use data attributes (an inline onclick broke on "St James's").
 document.getElementById('rankingsList').addEventListener('click', e => {
     const row = e.target.closest('.ranking-row');
-    if (row) selectArea(row.dataset.area);
+    if (row) pickArea(row.dataset.area);
 });
 document.getElementById('rankingsList').addEventListener('keydown', e => {
     const row = e.target.closest('.ranking-row');
-    if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectArea(row.dataset.area); }
+    if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickArea(row.dataset.area); }
 });
-
-function selectArea(area) {
-    if (!allData.length) return;
-    document.getElementById("areaSelect").value = area;
-    renderArea(area);
-    document.querySelector('.kpi-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 function sentimentClass(s) { return 's-' + String(s || '').toLowerCase(); }
 
@@ -490,7 +583,7 @@ function animateValue(el, end, { prefix = '', suffix = '', decimals = 0 } = {}) 
     requestAnimationFrame(update);
 }
 
-// A short factual summary built from the dataset. Shown instead of AI commentary when Claude isn't available.
+// A short factual summary built from the dataset.
 function buildDataSummary(area) {
     const rows = areaRows(area);
     if (!rows.length) return '';
@@ -509,45 +602,12 @@ function buildDataSummary(area) {
     return parts.join(' ');
 }
 
-function renderSummaryPanel(area, reason) {
-    document.getElementById('insightWrapper').innerHTML = `
-        <div class="insight-panel summary">
-            <div class="insight-header"><h2 class="insight-label">Data summary</h2><div class="insight-powered">Generated from the dataset · not AI commentary</div></div>
-            <div class="insight-text">${esc(buildDataSummary(area))}</div>
-            ${reason ? `<div class="insight-reason">${esc(reason)}</div>` : ''}
-        </div>`;
-}
-
-function renderCommentaryPanel(inner) {
+function renderSummaryPanel(area) {
     document.getElementById('insightWrapper').innerHTML = `
         <div class="insight-panel">
-            <div class="insight-header"><h2 class="insight-label">AI market commentary</h2><div class="insight-powered">Written by Claude (Anthropic)</div></div>
-            <div class="insight-text" id="insight">${inner}</div>
+            <div class="insight-header"><h2 class="insight-label">${esc(area)} in brief</h2></div>
+            <div class="insight-text">${esc(buildDataSummary(area))}</div>
         </div>`;
-}
-
-function looksLikeCommentary(text) {
-    if (!text || typeof text !== 'string' || text.length < 60) return false;
-    return !/^(API key not configured|API error|Commentary unavailable|No data available)/i.test(text.trim());
-}
-
-async function loadCommentary(area) {
-    if (dataSource !== 'live') {
-        renderSummaryPanel(area, 'AI commentary needs the live API, which is offline right now.');
-        return;
-    }
-    renderCommentaryPanel('<div class="typing-indicator"><span></span><span></span><span></span></div>');
-    try {
-        const result = await SiteData.fetchJSON(`${API}/commentary/${encodeURIComponent(area)}`, 30000);
-        if (area !== currentArea) return;
-        if (looksLikeCommentary(result.commentary)) {
-            renderCommentaryPanel(esc(result.commentary));
-        } else {
-            renderSummaryPanel(area, 'AI commentary is unavailable at the moment.');
-        }
-    } catch (e) {
-        if (area === currentArea) renderSummaryPanel(area, 'AI commentary is unavailable at the moment.');
-    }
 }
 
 async function fetchLiveData() {
@@ -700,16 +760,19 @@ function renderArea(selectedArea) {
         rentDelta.textContent = ''; vacDelta.textContent = '';
     }
     const badge = document.getElementById("signalBadge");
-    if (avgVacancy < 5) badge.innerHTML = '<span class="signal-dot" style="background:#2fa560"></span> Strong market';
-    else if (avgVacancy < 7) badge.innerHTML = '<span class="signal-dot" style="background:#d68910"></span> Monitor';
-    else badge.innerHTML = '<span class="signal-dot" style="background:#e5483d"></span> Weakening';
+    const dot = `<span class="signal-dot" style="background:${getVacancyColor(avgVacancy)}"></span> `;
+    badge.innerHTML = dot + (avgVacancy < 5 ? 'Strong market' : avgVacancy < 7 ? 'Monitor' : 'Weakening');
 
-    clearTimeout(window.commentaryTimer);
-    window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), dataSource === 'live' ? 800 : 0);
+    renderSummaryPanel(selectedArea);
 
     try { drawCharts(filtered, uniqueAreas); } catch (e) { console.error(e); }
 
     const bt = forecast && forecast.backtest;
+    if (bt) {
+        document.querySelector('[data-bt="tests"]').textContent = bt.tests;
+        document.querySelector('[data-bt="mae"]').textContent = bt.mae_pp.toFixed(2);
+        document.querySelector('[data-bt="naive"]').textContent = bt.naive_mae_pp.toFixed(2);
+    }
     document.getElementById('accuracyNote').textContent = bt
         ? `Backtested on ${bt.tests} past quarters it never saw: off by ${bt.mae_pp.toFixed(2)} points on average, ${bt.improvement_pct}% closer than assuming vacancy stays flat (${bt.naive_mae_pp.toFixed(2)}).`
         : '';
@@ -739,6 +802,8 @@ async function loadDashboard() {
         if (uniqueAreas.includes(fromHash)) initial = fromHash;
         selector.value = initial;
         renderArea(initial);
+        // The page grows as data lands, so the browser's own jump to #method misses.
+        if (location.hash === '#method') document.getElementById('method').scrollIntoView();
     } catch (e) {
         console.error(e);
         const err = document.getElementById('pageError');

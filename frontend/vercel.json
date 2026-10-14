@@ -2,8 +2,23 @@
     "redirects": [
         {
             "source": "/login",
-            "destination": "/dashboard",
+            "destination": "/west-end",
             "permanent": false
+        },
+        {
+            "source": "/dashboard",
+            "destination": "/west-end",
+            "permanent": true
+        },
+        {
+            "source": "/dashboard.html",
+            "destination": "/west-end",
+            "permanent": true
+        },
+        {
+            "source": "/west-end.html",
+            "destination": "/west-end",
+            "permanent": true
         }
     ],
     "rewrites": [
@@ -13,10 +28,6 @@
         },
         {
             "source": "/west-end",
-            "destination": "/west-end.html"
-        },
-        {
-            "source": "/dashboard",
             "destination": "/dashboard.html"
         },
         {

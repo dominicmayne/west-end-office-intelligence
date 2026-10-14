@@ -102,7 +102,7 @@
             plots[area] = { g, row, next };
             svg.appendChild(g);
 
-            const open = () => { location.href = '/dashboard#' + encodeURIComponent(area); };
+            const open = () => { location.href = '/west-end#' + encodeURIComponent(area); };
             g.addEventListener('pointerenter', e => { if (interactive && e.pointerType === 'mouse') select(area); });
             g.addEventListener('pointerdown', () => { if (interactive) select(area); });
             g.addEventListener('click', e => { if (interactive && (e.pointerType === 'mouse' || e.detail === 0 || selected === area)) open(); });
@@ -162,7 +162,7 @@
                 <div><dt>Vacancy</dt><dd>${p.row.vacancy.toFixed(1)}%</dd></div>
                 ${next}
             </dl>
-            <a class="link" href="/dashboard#${encodeURIComponent(area)}">Open ${esc(area)} in the platform</a>`;
+            <a class="link" href="/west-end#${encodeURIComponent(area)}">Open ${esc(area)} in the platform</a>`;
     }
 
     Promise.all([
