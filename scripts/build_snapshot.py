@@ -41,6 +41,7 @@ def main():
     sectors = sorted({r["sector"] for r in talent})
 
     write("predictions.json", predictions)
+    write("forecast.json", app.forecast())
     write("area-codes.json", {k: int(v) for k, v in app.area_codes().items()})
     write("deals.json", {a: asyncio.run(app.deals(a)) for a in areas})
     write("talent-predictions.json", talent)

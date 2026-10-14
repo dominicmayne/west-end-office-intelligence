@@ -19,8 +19,6 @@
     <script src="/assets/data.js"></script>
     <style>
         .kpi-grid { scroll-margin-top: 80px; }
-        .free-banner { display: none; align-items: center; gap: 12px 24px; flex-wrap: wrap; justify-content: space-between; background: var(--paper-2); border-radius: 14px; padding: 14px 18px; margin-bottom: 28px; font-size: 14.5px; color: var(--ink-2); }
-        .free-banner strong { color: var(--ink); font-weight: 500; }
         .offline-note { font-size: 13.5px; color: var(--ink-3); margin: -14px 0 28px; display: none; max-width: 52em; }
         .offline-note.show { display: block; }
         .toolbar .btn { padding: 9px 14px; font-size: 13.5px; }
@@ -62,14 +60,13 @@
         .insight-powered { margin-left: auto; font-family: var(--sans); font-size: 11.5px; color: var(--ink-3); }
         .insight-text { font-family: var(--display); font-size: 19px; line-height: 1.6; color: var(--ink); max-width: 44em; }
         .insight-text::first-letter { font-size: 1.15em; }
+        .accuracy { margin-top: 12px; line-height: 1.5; }
         .insight-reason { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
         .typing-indicator { display: inline-flex; gap: 5px; align-items: center; padding: 6px 0; }
         .typing-indicator span { width: 6px; height: 6px; background: var(--ink-3); border-radius: 50%; animation: blink 1.2s infinite; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
-        .locked-overlay .lock-mask { position: absolute; inset: 60px 0 0 0; background: linear-gradient(to bottom, transparent 0%, var(--paper) 72%); display: flex; align-items: flex-end; padding-bottom: 6px; }
-        .blurred { filter: blur(3.5px); pointer-events: none; user-select: none; }
 
         @media (max-width: 980px) {
             .map-container { grid-template-columns: 1fr; gap: 32px; }
@@ -81,7 +78,6 @@
             .seg button { flex: 1; }
             .insight-text { font-size: 17px; }
             .insight-powered { margin-left: 0; width: 100%; }
-            .free-banner .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -92,7 +88,8 @@
         <a href="/" class="mark" aria-label="Back to dominicmayne.com"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name hide-sm">Dominic Mayne</span></a>
         <a href="/west-end" class="mark-sub" style="text-decoration:none;margin-right:auto;font-size:14px;color:var(--ink)">West End Office Intelligence</a>
         <nav class="mast-nav" aria-label="Account">
-            <span id="navAuthArea"></span>
+            <a href="/about" class="hide-sm">About the builder</a>
+            <a href="/west-end#method" class="btn btn-sm">How it works</a>
         </nav>
     </div>
 </header>
@@ -103,14 +100,9 @@
     <div>
         <div class="kicker">Central London <span class="sep">/</span> Submarket Analytics</div>
         <h1 class="h1">West End Office <em>Intelligence</em> Platform</h1>
-        <p>Institutional-grade AI-assisted leasing analytics and vacancy forecasting across Central London office submarkets.</p>
+        <p>Leasing analytics, a backtested vacancy forecast and AI commentary across eight Central London office submarkets.</p>
     </div>
-    <p class="small">Commentary on this page is written by Claude (Anthropic) when you're signed in and the live API is up. Otherwise a plain summary is built from the dataset.</p>
-</div>
-
-<div class="free-banner" id="freeBanner">
-    <div><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
-    <a href="/login" class="btn btn-sm btn-solid">Get full access</a>
+    <p class="small">Commentary on this page is written by Claude (Anthropic) when the live API is up. Otherwise a plain summary is built from the dataset.</p>
 </div>
 
 <div class="toolbar">
@@ -138,7 +130,7 @@
     <div class="kpi">
         <div class="kpi-label">Forecast vacancy</div>
         <div class="kpi-value" id="avgVacancy"><span class="skeleton"></span></div>
-        <div class="kpi-sub">AI-predicted average</div>
+        <div class="kpi-sub" id="forecastSub">Next quarter, model forecast</div>
         <div class="kpi-delta" id="vacancyDelta"></div>
     </div>
     <div class="kpi">
@@ -210,8 +202,9 @@
 
 <section class="block cols-2">
     <div>
-        <div class="block-head"><div><h2 class="block-title">Vacancy vs prime rent</h2><div class="block-sub">Forecast vacancy overlaid with prime rent trend</div></div></div>
+        <div class="block-head"><div><h2 class="block-title">Vacancy vs prime rent</h2><div class="block-sub">Recorded vacancy, the next four quarters forecast (dashed), and prime rent</div></div></div>
         <canvas id="trendChart"></canvas>
+        <p class="small accuracy" id="accuracyNote"></p>
     </div>
     <div>
         <div class="block-head"><div><h2 class="block-title">Take-up momentum</h2><div class="block-sub">Quarterly leasing volume (sq ft)</div></div></div>
@@ -220,7 +213,7 @@
 </section>
 
 <section class="block">
-    <div class="block-head"><div><h2 class="block-title">All submarket comparison — latest quarter</h2><div class="block-sub">Prime rent and forecast vacancy across all 8 tracked submarkets</div></div></div>
+    <div class="block-head"><div><h2 class="block-title">All submarket comparison — latest quarter</h2><div class="block-sub">Prime rent and next-quarter forecast vacancy across all 8 tracked submarkets</div></div></div>
     <canvas id="comparisonChart" style="max-height:280px;"></canvas>
 </section>
 
@@ -254,7 +247,7 @@
 <section class="block">
     <div class="block-head"><div><h2 class="block-title">Quarterly data breakdown</h2><div class="block-sub">All data points for selected submarket</div></div></div>
     <div class="table-scroll"><table class="data">
-        <thead><tr><th>Period</th><th class="r">Prime rent (£ psf)</th><th class="r">Vacancy rate</th><th class="r">Forecast vacancy</th><th class="r">Take-up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
+        <thead><tr><th>Period</th><th class="r">Prime rent (£ psf)</th><th class="r">Vacancy rate</th><th class="r" title="What the model predicted for this quarter using the quarter before">Model estimate</th><th class="r">Take-up (sq ft)</th><th>Sentiment</th><th>Signal</th></tr></thead>
         <tbody id="dataTable"></tbody>
     </table></div>
 </section>
@@ -276,31 +269,10 @@ let currentArea = null;
 let currentDeals = [];
 let dataSource = null;     // 'live' | 'snapshot'
 let snapshotMeta = null;
+let forecast = null;      // { backtest, areas: { [area]: [{year, quarter, vacancy}] } }
 
 const API = SiteData.API;
 const esc = SiteData.esc;
-const isLoggedIn = (() => { try { return sessionStorage.getItem('weoi_auth') === 'true'; } catch (e) { return false; } })();
-
-function setupAuth() {
-    const navArea = document.getElementById('navAuthArea');
-    if (isLoggedIn) {
-        navArea.innerHTML = `<a href="#" class="btn btn-sm" onclick="signOut(); return false;">Sign out</a>`;
-        document.getElementById('freeBanner').style.display = 'none';
-    } else {
-        navArea.innerHTML = `<a href="/login" class="btn btn-sm btn-solid">Sign in</a>`;
-        document.getElementById('freeBanner').style.display = 'flex';
-        ['downloadBtn', 'liveBtn', 'dealsRefreshBtn'].forEach(id => {
-            const el = document.getElementById(id);
-            el.style.opacity = '0.4';
-            el.title = 'Sign in to use this feature';
-        });
-    }
-}
-
-function signOut() {
-    try { sessionStorage.removeItem('weoi_auth'); } catch (e) {}
-    window.location.reload();
-}
 
 // Live-only features (PDF report, live search) are switched off cleanly when the API can't be reached.
 function applyApiAvailability() {
@@ -331,17 +303,14 @@ function setDataStatus(latest) {
 }
 
 function handleDownload() {
-    if (!isLoggedIn) { window.location.href = '/login'; return; }
     downloadReport();
 }
 
 function handleLiveData() {
-    if (!isLoggedIn) { window.location.href = '/login'; return; }
     fetchLiveData();
 }
 
 function handleDealsRefresh() {
-    if (!isLoggedIn) { window.location.href = '/login'; return; }
     loadDeals(currentArea, true);
 }
 
@@ -437,7 +406,12 @@ function setMapMode(mode) {
 }
 
 function areaRows(area) { return allData.filter(d => d.area === area); }
-function avgPredicted(rows) { return rows.reduce((a, b) => a + b.predicted, 0) / rows.length; }
+function latestVacancy(rows) { return rows[rows.length - 1].vacancy; }
+// Next-quarter forecast; falls back to the latest recorded figure if the forecast didn't load.
+function nextVacancy(area) {
+    const f = forecast && forecast.areas && forecast.areas[area];
+    return f && f.length ? f[0].vacancy : latestVacancy(areaRows(area));
+}
 
 function updateSchematic() {
     if (!allData.length) return;
@@ -445,7 +419,7 @@ function updateSchematic() {
     uniqueAreas.forEach(area => {
         const rows = areaRows(area);
         const latest = rows[rows.length - 1];
-        const avgVacancy = avgPredicted(rows);
+        const avgVacancy = latestVacancy(rows);
         const color = mapMode === 'vacancy' ? getVacancyColor(avgVacancy) : getRentColor(latest.rent_psf);
         const zoneEl = document.getElementById(`zone-${area}`);
         if (zoneEl) {
@@ -469,7 +443,7 @@ function updateRankings() {
     const uniqueAreas = [...new Set(allData.map(d => d.area))];
     const ranked = uniqueAreas.map(area => {
         const rows = areaRows(area);
-        return { area, vacancy: avgPredicted(rows), rent: rows[rows.length - 1].rent_psf };
+        return { area, vacancy: latestVacancy(rows), rent: rows[rows.length - 1].rent_psf };
     });
     ranked.sort((a, b) => mapMode === 'vacancy' ? a.vacancy - b.vacancy : b.rent - a.rent);
     const maxVal = Math.max(...ranked.map(r => mapMode === 'vacancy' ? r.vacancy : r.rent));
@@ -523,12 +497,12 @@ function buildDataSummary(area) {
     const first = rows[0], latest = rows[rows.length - 1];
     const rentChange = latest.rent_psf - first.rent_psf;
     const avgTakeup = rows.reduce((a, b) => a + b.takeup_sqft, 0) / rows.length;
-    const avgVac = avgPredicted(rows);
+    const nextVac = nextVacancy(area);
     const vacStart = first.vacancy, vacEnd = latest.vacancy;
     const fmt = n => Math.round(n).toLocaleString('en-GB');
     const parts = [
         `Across ${rows.length} quarters from ${first.year} ${first.quarter} to ${latest.year} ${latest.quarter}, prime rent in ${area} moved from £${first.rent_psf} to £${latest.rent_psf} psf (${rentChange >= 0 ? '+' : '−'}£${Math.abs(rentChange)} psf).`,
-        `Recorded vacancy went from ${vacStart.toFixed(1)}% to ${vacEnd.toFixed(1)}%, and the model's forecast vacancy averages ${avgVac.toFixed(1)}% over the period.`,
+        `Recorded vacancy went from ${vacStart.toFixed(1)}% to ${vacEnd.toFixed(1)}%, and the model forecasts ${nextVac.toFixed(1)}% next quarter.`,
         `Take-up in the latest quarter was ${fmt(latest.takeup_sqft)} sq ft, ${latest.takeup_sqft >= avgTakeup ? 'above' : 'below'} the ${fmt(avgTakeup)} sq ft quarterly average for the period.`,
         `Latest market sentiment is recorded as “${latest.sentiment}”.`
     ];
@@ -558,15 +532,6 @@ function looksLikeCommentary(text) {
 }
 
 async function loadCommentary(area) {
-    if (!isLoggedIn) {
-        document.getElementById('insightWrapper').innerHTML = `
-            <div class="insight-panel locked-overlay">
-                <div class="insight-header"><h2 class="insight-label">AI market commentary</h2><div class="insight-powered">Written by Claude (Anthropic)</div></div>
-                <div class="insight-text blurred">Prime rents in ${esc(area)} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
-                <div class="lock-mask"><a href="/login" class="btn btn-solid">Sign in to read AI commentary</a></div>
-            </div>`;
-        return;
-    }
     if (dataSource !== 'live') {
         renderSummaryPanel(area, 'AI commentary needs the live API, which is offline right now.');
         return;
@@ -669,12 +634,17 @@ function drawCharts(filtered, uniqueAreas) {
     }
     const T = window.ChartTheme;
     const labels = filtered.map(d => `${d.year} ${d.quarter}`);
+    const ahead = (forecast && forecast.areas && forecast.areas[currentArea]) || [];
+    const pad = n => Array(n).fill(null);
+    // The forecast line starts on the last recorded quarter so the two lines join up.
+    const forecastLine = ahead.length ? [...pad(filtered.length - 1), filtered[filtered.length - 1].vacancy, ...ahead.map(f => f.vacancy)] : [];
     if (trendChart) trendChart.destroy();
     trendChart = new Chart(document.getElementById('trendChart'), {
         type: 'line',
-        data: { labels, datasets: [
-            { label: 'Forecast Vacancy (%)', data: filtered.map(d => +d.predicted.toFixed(2)), borderColor: T.accent, backgroundColor: T.accent, tension: 0.25, pointRadius: 2.5, pointBackgroundColor: T.accent, yAxisID: 'y' },
-            { label: 'Prime Rent (£ psf)', data: filtered.map(d => d.rent_psf), borderColor: T.ink, backgroundColor: T.ink, borderDash: [5, 4], borderWidth: 1.5, tension: 0.25, pointRadius: 0, yAxisID: 'y1' }
+        data: { labels: [...labels, ...ahead.map(f => `${f.year} ${f.quarter}`)], datasets: [
+            { label: 'Vacancy (%)', data: [...filtered.map(d => d.vacancy), ...pad(ahead.length)], borderColor: T.accent, backgroundColor: T.accent, tension: 0.25, pointRadius: 2.5, pointBackgroundColor: T.accent, yAxisID: 'y' },
+            { label: 'Forecast (%)', data: forecastLine, borderColor: T.accent, backgroundColor: T.accent, borderDash: [4, 4], tension: 0.25, pointRadius: 2.5, pointStyle: 'circle', pointBackgroundColor: 'transparent', yAxisID: 'y' },
+            { label: 'Prime Rent (£ psf)', data: [...filtered.map(d => d.rent_psf), ...pad(ahead.length)], borderColor: T.ink, backgroundColor: T.ink, borderDash: [2, 3], borderWidth: 1.5, tension: 0, pointRadius: 0, yAxisID: 'y1' }
         ]},
         options: chartOptions('y', 'y1')
     });
@@ -690,7 +660,7 @@ function drawCharts(filtered, uniqueAreas) {
         type: 'bar',
         data: { labels: latestByArea.map(d => d.area), datasets: [
             { label: 'Prime Rent (£ psf)', data: latestByArea.map(d => d.rent_psf), backgroundColor: T.ink, yAxisID: 'y', barPercentage: 0.8, categoryPercentage: 0.7 },
-            { label: 'Forecast Vacancy (%)', data: latestByArea.map(d => +parseFloat(d.predicted).toFixed(2)), backgroundColor: T.accent, yAxisID: 'y1', barPercentage: 0.8, categoryPercentage: 0.7 }
+            { label: 'Next-quarter forecast vacancy (%)', data: latestByArea.map(d => +nextVacancy(d.area).toFixed(2)), backgroundColor: T.accent, yAxisID: 'y1', barPercentage: 0.8, categoryPercentage: 0.7 }
         ]},
         options: chartOptions('y', 'y1')
     });
@@ -710,8 +680,10 @@ function renderArea(selectedArea) {
     document.getElementById("liveBanner").style.display = "none";
 
     animateValue(document.getElementById("primeRent"), latest.rent_psf, { prefix: '£' });
-    const avgVacancy = avgPredicted(filtered);
+    const avgVacancy = nextVacancy(selectedArea);
     animateValue(document.getElementById("avgVacancy"), avgVacancy, { suffix: '%', decimals: 2 });
+    const ahead = forecast && forecast.areas && forecast.areas[selectedArea];
+    document.getElementById("forecastSub").textContent = ahead && ahead.length ? `Forecast for ${ahead[0].year} ${ahead[0].quarter}` : 'Latest recorded';
     document.getElementById("takeup").textContent = latest.takeup_sqft.toLocaleString('en-GB');
     const score = Math.max(0, Math.min(100, Math.round(100 - (avgVacancy * 10))));
     animateValue(document.getElementById("healthScore"), score, { suffix: '/100' });
@@ -721,8 +693,8 @@ function renderArea(selectedArea) {
         const rentChange = latest.rent_psf - prev.rent_psf;
         rentDelta.textContent = (rentChange >= 0 ? '▲' : '▼') + ' £' + Math.abs(rentChange) + ' vs prev quarter';
         rentDelta.className = 'kpi-delta ' + (rentChange >= 0 ? 'delta-up' : 'delta-down');
-        const vacChange = latest.predicted - prev.predicted;
-        vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange).toFixed(2) + '% vs prev quarter';
+        const vacChange = avgVacancy - latest.vacancy;
+        vacDelta.textContent = (vacChange >= 0 ? '▲' : '▼') + ' ' + Math.abs(vacChange).toFixed(2) + ' pts vs latest recorded';
         vacDelta.className = 'kpi-delta ' + (vacChange >= 0 ? 'delta-down' : 'delta-up');
     } else {
         rentDelta.textContent = ''; vacDelta.textContent = '';
@@ -737,16 +709,23 @@ function renderArea(selectedArea) {
 
     try { drawCharts(filtered, uniqueAreas); } catch (e) { console.error(e); }
 
+    const bt = forecast && forecast.backtest;
+    document.getElementById('accuracyNote').textContent = bt
+        ? `Backtested on ${bt.tests} past quarters it never saw: off by ${bt.mae_pp.toFixed(2)} points on average, ${bt.improvement_pct}% closer than assuming vacancy stays flat (${bt.naive_mae_pp.toFixed(2)}).`
+        : '';
+
     const tbody = document.getElementById("dataTable");
     tbody.innerHTML = filtered.map(row => `<tr><td>${row.year} ${row.quarter}</td><td class="r">£${row.rent_psf}</td><td class="r">${(row.vacancy ?? row.predicted).toFixed(1)}%</td><td class="r">${parseFloat(row.predicted).toFixed(2)}%</td><td class="r">${row.takeup_sqft.toLocaleString('en-GB')}</td><td><span class="sentiment ${sentimentClass(row.sentiment)}">${esc(row.sentiment)}</span></td><td>${SiteData.signal(row.signal)}</td></tr>`).join('');
 }
 
 async function loadDashboard() {
     try {
-        const [{ data, source }, meta] = await Promise.all([
+        const [{ data, source }, meta, fc] = await Promise.all([
             SiteData.load('/predictions', 'predictions.json', null, d => Array.isArray(d) && d.length > 0),
-            SiteData.meta()
+            SiteData.meta(),
+            SiteData.load('/forecast', 'forecast.json', null, d => d && d.areas).catch(() => null)
         ]);
+        forecast = fc ? fc.data : null;
         allData = data;
         dataSource = source;
         snapshotMeta = meta;
@@ -783,7 +762,6 @@ function chartOptions(leftAxis, rightAxis) {
     };
 }
 
-setupAuth();
 loadDashboard();
 document.getElementById("areaSelect").addEventListener("change", e => {
     renderArea(e.target.value);

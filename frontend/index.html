@@ -3,8 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Dominic Mayne — Real Estate graduate building data-driven property and analytics tools.">
-    <title>Dominic Mayne — Real Estate & Technology</title>
+    <title>Dominic Mayne · Real estate, data and product</title>
+    <meta name="description" content="Real estate graduate (BSc, Reading) who builds and ships data products: West End office intelligence, Hold for parents, and Unearthed for football fans.">
+    <link rel="canonical" href="https://www.dominicmayne.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.dominicmayne.com/">
+    <meta property="og:title" content="Dominic Mayne · Real estate, data and product">
+    <meta property="og:description" content="A real estate graduate who builds and ships data products. Central London office intelligence, a live service for parents, and a fantasy game for wonderkids.">
+    <meta property="og:image" content="https://www.dominicmayne.com/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -14,57 +23,149 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/site.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Dominic Mayne",
+        "url": "https://www.dominicmayne.com/",
+        "jobTitle": "Real estate graduate",
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Reading" },
+        "sameAs": ["https://linkedin.com/in/dominicmayne", "https://www.gethold.co.uk"],
+        "knowsAbout": ["Commercial real estate", "Central London office markets", "Proptech", "Data analytics", "AI-assisted software development"]
+    }
+    </script>
     <style>
         section[id] { scroll-margin-top: 56px; }
 
-        /* Hero */
-        .hero { text-align: center; padding-top: 96px; padding-bottom: 72px; }
+        /* ---------- Hero: words left, the West End model right ---------- */
+        .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 48px; align-items: center; padding-top: 72px; padding-bottom: 56px; }
         .hero .kicker { margin-bottom: 18px; }
-        .hero .display { margin-bottom: 10px; }
-        .hero-role { font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.15; letter-spacing: -0.025em; color: var(--ink-3); margin: 0 auto 26px; max-width: 22em; }
-        .hero .lede { margin: 0 auto 24px; }
-        .hero .stack { justify-content: center; margin: 0 auto 34px; max-width: 40em; }
-        .hero-actions { display: flex; gap: 14px 22px; flex-wrap: wrap; align-items: center; justify-content: center; }
-        .glance { margin-top: 64px; text-align: left; }
+        .hero .display { font-size: clamp(48px, 6.4vw, 84px); margin-bottom: 14px; }
+        .hero-role { font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.3vw, 30px); line-height: 1.16; letter-spacing: -0.025em; color: var(--ink-3); margin-bottom: 22px; max-width: 18em; }
+        .hero .lede { font-size: 19px; margin-bottom: 30px; }
+        .hero-actions { display: flex; gap: 14px 22px; flex-wrap: wrap; align-items: center; }
 
-        /* Projects: one wide tile, two half tiles. Each draws its own subject. */
-        .projects { padding-top: 32px; padding-bottom: 104px; }
+        /* The isometric model */
+        .iso { position: relative; margin: 0; }
+        .iso svg { width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
+        .iso-river { fill: none; stroke: var(--accent-wash); stroke-width: 26; stroke-linejoin: round; stroke-linecap: round; }
+        .iso-plot { --c: var(--ink-3); cursor: pointer; outline: none; transition: opacity 0.35s var(--spring); }
+        .iso-plot[data-band="good"] { --c: var(--good); }
+        .iso-plot[data-band="warn"] { --c: var(--warn); }
+        .iso-plot[data-band="bad"]  { --c: var(--bad); }
+        .iso-lot { fill: var(--paper-2); stroke: var(--rule); stroke-width: 0.8; }
+        .f-top   { fill: color-mix(in srgb, var(--c) 34%, var(--surface)); }
+        .f-left  { fill: color-mix(in srgb, var(--c) 62%, var(--surface)); }
+        .f-right { fill: color-mix(in srgb, var(--c) 84%, #000); }
+        .f-top, .f-left, .f-right { stroke: color-mix(in srgb, var(--c) 55%, var(--ink)); stroke-width: 0.6; stroke-linejoin: round; }
+        .f-floors { fill: none; stroke: color-mix(in srgb, var(--surface) 40%, transparent); stroke-width: 0.5; }
+        .has-selection .iso-plot:not(.is-selected) { opacity: 0.42; }
+        .iso-plot.is-selected .iso-lot, .iso-plot:focus-visible .iso-lot { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.4; }
+
+        .iso-below { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 20px; align-items: start; margin-top: 8px; }
+        .iso-card {
+            padding: 14px 16px 14px;
+            border-radius: 16px; background: var(--glass); box-shadow: var(--shadow);
+            -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+            font-size: 14px;
+        }
+        .iso-card:empty { display: none; }
+        .iso-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .iso-card-top strong { font-family: var(--display); font-size: 18px; letter-spacing: -0.02em; }
+        .iso-when { margin-left: auto; font-size: 12px; color: var(--ink-3); }
+        .iso-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-3); }
+        .iso-dot[data-band="good"], .iso-chip[data-band="good"]::before { background: var(--good); }
+        .iso-dot[data-band="warn"], .iso-chip[data-band="warn"]::before { background: var(--warn); }
+        .iso-dot[data-band="bad"],  .iso-chip[data-band="bad"]::before  { background: var(--bad); }
+        .iso-card dl { margin-bottom: 10px; }
+        .iso-card dl > div { display: flex; justify-content: space-between; gap: 18px; padding: 3px 0; }
+        .iso-card dt { color: var(--ink-3); }
+        .iso-card dd { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .iso-card dd small { font-weight: 400; color: var(--ink-3); }
+        .iso-card .link { font-size: 13.5px; }
+
+        .iso-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .iso-chip {
+            display: inline-flex; align-items: center; gap: 6px; font: 500 12.5px/1 var(--sans); letter-spacing: -0.005em;
+            padding: 7px 10px; border: 0; border-radius: 980px; background: var(--paper-2); color: var(--ink-2); cursor: pointer;
+            transition: transform var(--spring-t) var(--spring), background-color 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
+        }
+        .iso-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+        .iso-chip:active { transform: scale(0.94); transition-duration: 0.08s, 0.2s, 0.2s; }
+        .iso-chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+        .iso figcaption { font-size: 13px; color: var(--ink-3); margin-top: 12px; max-width: 40em; line-height: 1.5; }
+        .iso.is-empty { display: none; }
+
+        .glance { margin-top: 8px; }
+
+        /* ---------- Work ---------- */
+        .work { padding-top: 96px; padding-bottom: 104px; }
+        .group { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 56px 0 18px; padding-top: 18px; border-top: 1px solid var(--rule-soft); }
+        .group:first-of-type { margin-top: 0; }
+        .group h3 { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; }
+        .group span { font-size: 14px; color: var(--ink-3); }
         .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .tile {
             position: relative; display: flex; flex-direction: column; overflow: hidden;
-            min-height: 520px; padding: 40px 40px 0; border-radius: 28px;
+            min-height: 500px; padding: 40px 40px 0; border-radius: 28px;
             background: var(--surface); box-shadow: var(--shadow);
             text-decoration: none; color: var(--ink); -webkit-tap-highlight-color: transparent;
         }
-        .tile:hover { box-shadow: var(--shadow), 0 18px 48px rgba(0, 0, 0, 0.08); }
-        .tile-wide { grid-column: 1 / -1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; padding: 48px 48px 48px; align-items: center; }
+        a.tile:hover { box-shadow: var(--shadow), 0 18px 48px rgba(0, 0, 0, 0.08); }
+        .tile-wide { grid-column: 1 / -1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; padding: 48px; align-items: center; }
         .tile-status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink-3); margin-bottom: 12px; }
         .tile-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
         .tile-status .dot.demo { background: var(--ink-3); }
+        .tile-status .dot.soon { background: var(--warn); }
         .tile-title { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 3vw, 40px); line-height: 1.06; letter-spacing: -0.035em; margin-bottom: 14px; max-width: 14em; }
         .tile-desc { color: var(--ink-3); font-size: 17px; line-height: 1.5; max-width: 32em; margin-bottom: 16px; }
+        .tile-proof { font-size: 15px; line-height: 1.45; margin-bottom: 16px; max-width: 30em; padding-left: 12px; border-left: 2px solid var(--accent); color: var(--ink-2); }
+        .tile-proof strong { color: var(--ink); }
         .tile .stack { margin-bottom: 22px; }
         .tile-go { color: var(--accent); font-weight: 500; font-size: 17px; }
-        .tile:hover .tile-go { text-decoration: underline; text-underline-offset: 3px; }
+        a.tile:hover .tile-go { text-decoration: underline; text-underline-offset: 3px; }
         .tile-art { margin-top: auto; padding-top: 28px; }
         .tile-wide .tile-art { margin: 0; padding: 0; }
         .tile-art svg { width: 100%; height: auto; }
 
-        /* Spurs tile is always club navy */
+        /* Each product keeps its own colours, so the tiles read as different things. */
         .tile-spurs { background: #0e1a45; color: #f5f5f7; box-shadow: none; }
-        .tile-spurs .tile-desc, .tile-spurs .tile-status { color: rgba(245, 245, 247, 0.7); }
+        .tile-hold { background: #0b1415; color: #ecf2f2; box-shadow: none; }
+        .tile-unearthed { background: #1b1530; color: #fff6ea; box-shadow: none; }
+        .tile-dark .tile-desc, .tile-dark .tile-status, .tile-dark .tile-proof { color: rgba(245, 245, 247, 0.72); }
+        .tile-dark .tile-proof strong { color: #fff; }
+        .tile-dark .stack span { background: rgba(255, 255, 255, 0.1); color: rgba(245, 245, 247, 0.82); }
         .tile-spurs .tile-go { color: #ffffff; }
-        .tile-spurs .stack span { background: rgba(255, 255, 255, 0.1); color: rgba(245, 245, 247, 0.8); }
+        .tile-hold .tile-go { color: #6fd6cd; }
+        .tile-hold .tile-proof { border-color: #ffb547; }
+        .tile-unearthed .tile-go { color: #ffd23f; }
+        .tile-unearthed .tile-proof { border-color: #ff4b2b; }
+        .tile-unearthed .tile-title { font-style: italic; letter-spacing: -0.045em; }
 
-        /* About */
-        .about { background: var(--paper-2); padding: 104px 0; }
+        /* Hold's art: one class in a full timetable gets a space. */
+        .slot-open { animation: slot 3.2s var(--spring) infinite; transform-box: fill-box; transform-origin: center; }
+        @keyframes slot { 0%, 55% { fill: rgba(255, 255, 255, 0.1); transform: scale(1); } 62%, 92% { fill: #ffb547; transform: scale(1.06); } 100% { fill: rgba(255, 255, 255, 0.1); transform: scale(1); } }
+        @media (prefers-reduced-motion: reduce) { .slot-open { animation: none; fill: #ffb547; } }
+
+        /* ---------- How I build ---------- */
+        .method { background: var(--paper-2); padding: 104px 0; }
+        .method .h2 { margin: 12px 0 0; max-width: 16em; }
+        .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; margin-top: 48px; counter-reset: s; }
+        .steps li { counter-increment: s; border-top: 1px solid var(--rule); padding-top: 20px; }
+        .steps li::before { content: counter(s); display: block; font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; letter-spacing: -0.04em; color: var(--accent); margin-bottom: 18px; }
+        .steps h3 { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.02em; margin-bottom: 10px; }
+        .steps p { color: var(--ink-2); line-height: 1.6; }
+
+        /* ---------- About ---------- */
+        .about { padding: 104px 0; }
         .about-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 72px; align-items: center; }
         .about .h2 { margin: 12px 0 24px; max-width: 14em; }
         .about .prose { margin-bottom: 22px; }
         .about .stat-strip { --cols: 2; }
         .about .stat-val { font-size: 48px; }
 
-        /* Contact */
+        /* ---------- Contact ---------- */
         .contact { padding-top: 104px; padding-bottom: 112px; text-align: center; }
         .contact .h1 { margin: 12px 0 18px; font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.045em; }
         .contact p { color: var(--ink-3); max-width: 32em; margin: 0 auto 40px; font-size: 19px; }
@@ -76,18 +177,23 @@
         .c-val { font-weight: 500; font-size: 17px; transition: color 0.2s; overflow-wrap: anywhere; text-align: right; }
 
         @media (max-width: 980px) {
+            .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 56px; }
             .tile-wide { grid-template-columns: 1fr; padding: 40px 32px 32px; }
             .tile { padding: 32px 32px 0; min-height: 0; }
             .about-grid { grid-template-columns: 1fr; gap: 44px; }
+            .steps { grid-template-columns: 1fr; gap: 28px; }
         }
         @media (max-width: 640px) {
-            .hero { padding-top: 56px; padding-bottom: 48px; }
+            .hero { padding-top: 40px; padding-bottom: 40px; }
+            .hero .lede { font-size: 17px; }
             .hero-actions .btn { flex: 1 1 100%; }
-            .glance { margin-top: 44px; }
+            .iso-below { grid-template-columns: 1fr; gap: 14px; }
             .tiles { grid-template-columns: 1fr; gap: 14px; }
             .tile, .tile-wide { padding: 28px 22px 0; border-radius: 22px; }
             .tile-wide { padding-bottom: 24px; gap: 24px; }
-            .about { padding: 72px 0; }
+            .work { padding-top: 72px; padding-bottom: 72px; }
+            .group { flex-direction: column; gap: 2px; margin-top: 44px; }
+            .method, .about { padding: 72px 0; }
             .about .stat-val { font-size: 36px; }
             .contact { padding-top: 72px; padding-bottom: 80px; }
             .contact p { font-size: 17px; }
@@ -101,7 +207,8 @@
     <div class="wrap mast-in">
         <a href="/" class="mark"><img src="/favicon.svg" alt="" width="24" height="24"><span class="mark-name">Dominic Mayne</span></a>
         <nav class="mast-nav" aria-label="Main">
-            <a href="#projects" class="hide-sm">Projects</a>
+            <a href="#work" class="hide-sm">Work</a>
+            <a href="#method" class="hide-sm">How I build</a>
             <a href="#about" class="hide-sm">About</a>
             <a href="#contact" class="hide-sm">Contact</a>
             <a href="/about" class="btn btn-sm">Full profile</a>
@@ -111,40 +218,57 @@
 
 <main>
 <section class="wrap hero">
-    <div class="kicker">Real Estate <span class="sep">·</span> Technology <span class="sep">·</span> Analytics</div>
-    <h1 class="display">Dominic Mayne</h1>
-    <p class="hero-role">Real Estate Graduate &amp; Technology Enthusiast</p>
-    <p class="lede">
-        <strong>BSc Real Estate, University of Reading (2:1).</strong> I build data-driven tools that sit at the intersection of property and technology, using AI to turn market intelligence into something anyone can use.
-    </p>
-    <p class="stack"><span>Commercial Property</span><span>Proptech</span><span>AI-Assisted Development</span><span>Data Analytics</span><span>London</span></p>
-    <div class="hero-actions">
-        <a href="#projects" class="btn btn-solid">View my projects</a>
-        <a href="/about" class="link">About me</a>
+    <div>
+        <div class="kicker">Real estate <span class="sep">·</span> Data <span class="sep">·</span> Product</div>
+        <h1 class="display">Dominic Mayne</h1>
+        <p class="hero-role">A real estate graduate who builds and ships data products.</p>
+        <p class="lede">
+            <strong>BSc Real Estate, University of Reading (2:1).</strong> This year I've launched a Central London office intelligence platform, a free service that watches 510+ UK leisure centres for parents, and a fantasy football game for wonderkids. I bring the market judgement and direct AI to write the code.
+        </p>
+        <div class="hero-actions">
+            <a href="#work" class="btn btn-solid">See the work</a>
+            <a href="#contact" class="link">Get in touch</a>
+        </div>
     </div>
-    <div class="stat-strip glance" aria-label="At a glance">
-        <div><div class="stat-val">2:1</div><div class="stat-label">BSc Real Estate, Reading</div></div>
-        <div><div class="stat-val">3+</div><div class="stat-label">Live projects built</div></div>
-        <div><div class="stat-val">0</div><div class="stat-label">Prior coding experience</div></div>
-        <div><div class="stat-val">AI</div><div class="stat-label">Assisted development</div></div>
-    </div>
+
+    <figure class="iso" data-iso-westend>
+        <svg role="img" aria-label="Isometric model of eight West End office submarkets. Tower height shows prime rent and colour shows vacancy."></svg>
+        <div class="iso-below">
+            <div class="iso-card" aria-live="polite"></div>
+            <div>
+                <div class="iso-chips" aria-label="Choose a submarket"></div>
+                <figcaption>The West End, built from my platform's latest data. Taller towers mean higher prime rent; green, amber and red show vacancy below 5%, 5 to 7% and above 7%.</figcaption>
+            </div>
+        </div>
+    </figure>
 </section>
 
-<section class="wrap projects" id="projects">
+<div class="wrap">
+    <div class="stat-strip glance" aria-label="At a glance">
+        <div><div class="stat-val">6</div><div class="stat-label">Projects built in 2026</div></div>
+        <div><div class="stat-val">510+</div><div class="stat-label">Leisure centres Hold watches</div></div>
+        <div><div class="stat-val">49,339</div><div class="stat-label">Kids' classes in Hold's October report</div></div>
+        <div><div class="stat-val">8</div><div class="stat-label">West End submarkets modelled</div></div>
+    </div>
+</div>
+
+<section class="wrap work" id="work">
     <div class="sec-head">
-        <div class="kicker">Projects</div>
-        <h2 class="h2">Three things I've built.</h2>
-        <p>Three independently built platforms, covering Central London office markets, built-environment recruitment intelligence, and football stadium commercial intelligence. All built using AI-assisted development from scratch.</p>
+        <div class="kicker">Work</div>
+        <h2 class="h2">Things I've built.</h2>
+        <p>Each one started with a question from the real world: what the West End office market will do next, why parents can't get a swimming place, and who the next wonderkid is.</p>
     </div>
 
+    <div class="group"><h3>Property &amp; data</h3><span>Where my degree meets the data</span></div>
     <div class="tiles">
         <a href="/west-end" class="tile tile-wide">
             <div>
                 <div class="tile-status"><span class="dot"></span>Live · dominicmayne.com/west-end</div>
                 <h3 class="tile-title">West End Office Intelligence Platform</h3>
-                <p class="tile-desc">AI-powered leasing analytics and vacancy forecasting across 8 Central London office submarkets. Live data feed, Claude AI commentary, PDF report generation and a deals tracker.</p>
-                <p class="stack"><span>Python</span><span>Machine Learning</span><span>Claude AI</span><span>FastAPI</span><span>Chart.js</span></p>
-                <span class="tile-go">View platform</span>
+                <p class="tile-desc">Leasing analytics across 8 Central London office submarkets: a backtested vacancy forecast, research notes written by Claude, live market search, a deals tracker and one-click PDF reports.</p>
+                <p class="tile-proof">The forecast is tested on quarters it never saw and lands <strong><span data-backtest>19%</span> closer</strong> than assuming nothing changes.</p>
+                <p class="stack"><span>Python</span><span>scikit-learn</span><span>FastAPI</span><span>Claude API</span><span>Chart.js</span></p>
+                <span class="tile-go">Open the platform</span>
             </div>
             <div class="tile-art" aria-hidden="true">
                 <!-- The eight submarkets as the dashboard's schematic draws them, tinted by vacancy. -->
@@ -152,12 +276,12 @@
                     <g font-family="-apple-system, Inter, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
                         <rect x="8" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 22%, transparent)"/><text x="68" y="57" style="fill:var(--ink)">Marylebone</text>
                         <rect x="140" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 24%, transparent)"/><text x="200" y="57" style="fill:var(--ink)">Fitzrovia</text>
-                        <rect x="272" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--bad) 22%, transparent)"/><text x="332" y="57" style="fill:var(--ink)">Midtown</text>
+                        <rect x="272" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 30%, transparent)"/><text x="332" y="57" style="fill:var(--ink)">Midtown</text>
                         <rect x="8" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 34%, transparent)"/><text x="68" y="155" style="fill:var(--ink)">Mayfair</text>
                         <rect x="140" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 18%, transparent)"/><text x="200" y="155" style="fill:var(--ink)">Soho</text>
-                        <rect x="272" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 22%, transparent)"/><text x="332" y="155" style="fill:var(--ink)">Covent Garden</text>
+                        <rect x="272" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 22%, transparent)"/><text x="332" y="155" style="fill:var(--ink)">Covent Garden</text>
                         <rect x="8" y="204" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 28%, transparent)"/><text x="68" y="253" style="fill:var(--ink)">St James's</text>
-                        <rect x="140" y="204" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 30%, transparent)"/><text x="200" y="253" style="fill:var(--ink)">Victoria</text>
+                        <rect x="140" y="204" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--bad) 22%, transparent)"/><text x="200" y="253" style="fill:var(--ink)">Victoria</text>
                     </g>
                     <path d="M272 262 Q 320 240 392 256" fill="none" style="stroke:var(--paper-3)" stroke-width="12" stroke-linecap="round"/>
                 </svg>
@@ -167,7 +291,7 @@
         <a href="/talent-dashboard" class="tile">
             <div class="tile-status"><span class="dot demo"></span>Demo platform</div>
             <h3 class="tile-title">Built Environment Talent Intelligence</h3>
-            <p class="tile-desc">Salary benchmarking and hiring-demand forecasting across five property, engineering and construction recruitment sectors, exploring how market intelligence tooling could support recruitment consultancies.</p>
+            <p class="tile-desc">Salary benchmarking and hiring-demand forecasting across five property, engineering and construction recruitment sectors, exploring how market intelligence could support recruitment consultancies.</p>
             <p class="stack"><span>Python</span><span>Machine Learning</span><span>FastAPI</span><span>Chart.js</span><span>Recruitment Analytics</span></p>
             <span class="tile-go">View platform</span>
             <div class="tile-art" aria-hidden="true">
@@ -183,10 +307,10 @@
             </div>
         </a>
 
-        <a href="/spurs" class="tile tile-spurs">
+        <a href="/spurs" class="tile tile-dark tile-spurs">
             <div class="tile-status"><span class="dot"></span>Live · Passion project</div>
             <h3 class="tile-title">Tottenham Hotspur Stadium Commercial Intelligence</h3>
-            <p class="tile-desc">A data-driven analysis of the commercial property and revenue model behind one of Europe's most commercially advanced venues: NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study.</p>
+            <p class="tile-desc">The commercial property and revenue model behind one of Europe's most commercially advanced venues: NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study.</p>
             <p class="stack"><span>Stadium Economics</span><span>Commercial Real Estate</span><span>Sports Finance</span><span>Chart.js</span></p>
             <span class="tile-go">View dashboard</span>
             <div class="tile-art" aria-hidden="true">
@@ -202,6 +326,97 @@
             </div>
         </a>
     </div>
+
+    <div class="group"><h3>Products people use</h3><span>Outside property, same instincts</span></div>
+    <div class="tiles">
+        <a href="https://www.gethold.co.uk" target="_blank" rel="noopener" class="tile tile-dark tile-hold">
+            <div class="tile-status"><span class="dot"></span>Live · gethold.co.uk</div>
+            <h3 class="tile-title">Hold</h3>
+            <p class="tile-desc">Parents refresh leisure-centre booking pages for weeks to get a child into swimming lessons. Hold checks the live timetables of 510+ UK centres every few minutes and emails them the moment a space opens. Free, no account needed.</p>
+            <p class="tile-proof">Its October report found <strong>37% of 49,339 kids' swimming classes</strong> fully booked, and more than half in some cities.</p>
+            <p class="stack"><span>Python</span><span>Open data</span><span>Geosearch</span><span>Email alerts</span><span>SEO</span></p>
+            <span class="tile-go">Visit gethold.co.uk <span class="arrow">↗</span></span>
+            <div class="tile-art" aria-hidden="true">
+                <!-- A week of full classes; one opens up. -->
+                <svg viewBox="0 0 400 150">
+                    <g fill="rgba(255,255,255,0.1)">
+                        <rect x="0" y="0" width="70" height="30" rx="7"/><rect x="82" y="0" width="70" height="30" rx="7"/><rect x="164" y="0" width="70" height="30" rx="7"/><rect x="246" y="0" width="70" height="30" rx="7"/><rect x="328" y="0" width="70" height="30" rx="7"/>
+                        <rect x="0" y="40" width="70" height="30" rx="7"/><rect x="82" y="40" width="70" height="30" rx="7"/><rect x="246" y="40" width="70" height="30" rx="7"/><rect x="328" y="40" width="70" height="30" rx="7"/>
+                        <rect x="0" y="80" width="70" height="30" rx="7"/><rect x="82" y="80" width="70" height="30" rx="7"/><rect x="164" y="80" width="70" height="30" rx="7"/><rect x="246" y="80" width="70" height="30" rx="7"/><rect x="328" y="80" width="70" height="30" rx="7"/>
+                        <rect x="0" y="120" width="70" height="30" rx="7"/><rect x="82" y="120" width="70" height="30" rx="7"/><rect x="164" y="120" width="70" height="30" rx="7"/><rect x="246" y="120" width="70" height="30" rx="7"/><rect x="328" y="120" width="70" height="30" rx="7"/>
+                    </g>
+                    <rect class="slot-open" x="164" y="40" width="70" height="30" rx="7"/>
+                </svg>
+            </div>
+        </a>
+
+        <div class="tile tile-dark tile-unearthed">
+            <div class="tile-status"><span class="dot soon"></span>Launching · Gameweek 1 on 16 October</div>
+            <h3 class="tile-title">Unearthed</h3>
+            <p class="tile-desc">Fantasy football for wonderkids. Pick seven real under-21s, score from what they actually do each week, and beat your mates in mini-leagues by finding them first. A career mode drafts five teenagers and plays out their next ten seasons.</p>
+            <p class="tile-proof">Points come from <strong>real match data every gameweek</strong>, so the scouting is the game.</p>
+            <p class="stack"><span>Node.js</span><span>API-Football</span><span>Game design</span><span>Simulation</span></p>
+            <div class="tile-art" aria-hidden="true">
+                <!-- Seven picks on a half pitch, one breaking out. -->
+                <svg viewBox="0 0 400 150">
+                    <rect x="1" y="1" width="398" height="148" rx="10" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <line x1="200" y1="1" x2="200" y2="149" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <circle cx="200" cy="75" r="30" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <rect x="1" y="35" width="50" height="80" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <g fill="rgba(255,246,234,0.45)">
+                        <circle cx="30" cy="75" r="7"/><circle cx="95" cy="35" r="7"/><circle cx="95" cy="115" r="7"/>
+                        <circle cx="160" cy="55" r="7"/><circle cx="160" cy="105" r="7"/><circle cx="255" cy="40" r="7"/>
+                    </g>
+                    <circle cx="300" cy="92" r="11" fill="#ffd23f"/>
+                    <path d="M300 92 L 372 30" stroke="#ff4b2b" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 7"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="group"><h3>Making</h3><span>Away from the spreadsheets</span></div>
+    <div class="tiles">
+        <!-- TODO(dom): swap in a real description, software and a few renders. -->
+        <div class="tile tile-wide">
+            <div>
+                <div class="tile-status"><span class="dot demo"></span>In progress</div>
+                <h3 class="tile-title">3D modelling</h3>
+                <p class="tile-desc">I'm building a portfolio of 3D models. Renders and the story behind each piece are on their way here.</p>
+            </div>
+            <div class="tile-art" aria-hidden="true">
+                <!-- A building shell in isometric wireframe: the stage before the render. -->
+                <svg viewBox="0 0 400 250" fill="none" stroke-linejoin="round">
+                    <path d="M200 30 L330 105 L200 180 L70 105 Z" style="fill:color-mix(in srgb, var(--accent) 7%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M70 105 L200 180 L200 240 L70 165 Z" style="fill:color-mix(in srgb, var(--accent) 16%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M200 180 L330 105 L330 165 L200 240 Z" style="fill:color-mix(in srgb, var(--accent) 28%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M70 165 L200 90 L330 165 M200 30 L200 90" style="stroke:var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity="0.55"/>
+                    <path d="M102.5 123.8 V183.8 M135 142.5 V202.5 M167.5 161.3 V221.3 M232.5 161.3 V221.3 M265 142.5 V202.5 M297.5 123.8 V183.8 M70 135 L200 210 L330 135" style="stroke:var(--accent)" stroke-width="0.7" opacity="0.45"/>
+                    <g style="fill:var(--surface);stroke:var(--accent)" stroke-width="1.4"><circle cx="200" cy="30" r="3.5"/><circle cx="330" cy="105" r="3.5"/><circle cx="200" cy="180" r="3.5"/><circle cx="70" cy="105" r="3.5"/><circle cx="70" cy="165" r="3.5"/><circle cx="200" cy="240" r="3.5"/><circle cx="330" cy="165" r="3.5"/></g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="method" id="method">
+    <div class="wrap">
+        <div class="kicker">How I build</div>
+        <h2 class="h2">Judgement in, software out.</h2>
+        <ol class="steps">
+            <li>
+                <h3>Start with a real question</h3>
+                <p>Every project began with something I noticed. Graduates can't afford CoStar. Parents can't get a swimming place. Fans love spotting talent before anyone else.</p>
+            </li>
+            <li>
+                <h3>Direct the build</h3>
+                <p>I write the spec, make the product calls and direct Claude to write the code. I had no coding background, so I learned to read, test and question everything it produces.</p>
+            </li>
+            <li>
+                <h3>Ship it and be honest about it</h3>
+                <p>Everything here is deployed with real data. The West End forecast is backtested against a simple baseline, and Hold publishes how it measures what it reports.</p>
+            </li>
+        </ol>
+    </div>
 </section>
 
 <section class="about" id="about">
@@ -210,16 +425,16 @@
             <div class="kicker">About</div>
             <h2 class="h2">Real estate knowledge meets modern technology.</h2>
             <div class="prose">
-                <p>I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with a First Class final year project. During my job search I became interested in how AI and data could be applied to property intelligence, so I built my own platform to find out.</p>
-                <p>All three projects on this site were built entirely using AI-assisted development, with no prior coding experience. I directed Claude to design, build and deploy full-stack applications, learning how to use AI as a genuine productivity tool rather than a shortcut.</p>
+                <p>I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with a First Class final year project, and I've spent time with Savills, Fletcher Morgan and PMG in Cardiff.</p>
+                <p>During my job search I wanted to know how far AI and data could take property intelligence, so I built my own platform to find out. Then I kept going. I'm looking for a graduate role in London where property, data and technology meet.</p>
             </div>
             <a href="/about" class="link">Read my full profile</a>
         </div>
         <div class="stat-strip">
-            <div><div class="stat-val">2:1</div><div class="stat-label">BSc Real Estate</div></div>
-            <div><div class="stat-val">1st</div><div class="stat-label">Final Year Project</div></div>
-            <div><div class="stat-val">8+</div><div class="stat-label">Submarkets Tracked</div></div>
-            <div><div class="stat-val">0</div><div class="stat-label">Prior Coding Experience</div></div>
+            <div><div class="stat-val">2:1</div><div class="stat-label">BSc Real Estate, Reading</div></div>
+            <div><div class="stat-val">1st</div><div class="stat-label">Final year project</div></div>
+            <div><div class="stat-val">3</div><div class="stat-label">Firms I've worked with</div></div>
+            <div><div class="stat-val">6</div><div class="stat-label">Projects built</div></div>
         </div>
     </div>
 </section>
@@ -227,7 +442,7 @@
 <section class="wrap contact" id="contact">
     <div class="kicker">Get in touch</div>
     <h2 class="h1">Open to <em>opportunities.</em></h2>
-    <p>Actively looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If these projects have caught your attention I'd love to talk.</p>
+    <p>Looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If something here caught your eye, I'd love to talk.</p>
     <ul class="contact-list">
         <li><a href="mailto:dominic.d.mayne@gmail.com"><span class="c-label">Email</span><span class="c-val">dominic.d.mayne@gmail.com</span></a></li>
         <li><a href="https://linkedin.com/in/dominicmayne" target="_blank" rel="noopener"><span class="c-label">LinkedIn</span><span class="c-val">in/dominicmayne <span class="arrow">↗</span></span></a></li>
@@ -239,9 +454,18 @@
 <footer class="foot">
     <div class="wrap foot-in">
         <span>© 2026 <strong>Dominic Mayne</strong> · dominicmayne.com</span>
-        <span class="foot-links"><a href="/about">About the builder</a><span>Built with Claude</span></span>
+        <span class="foot-links"><a href="/about">Full profile</a><a href="https://www.gethold.co.uk" target="_blank" rel="noopener">Hold</a><span>Built with Claude</span></span>
     </div>
 </footer>
 
+<script src="/assets/data.js"></script>
+<script src="/assets/iso-westend.js"></script>
+<script>
+    // Keep the West End proof line in step with the latest backtest.
+    fetch('/data/forecast.json').then(r => r.json()).then(f => {
+        const el = document.querySelector('[data-backtest]');
+        if (el && f.backtest) el.textContent = Math.round(f.backtest.improvement_pct) + '%';
+    }).catch(() => {});
+</script>
 </body>
 </html>
