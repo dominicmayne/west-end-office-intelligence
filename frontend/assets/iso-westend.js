@@ -4,17 +4,23 @@
  * colour follows vacancy (same thresholds as the dashboard). Faces use four
  * tones (top, left, right, edge) and are drawn back to front (painter's order).
  *
- * Usage: <figure data-iso-westend> with an <svg>, a .iso-card and a .iso-chips
- * inside it. Reads /data/predictions.json and /data/forecast.json.
+ * Markup: <figure data-iso-westend> holding an <svg> and an optional .iso-card.
+ * Inside a [data-scene] (see motion.js) the model is driven by scroll:
+ *   0.00–0.18  empty lots
+ *   0.18–0.55  towers rise, lowest rent first
+ *   0.50–0.72  vacancy colour floods in
+ *   0.78+      a submarket card appears and the blocks become clickable
+ * Captions inside the scene with data-from/data-to fade in over that range.
+ * Reads /data/predictions.json and /data/forecast.json.
  */
 (function () {
     const fig = document.querySelector('[data-iso-westend]');
     if (!fig) return;
     const svg = fig.querySelector('svg');
     const card = fig.querySelector('.iso-card');
-    const chips = fig.querySelector('.iso-chips');
+    const scene = fig.closest('[data-scene]');
     const NS = 'http://www.w3.org/2000/svg';
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const range = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
 
     // Same arrangement as the dashboard's schematic: north is up-right.
     const LAYOUT = {
@@ -36,20 +42,16 @@
         return n;
     };
 
-    // Critically damped spring (damping 1.0, response 0.4s), sampled per frame.
-    const OMEGA = (2 * Math.PI) / 0.4;
-    const spring = t => 1 - (1 + OMEGA * t) * Math.exp(-OMEGA * t);
-
-    let towers = [];   // { faces: [top, left, right], floors, x, y, h, delay }
-    let selected = null;
-    let plots = {};
+    const towers = [];   // { faces, floors, x, y, h, start }
+    const plots = {};
+    let selected = null, interactive = !scene;
 
     function drawTower(t, k) {
         const { x, y } = t, w = TOWER, h = Math.max(0.01, t.h * k);
         t.faces[0].setAttribute('points', pts([[x, y, h], [x + w, y, h], [x + w, y + w, h], [x, y + w, h]]));
         t.faces[1].setAttribute('points', pts([[x, y + w, 0], [x + w, y + w, 0], [x + w, y + w, h], [x, y + w, h]]));
         t.faces[2].setAttribute('points', pts([[x + w, y, 0], [x + w, y + w, 0], [x + w, y + w, h], [x + w, y, h]]));
-        // Floor lines: invisible at 1x as texture, legible as storeys when zoomed.
+        // Floor lines: texture at 1x, legible storeys when zoomed in.
         let d = '';
         for (let z = 7; z < h - 3; z += 7) {
             const a = iso(x, y + w, z), b = iso(x + w, y + w, z), c = iso(x + w, y, z);
@@ -65,32 +67,31 @@
         const rents = areas.map(a => latest[a].rent_psf);
         const lo = Math.min(...rents), hi = Math.max(...rents);
         const height = r => 46 + ((r - lo) / (hi - lo || 1)) * 128;
+        const byRent = areas.slice().sort((a, b) => latest[a].rent_psf - latest[b].rent_psf);
 
-        // Painter's order: plots, then towers, sorted by depth (x + y) from the back.
+        // Painter's order: sorted by depth (x + y) from the back.
         const order = areas.slice().sort((a, b) => (LAYOUT[a][0] + LAYOUT[a][1]) - (LAYOUT[b][0] + LAYOUT[b][1]) || LAYOUT[a][0] - LAYOUT[b][0]);
 
-        const ground = el('g', { class: 'iso-ground' });
-        // The Thames runs under St James's and Victoria, then bends north into the
-        // empty corner by the Embankment.
+        // The Thames runs under St James's and Victoria, then bends north into
+        // the empty corner by the Embankment.
         const U = PLOT + GAP, ry = 3 * U + 6;
-        ground.appendChild(el('path', { class: 'iso-river', d: `M${iso(-30, ry, 0)}L${iso(2 * U - 4, ry, 0)}Q${iso(2 * U + 30, ry, 0)} ${iso(2 * U + 40, 2 * U + 50, 0)}L${iso(3 * U + 30, 2 * U + 30, 0)}` }));
-        svg.appendChild(ground);
+        svg.appendChild(el('path', { class: 'iso-river', d: `M${iso(-30, ry, 0)}L${iso(2 * U - 4, ry, 0)}Q${iso(2 * U + 30, ry, 0)} ${iso(2 * U + 40, 2 * U + 50, 0)}L${iso(3 * U + 30, 2 * U + 30, 0)}` }));
 
         order.forEach((area, i) => {
             const [cx, cy] = LAYOUT[area];
-            const ox = cx * (PLOT + GAP), oy = cy * (PLOT + GAP);
+            const ox = cx * U, oy = cy * U;
             const row = latest[area];
             const next = forecast && forecast.areas && forecast.areas[area] && forecast.areas[area][0];
-            const g = el('g', { class: 'iso-plot', 'data-band': band(row.vacancy), tabindex: '0', role: 'button', 'aria-label': `${area}: prime rent £${row.rent_psf} per sq ft, vacancy ${row.vacancy}%` });
+            const g = el('g', { class: 'iso-plot', 'data-band': band(row.vacancy), tabindex: '0', role: 'link', 'aria-label': `${area}: prime rent £${row.rent_psf} per sq ft, vacancy ${row.vacancy}%. Open in the platform.` });
             g.appendChild(el('polygon', { class: 'iso-lot', points: pts([[ox, oy, 0], [ox + PLOT, oy, 0], [ox + PLOT, oy + PLOT, 0], [ox, oy + PLOT, 0]]) }));
             const shape = SHAPES[i % SHAPES.length];
-            const spots = [[0, 0], [1, 0], [0, 1], [1, 1]];
-            spots.forEach(([sx, sy], j) => {
+            [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([sx, sy], j) => {
                 const t = {
                     x: ox + PAD + sx * (PLOT - 2 * PAD - TOWER),
                     y: oy + PAD + sy * (PLOT - 2 * PAD - TOWER),
                     h: height(row.rent_psf) * shape[j],
-                    delay: i * 0.06 + j * 0.03,
+                    // Cheapest submarket rises first, so the climb ends on Mayfair.
+                    start: byRent.indexOf(area) * 0.04 + j * 0.012,
                     faces: [el('polygon', { class: 'f-top' }), el('polygon', { class: 'f-left' }), el('polygon', { class: 'f-right' })],
                     floors: el('path', { class: 'f-floors' }),
                 };
@@ -101,47 +102,48 @@
             plots[area] = { g, row, next };
             svg.appendChild(g);
 
-            g.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') select(area); });
-            g.addEventListener('pointerdown', () => select(area));
-            g.addEventListener('click', e => { if (e.pointerType === 'mouse' || e.detail === 0) location.href = '/dashboard#' + encodeURIComponent(area); });
+            const open = () => { location.href = '/dashboard#' + encodeURIComponent(area); };
+            g.addEventListener('pointerenter', e => { if (interactive && e.pointerType === 'mouse') select(area); });
+            g.addEventListener('pointerdown', () => { if (interactive) select(area); });
+            g.addEventListener('click', e => { if (interactive && (e.pointerType === 'mouse' || e.detail === 0 || selected === area)) open(); });
             g.addEventListener('focus', () => select(area));
-            g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.href = '/dashboard#' + encodeURIComponent(area); } });
-
+            g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
         });
 
-        // Chips follow the map, north-west to south-east, not drawing order.
-        areas.forEach(area => {
-            const chip = document.createElement('button');
-            chip.type = 'button';
-            chip.className = 'iso-chip';
-            chip.dataset.area = area;
-            chip.dataset.band = band(latest[area].vacancy);
-            chip.textContent = area;
-            chip.addEventListener('pointerdown', () => select(area));
-            chip.addEventListener('click', () => select(area));
-            chips.appendChild(chip);
-        });
-
-        // Fit the viewBox to what was drawn.
+        // Fit the viewBox to the finished model, so nothing shifts as it grows.
         towers.forEach(t => drawTower(t, 1));
         const box = svg.getBBox();
         svg.setAttribute('viewBox', `${(box.x - 8).toFixed(0)} ${(box.y - 8).toFixed(0)} ${(box.width + 16).toFixed(0)} ${(box.height + 16).toFixed(0)}`);
 
-        if (reduce) return;
-        towers.forEach(t => drawTower(t, 0));
-        const start = performance.now();
-        (function frame(now) {
-            const s = (now - start) / 1000;
-            let moving = false;
-            towers.forEach(t => {
-                const local = Math.max(0, s - t.delay);
-                const k = spring(local);
-                if (k < 0.999) moving = true;
-                drawTower(t, k);
-            });
-            if (moving) requestAnimationFrame(frame);
-            else towers.forEach(t => drawTower(t, 1));
-        })(start);
+        const top = byRent[byRent.length - 1], weakest = areas.slice().sort((a, b) => latest[b].vacancy - latest[a].vacancy)[0];
+        fig.dispatchEvent(new CustomEvent('iso:ready', { detail: { top: latest[top], weakest: latest[weakest] } }));
+
+        if (scene && window.Motion) {
+            Motion.onScene(scene, p => render(p, top));
+        } else {
+            render(1, top);
+        }
+    }
+
+    function render(p, top) {
+        const rise = range(p, 0.18, 0.55);
+        towers.forEach(t => drawTower(t, easeOut(range(rise, t.start, t.start + 0.55))));
+        fig.style.setProperty('--sat', (range(p, 0.5, 0.72) * 100).toFixed(1) + '%');
+        const ready = p > 0.78;
+        if (ready !== interactive) {
+            interactive = ready;
+            fig.classList.toggle('is-live', ready);
+            if (ready && !selected) select(top);
+            if (!ready) clearSelection();
+        }
+    }
+    // Ease the per-tower climb so each one lands softly; the scroll spring handles the rest.
+    const easeOut = k => 1 - Math.pow(1 - k, 3);
+
+    function clearSelection() {
+        selected = null;
+        fig.classList.remove('has-selection');
+        Object.values(plots).forEach(q => q.g.classList.remove('is-selected'));
     }
 
     function select(area) {
@@ -150,7 +152,7 @@
         selected = area;
         fig.classList.add('has-selection');
         Object.entries(plots).forEach(([a, q]) => q.g.classList.toggle('is-selected', a === area));
-        chips.querySelectorAll('.iso-chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.area === area));
+        if (!card) return;
         const esc = window.SiteData ? SiteData.esc : String;
         const next = p.next ? `<div><dt>Forecast ${esc(p.next.year)} ${esc(p.next.quarter)}</dt><dd>${p.next.vacancy.toFixed(1)}%</dd></div>` : '';
         card.innerHTML = `
@@ -166,9 +168,6 @@
     Promise.all([
         fetch('/data/predictions.json').then(r => r.json()),
         fetch('/data/forecast.json').then(r => r.json()).catch(() => null),
-    ]).then(([rows, forecast]) => {
-        build(rows, forecast);
-        const top = Object.values(plots).sort((a, b) => b.row.rent_psf - a.row.rent_psf)[0];
-        if (top) select(top.row.area);
-    }).catch(() => fig.classList.add('is-empty'));
+    ]).then(([rows, forecast]) => build(rows, forecast))
+      .catch(() => fig.classList.add('is-empty'));
 })();

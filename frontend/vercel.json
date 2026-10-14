@@ -1,13 +1,39 @@
 {
     "redirects": [
-      { "source": "/login", "destination": "/dashboard", "permanent": false }
+        {
+            "source": "/login",
+            "destination": "/dashboard",
+            "permanent": false
+        }
     ],
     "rewrites": [
-      { "source": "/west-end", "destination": "/west-end.html" },
-      { "source": "/dashboard", "destination": "/dashboard.html" },
-      { "source": "/about", "destination": "/about.html" },
-      { "source": "/spurs", "destination": "/spurs.html" },
-      { "source": "/talent-dashboard", "destination": "/talent-dashboard.html" },
-      { "source": "/", "destination": "/index.html" }
+        {
+            "source": "/work",
+            "destination": "/work.html"
+        },
+        {
+            "source": "/west-end",
+            "destination": "/west-end.html"
+        },
+        {
+            "source": "/dashboard",
+            "destination": "/dashboard.html"
+        },
+        {
+            "source": "/about",
+            "destination": "/about.html"
+        },
+        {
+            "source": "/spurs",
+            "destination": "/spurs.html"
+        },
+        {
+            "source": "/talent-dashboard",
+            "destination": "/talent-dashboard.html"
+        },
+        {
+            "source": "/",
+            "destination": "/index.html"
+        }
     ]
 }
