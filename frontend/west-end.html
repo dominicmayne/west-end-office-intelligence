@@ -3,7 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="West End Office Intelligence — leasing analytics and vacancy forecasting across Central London office submarkets.">
+    <meta name="description" content="West End Office Intelligence: leasing analytics, a backtested vacancy forecast and Claude-written research notes across 8 Central London office submarkets. Built by Dominic Mayne.">
+    <meta property="og:title" content="West End Office Intelligence">
+    <meta property="og:description" content="Leasing analytics and a backtested vacancy forecast across 8 Central London office submarkets.">
+    <meta property="og:image" content="https://www.dominicmayne.com/og.png">
+    <meta name="twitter:card" content="summary_large_image">
     <title>West End Office Intelligence</title>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -28,20 +32,13 @@
         .figcap b { font-family: var(--sans); font-weight: 400; color: var(--ink-2); }
 
         .section { padding-top: 88px; }
-        .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-        .tier { border-top: 1px solid var(--rule); padding-top: 18px; }
-        .tier.pro { border-top: 3px solid var(--accent); padding-top: 16px; }
-        .tier-name { font-family: var(--sans); font-size: 11.5px; letter-spacing: 0; color: var(--ink-3); margin-bottom: 10px; }
-        .tier.pro .tier-name { color: var(--accent-ink); }
-        .tier-price { font-family: var(--display); font-size: 48px; line-height: 1; margin-bottom: 8px; }
-        .tier-price span { font-family: var(--sans); font-size: 14px; color: var(--ink-3); margin-left: 4px; }
-        .tier-desc { color: var(--ink-2); font-size: 14.5px; margin-bottom: 18px; min-height: 2.8em; }
-        .tier ul { list-style: none; border-top: 1px solid var(--rule); margin-bottom: 22px; }
-        .tier li { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule-soft); font-size: 14.5px; }
-        .tier li .m { width: 14px; flex-shrink: 0; font-family: var(--sans); color: var(--good); }
-        .tier li.off { color: var(--ink-3); }
-        .tier li.off .m { color: var(--rule); }
-
+        .method { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+        .m-step { border-top: 1px solid var(--rule); padding-top: 18px; }
+        .m-num { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.04em; color: var(--accent); margin-bottom: 16px; }
+        .m-step .feature-title { margin-bottom: 10px; }
+        .m-step p { font-size: 15px; color: var(--ink-2); line-height: 1.6; }
+        #nowTable a { color: var(--ink); font-weight: 600; text-decoration: none; }
+        #nowTable a:hover { color: var(--accent); }
         .features { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 40px; }
         .feature { border-top: 1px solid var(--rule); padding: 20px 0 30px; }
         .feature-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
@@ -69,7 +66,7 @@
             .hero { padding-top: 36px; padding-bottom: 56px; }
             .hero-actions .btn, .cta-actions .btn { flex: 1 1 auto; justify-content: center; }
             .section { padding-top: 64px; }
-            .tiers, .features { grid-template-columns: 1fr; gap: 40px; }
+            .method, .features { grid-template-columns: 1fr; gap: 28px; }
             .features { gap: 0; }
             .sources { margin-top: 64px; }
             .sources-list { font-size: 19px; }
@@ -84,9 +81,8 @@
         <a href="/" class="mark"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name">Dominic Mayne</span><span class="mark-sub hide-sm">West End Office Intelligence</span></a>
         <nav class="mast-nav" aria-label="Main">
             <a href="/about" class="hide-sm">About the builder</a>
-            <a href="/dashboard" class="hide-sm">Preview dashboard</a>
-            <a href="/login" class="hide-sm">Sign in</a>
-            <a href="/login" class="btn btn-sm btn-solid">Get access</a>
+            <a href="#method" class="hide-sm">How it works</a>
+            <a href="/dashboard" class="btn btn-sm btn-solid">Open the platform</a>
         </nav>
     </div>
 </header>
@@ -95,13 +91,13 @@
 <section class="wrap hero">
     <div>
         <div class="kicker">Central London <span class="sep">/</span> Live Market Intelligence</div>
-        <h1 class="display">Institutional-grade <em>office analytics</em></h1>
-        <p class="lede">AI-powered leasing intelligence, vacancy forecasting and market commentary across 8 Central London office submarkets. Updated in real time.</p>
+        <h1 class="display">Central London offices, <em>read clearly</em></h1>
+        <p class="lede">Leasing analytics across 8 West End office submarkets: a backtested vacancy forecast, research notes written by Claude, live market search, a deals tracker and one-click PDF reports.</p>
         <div class="hero-actions">
-            <a href="/login" class="btn btn-solid">Get full access</a>
-            <a href="/dashboard" class="btn">Preview free</a>
+            <a href="/dashboard" class="btn btn-solid">Open the platform</a>
+            <a href="#method" class="btn">How the forecast works</a>
         </div>
-        <div class="hero-note">Free preview available · No credit card required</div>
+        <div class="hero-note">Free and open to everyone. No sign-in.</div>
     </div>
     <figure class="figure" aria-label="Schematic of the dashboard layout">
         <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic line and bar chart">
@@ -123,55 +119,40 @@
 
 <div class="wrap">
     <div class="stat-strip" style="--cols:5">
-        <div><div class="stat-val">8+</div><div class="stat-label">Submarkets tracked</div></div>
-        <div><div class="stat-val">11Q</div><div class="stat-label">Quarters of data</div></div>
-        <div><div class="stat-val">AI</div><div class="stat-label">Claude-powered</div></div>
-        <div><div class="stat-val">Live</div><div class="stat-label">Web data feed</div></div>
-        <div><div class="stat-val">PDF</div><div class="stat-label">Report export</div></div>
+        <div><div class="stat-val">8</div><div class="stat-label">Submarkets tracked</div></div>
+        <div><div class="stat-val">11</div><div class="stat-label">Quarters of data per submarket</div></div>
+        <div><div class="stat-val" data-bt="mae">0.30</div><div class="stat-label">Forecast error, vacancy points</div></div>
+        <div><div class="stat-val" data-bt="pct">19%</div><div class="stat-label">Better than a flat-line guess</div></div>
+        <div><div class="stat-val">4Q</div><div class="stat-label">Forecast horizon</div></div>
     </div>
 </div>
 
-<section class="wrap section" id="pricing">
+<section class="wrap section" id="now">
     <div class="sec-head">
-        <div class="kicker">Access</div>
+        <div class="kicker">This quarter</div>
         <div>
-            <h2 class="h2">Free preview or full access</h2>
-            <p>Explore the platform for free, unlock the full intelligence suite with a password.</p>
+            <h2 class="h2">The West End at a glance</h2>
+            <p>Latest recorded figures for every submarket, next to what the model expects next quarter. Pick one to open it in the platform.</p>
         </div>
     </div>
-    <div class="tiers">
-        <div class="tier">
-            <div class="tier-name">Free preview</div>
-            <div class="tier-price">£0<span>/ always free</span></div>
-            <p class="tier-desc">Explore the dashboard and submarket data without signing in.</p>
-            <ul>
-                <li><span class="m">✓</span>All 8 submarket charts</li>
-                <li><span class="m">✓</span>Vacancy &amp; rent trend data</li>
-                <li><span class="m">✓</span>Submarket schematic map</li>
-                <li><span class="m">✓</span>Quarterly data table</li>
-                <li class="off"><span class="m">—</span>AI market commentary</li>
-                <li class="off"><span class="m">—</span>Live web data refresh</li>
-                <li class="off"><span class="m">—</span>Deals tracker</li>
-                <li class="off"><span class="m">—</span>PDF report download</li>
-            </ul>
-            <a href="/dashboard" class="btn">Preview dashboard</a>
+    <div class="table-scroll"><table class="data">
+        <thead><tr><th>Submarket</th><th class="r">Prime rent (£ psf)</th><th class="r">Vacancy</th><th class="r" id="nextHead">Forecast next quarter</th><th class="r">Take-up (sq ft)</th></tr></thead>
+        <tbody id="nowTable"><tr><td colspan="5" class="muted">Loading the latest quarter…</td></tr></tbody>
+    </table></div>
+</section>
+
+<section class="wrap section" id="method">
+    <div class="sec-head">
+        <div class="kicker">Method</div>
+        <div>
+            <h2 class="h2">A forecast you can check</h2>
+            <p>A forecast is only worth something if it beats the obvious guess. So this one is tested the hard way.</p>
         </div>
-        <div class="tier pro">
-            <div class="tier-name">Full access</div>
-            <div class="tier-price">£9<span>/ month</span></div>
-            <p class="tier-desc">Everything in free, plus AI commentary, live data, deals tracker and PDF reports.</p>
-            <ul>
-                <li><span class="m">✓</span>All 8 submarket charts</li>
-                <li><span class="m">✓</span>Vacancy &amp; rent trend data</li>
-                <li><span class="m">✓</span>Submarket schematic map</li>
-                <li><span class="m">✓</span>Quarterly data table</li>
-                <li><span class="m">✓</span>AI market commentary</li>
-                <li><span class="m">✓</span>Live web data refresh</li>
-                <li><span class="m">✓</span>Deals tracker</li>
-                <li><span class="m">✓</span>PDF report download</li>
-            </ul>
-            <a href="/login" class="btn btn-solid">Get full access</a>
-        </div>
+    </div>
+    <div class="method">
+        <div class="m-step"><div class="m-num">1</div><h3 class="feature-title">What it predicts</h3><p>Next quarter's change in vacancy for each submarket, from two signals: last quarter's change (momentum) and take-up against that submarket's own average.</p></div>
+        <div class="m-step"><div class="m-num">2</div><h3 class="feature-title">How it's tested</h3><p>Walk-forward backtesting. For each past quarter the model is trained only on the quarters before it, then asked to predict it. <span data-bt="tests">40</span> predictions in all.</p></div>
+        <div class="m-step"><div class="m-num">3</div><h3 class="feature-title">How it scored</h3><p>Off by <strong data-bt="mae2">0.30</strong> vacancy points on average, against <strong data-bt="naive">0.37</strong> for assuming nothing changes. Small data, honest result, and the limits are written into the code.</p></div>
     </div>
 </section>
 
@@ -180,53 +161,71 @@
         <div class="kicker">Platform features</div>
         <div>
             <h2 class="h2">Everything you need to track the West End</h2>
-            <p>Built for property professionals who need institutional-quality data without the institutional price tag.</p>
+            <p>What CoStar-style tools do, rebuilt by a graduate to learn how they work.</p>
         </div>
     </div>
     <div class="features">
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">AI Vacancy Forecasting</h3><span class="feature-tag">Free</span></div>
-            <p>Machine learning model trained on historical rent, take-up and vacancy data to forecast future availability across each submarket.</p>
+            <div class="feature-top"><h3 class="feature-title">Vacancy forecasting</h3></div>
+            <p>A ridge regression model forecasts each submarket four quarters ahead, and is backtested against a no-change baseline.</p>
         </div>
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">Claude Market Commentary</h3><span class="feature-tag pro">Full access</span></div>
-            <p>Every submarket gets a freshly generated research note written by Claude in the style of a Savills or CBRE analyst — not a template.</p>
+            <div class="feature-top"><h3 class="feature-title">Claude Market Commentary</h3></div>
+            <p>Every submarket gets a freshly generated research note written by Claude in the style of an agency research note, not a template.</p>
         </div>
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">Live Web Data Feed</h3><span class="feature-tag pro">Full access</span></div>
+            <div class="feature-top"><h3 class="feature-title">Live Web Data Feed</h3></div>
             <p>Claude searches the web in real time to pull the latest published figures from Savills, CBRE, Colliers and Knight Frank quarterly reports.</p>
         </div>
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">Submarket Schematic</h3><span class="feature-tag">Free</span></div>
+            <div class="feature-top"><h3 class="feature-title">Submarket Schematic</h3></div>
             <p>Interactive Central London zone map colour-coded by vacancy rate or prime rent. Click any submarket to load its full analytics instantly.</p>
         </div>
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">Deals Tracker</h3><span class="feature-tag pro">Full access</span></div>
+            <div class="feature-top"><h3 class="feature-title">Deals Tracker</h3></div>
             <p>Notable transactions tracked per submarket — occupier, building, size, rent and sector. Claude searches for the latest deals on demand.</p>
         </div>
         <div class="feature">
-            <div class="feature-top"><h3 class="feature-title">PDF Research Reports</h3><span class="feature-tag pro">Full access</span></div>
+            <div class="feature-top"><h3 class="feature-title">PDF Research Reports</h3></div>
             <p>One-click download of a professionally formatted submarket research note with KPIs, data table and AI commentary — ready to share.</p>
         </div>
     </div>
 
     <div class="sources">
-        <span class="kicker">Data sourced from leading market research firms</span>
+        <span class="kicker">Figures compiled from published research by</span>
         <span class="sources-list"><span>Savills</span><span>CBRE</span><span>Colliers</span><span>Knight Frank</span><span>BNP Paribas RE</span><span>Avison Young</span></span>
     </div>
 </section>
 
 <section class="wrap cta">
     <div>
-        <h2 class="h1">Ready to explore <em>the market?</em></h2>
-        <p>Start with the free preview or get full access to AI commentary, live data, deals tracking and PDF reports across 8 Central London submarkets.</p>
+        <h2 class="h1">Explore <em>the market.</em></h2>
+        <p>Every feature is open: the forecast, AI commentary, live market search, the deals tracker and PDF reports across 8 Central London submarkets.</p>
     </div>
     <div class="cta-actions">
-        <a href="/dashboard" class="btn">Preview free</a>
-        <a href="/login" class="btn btn-solid">Get full access</a>
+        <a href="/about" class="btn">About the builder</a>
+        <a href="/dashboard" class="btn btn-solid">Open the platform</a>
     </div>
 </section>
 </main>
+<script src="/assets/data.js"></script>
+<script>
+// Fills the glance table and the method numbers from the published snapshot.
+Promise.all([fetch('/data/predictions.json').then(r => r.json()), fetch('/data/forecast.json').then(r => r.json())]).then(([rows, fc]) => {
+    const esc = SiteData.esc, latest = {};
+    rows.forEach(r => { latest[r.area] = r; });
+    const band = v => v < 5 ? 's-good' : v < 7 ? 's-warn' : 's-bad';
+    const first = Object.values(fc.areas)[0][0];
+    document.getElementById('nextHead').textContent = `Forecast ${first.year} ${first.quarter}`;
+    document.getElementById('nowTable').innerHTML = Object.values(latest).sort((a, b) => b.rent_psf - a.rent_psf).map(r => {
+        const next = fc.areas[r.area][0].vacancy, d = Math.round((next - r.vacancy) * 10) / 10;
+        return `<tr><td><a href="/dashboard#${encodeURIComponent(r.area)}">${esc(r.area)}</a></td><td class="r">£${r.rent_psf}</td><td class="r"><span class="sentiment ${band(r.vacancy)}">${r.vacancy.toFixed(1)}%</span></td><td class="r">${next.toFixed(1)}% <span class="muted">(${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d).toFixed(1)})</span></td><td class="r">${r.takeup_sqft.toLocaleString('en-GB')}</td></tr>`;
+    }).join('');
+    const bt = fc.backtest, set = (k, v) => document.querySelectorAll(`[data-bt="${k}"]`).forEach(el => { el.textContent = v; });
+    set('mae', bt.mae_pp.toFixed(2)); set('mae2', bt.mae_pp.toFixed(2)); set('naive', bt.naive_mae_pp.toFixed(2));
+    set('pct', Math.round(bt.improvement_pct) + '%'); set('tests', bt.tests);
+}).catch(() => {});
+</script>
 
 <footer class="foot">
     <div class="wrap foot-in">

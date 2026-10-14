@@ -3,8 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="About Dominic Mayne and how the West End Office Intelligence platform was built.">
-    <title>About — Dominic Mayne</title>
+    <meta name="description" content="Dominic Mayne: BSc Real Estate (Reading, 2:1), experience with Savills, and the projects he has built: West End Office Intelligence, Hold and Unearthed.">
+    <meta property="og:title" content="Dominic Mayne · Full profile">
+    <meta property="og:image" content="https://www.dominicmayne.com/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Full profile · Dominic Mayne</title>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -38,7 +41,7 @@
 
         .build-grid { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 40px; row-gap: 8px; }
         .build { border-top: 1px solid var(--rule); padding: 20px 0 28px; }
-        .build-num { font-family: var(--display); font-size: 30px; color: var(--accent); line-height: 1; margin-bottom: 14px; }
+        .build-num { font-family: var(--display); font-weight: 700; letter-spacing: -0.03em; font-size: 30px; color: var(--accent); line-height: 1; margin-bottom: 14px; }
         .build-title { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.25; margin-bottom: 10px; }
         .build-text { font-size: 14.5px; color: var(--ink-2); line-height: 1.65; margin-bottom: 12px; }
 
@@ -93,10 +96,10 @@
         <a href="/" class="mark"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name">Dominic Mayne</span></a>
         <nav class="mast-nav" aria-label="Main">
             <a href="#about" class="hide-sm">About</a>
-            <a href="#platform" class="hide-sm">The Platform</a>
+            <a href="#platform" class="hide-sm">Projects</a>
             <a href="#experience" class="hide-sm">Experience</a>
             <a href="#contact" class="hide-sm">Contact</a>
-            <a href="/dashboard" class="btn btn-sm">View platform</a>
+            <a href="/#work" class="btn btn-sm">See the work</a>
         </nav>
     </div>
 </header>
@@ -108,10 +111,10 @@
         <h1 class="display">Dominic Mayne</h1>
         <p class="hero-role">Real Estate Graduate &amp; Proptech Builder</p>
         <p class="lede">
-            <strong>BSc Real Estate, University of Reading (2:1).</strong> I built this platform independently to demonstrate that real estate knowledge and modern technology aren't separate disciplines — they're most powerful when combined.
+            <strong>BSc Real Estate, University of Reading (2:1).</strong> I build data products that put real estate knowledge to work, from a Central London office intelligence platform to a live service used by parents across the UK.
         </p>
         <div class="hero-actions">
-            <a href="/dashboard" class="btn btn-solid">View the platform</a>
+            <a href="/#work" class="btn btn-solid">See the work</a>
             <a href="#about" class="link">Read my story</a>
         </div>
     </div>
@@ -119,7 +122,8 @@
         <div class="kicker">On this page</div>
         <ol>
             <li><a href="#about">Why I built this</a></li>
-            <li><a href="#platform">What I built and how</a></li>
+            <li><a href="#platform">How the West End platform works</a></li>
+            <li><a href="#more">Everything else I've built</a></li>
             <li><a href="#skills">Technical &amp; professional capability</a></li>
             <li><a href="#experience">Education &amp; work history</a></li>
             <li><a href="#contact">Get in touch</a></li>
@@ -132,31 +136,32 @@
         <div class="kicker">Background</div>
         <div>
             <h2 class="h2">Why I built this</h2>
-            <p>A real estate degree meets modern technology — built independently, from scratch.</p>
+            <p>A real estate degree, a gap in the market, and a question about what AI could do with it.</p>
         </div>
     </div>
     <div class="about-grid">
         <div class="prose">
             <p>I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with modules covering Real Estate Valuation, Development Appraisal, Applied Property Law and Asset Management. My final project received a First Class grade.</p>
             <p>During my studies and job search I noticed a gap: the tools used by institutional property professionals — CoStar, EG Propertylink, agent research platforms — are expensive, complex, and largely inaccessible to graduates. I wanted to understand how modern technology could democratise access to this kind of intelligence, so I built my own version.</p>
-            <p>This platform was built entirely independently, with <strong>no prior professional software development experience</strong>. I taught myself Python, FastAPI, machine learning with scikit-learn, and frontend development to bring it to life. Every line of code, every design decision, and every data point was my own work.</p>
+            <p>I had <strong>no coding background</strong>, so I built it the way I think a lot of work will be done from now on: I researched the data, wrote the specs, made every product and design call, and directed Claude to write the code. That meant learning enough Python, FastAPI and scikit-learn to read what it wrote, test it, and push back when it was wrong.</p>
+            <p>It worked well enough that I kept going. <strong>Hold</strong> now watches 510+ UK leisure centres for parents, and <strong>Unearthed</strong> launches this month.</p>
             <p>I'm now looking to bring both sides of this — <strong>real estate knowledge and technical capability</strong> — into a graduate role at a firm where data, technology and property intersect.</p>
         </div>
         <div class="about-facts">
             <div><div class="stat-val">2:1</div><div class="stat-label">BSc Real Estate, Reading</div></div>
-            <div><div class="stat-val">8+</div><div class="stat-label">Submarkets Tracked</div></div>
+            <div><div class="stat-val">6</div><div class="stat-label">Projects built</div></div>
             <div><div class="stat-val">1st</div><div class="stat-label">Final Year Project</div></div>
-            <div><div class="stat-val">0</div><div class="stat-label">Prior Coding Experience</div></div>
+            <div><div class="stat-val">510+</div><div class="stat-label">Centres Hold watches</div></div>
         </div>
     </div>
 </section>
 
 <section class="wrap section" id="platform">
     <div class="sec-head">
-        <div class="kicker">The Platform</div>
+        <div class="kicker">West End Office Intelligence</div>
         <div>
-            <h2 class="h2">What I built and how</h2>
-            <p>A full-stack proptech platform built from scratch — data pipeline, machine learning model, AI integration, and professional frontend.</p>
+            <h2 class="h2">How the platform works</h2>
+            <p>A full-stack proptech platform: data pipeline, a backtested forecast, AI integration and a frontend, all deployed.</p>
         </div>
     </div>
     <div class="build-grid">
@@ -169,25 +174,25 @@
         <div class="build">
             <div class="build-num">ii.</div>
             <h3 class="build-title">Machine Learning Forecasting</h3>
-            <p class="build-text">Trained a Linear Regression model using scikit-learn to forecast vacancy rates by submarket, using rent, take-up and historical vacancy as features. Model runs at startup and serves predictions via a REST API.</p>
-            <p class="stack"><span>scikit-learn</span><span>Linear Regression</span><span>Feature Engineering</span></p>
+            <p class="build-text">A ridge regression forecasts next quarter's vacancy change from momentum and relative take-up, four quarters ahead. Walk-forward backtesting shows it beats a no-change guess by 19%.</p>
+            <p class="stack"><span>scikit-learn</span><span>Ridge Regression</span><span>Backtesting</span></p>
         </div>
         <div class="build">
             <div class="build-num">iii.</div>
             <h3 class="build-title">FastAPI Backend</h3>
-            <p class="build-text">Built a production REST API with FastAPI, deployed on Railway. Endpoints serve predictions, AI commentary, live web data, deal tracking and PDF generation. Handles CORS, environment variables and async requests.</p>
+            <p class="build-text">Built a production REST API with FastAPI, deployed on Railway. Endpoints serve forecasts, AI commentary, live web data, deal tracking and PDF generation, with Claude responses cached to keep costs down.</p>
             <p class="stack"><span>FastAPI</span><span>Railway</span><span>REST API</span></p>
         </div>
         <div class="build">
             <div class="build-num">iv.</div>
             <h3 class="build-title">Claude AI Integration</h3>
-            <p class="build-text">Integrated the Anthropic Claude API to generate real-time market commentary in the style of a Savills research note, and to search the web for the latest published market figures and deal transactions.</p>
+            <p class="build-text">Integrated the Anthropic Claude API to write market commentary in the style of an agency research note, and to search the web for the latest published market figures and deal transactions.</p>
             <p class="stack"><span>Anthropic API</span><span>Web Search</span><span>Prompt Engineering</span></p>
         </div>
         <div class="build">
             <div class="build-num">v.</div>
             <h3 class="build-title">Frontend &amp; Product Design</h3>
-            <p class="build-text">Designed and built the entire frontend in vanilla HTML, CSS and JavaScript — including an interactive SVG submarket schematic, Chart.js data visualisations, animated KPI cards and a freemium access model with password gating.</p>
+            <p class="build-text">Vanilla HTML, CSS and JavaScript: an interactive submarket schematic, Chart.js visualisations, light and dark themes, and a saved data snapshot so the pages never sit blank when the API is down.</p>
             <p class="stack"><span>HTML/CSS/JS</span><span>Chart.js</span><span>SVG</span><span>Vercel</span></p>
         </div>
         <div class="build">
@@ -195,6 +200,47 @@
             <h3 class="build-title">PDF Report Generation</h3>
             <p class="build-text">Built an automated PDF report generator using ReportLab that produces a branded, institutional-quality research note on demand — including AI commentary, KPI tables, quarterly data breakdown and a disclaimer footer.</p>
             <p class="stack"><span>ReportLab</span><span>PDF Generation</span><span>Document Design</span></p>
+        </div>
+    </div>
+</section>
+
+<section class="wrap section" id="more">
+    <div class="sec-head">
+        <div class="kicker">Other projects</div>
+        <div>
+            <h2 class="h2">Everything else I've built</h2>
+            <p>Different problems, same approach: find a real question, get the data, ship something people can use.</p>
+        </div>
+    </div>
+    <div class="build-grid">
+        <div class="build">
+            <div class="build-num">Hold</div>
+            <h3 class="build-title">Kids' class alerts for parents</h3>
+            <p class="build-text">Checks the live timetables of 510+ UK leisure centres across 22 operators and emails parents the moment a space opens. Its October report found 37% of 49,339 kids' swimming classes fully booked. <a class="link" href="https://www.gethold.co.uk" target="_blank" rel="noopener">gethold.co.uk ↗</a></p>
+            <p class="stack"><span>Python</span><span>Open data</span><span>Email</span></p>
+        </div>
+        <div class="build">
+            <div class="build-num">Unearthed</div>
+            <h3 class="build-title">Fantasy football for wonderkids</h3>
+            <p class="build-text">Pick seven real under-21s and score from what they actually do each week, in mini-leagues with friends. A career mode simulates five teenagers' next ten seasons. Gameweek 1 is 16 October 2026.</p>
+            <p class="stack"><span>Node.js</span><span>API-Football</span><span>Game design</span></p>
+        </div>
+        <div class="build">
+            <div class="build-num">Talent</div>
+            <h3 class="build-title">Built Environment Talent Intelligence</h3>
+            <p class="build-text">Salary benchmarking and hiring-demand forecasting across five property, engineering and construction recruitment sectors. <a class="link" href="/talent-dashboard">View the demo</a></p>
+            <p class="stack"><span>Python</span><span>Chart.js</span></p>
+        </div>
+        <div class="build">
+            <div class="build-num">Spurs</div>
+            <h3 class="build-title">Stadium Commercial Intelligence</h3>
+            <p class="build-text">The property and revenue model behind Tottenham Hotspur Stadium: NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study. <a class="link" href="/spurs">View the dashboard</a></p>
+            <p class="stack"><span>Stadium economics</span><span>Chart.js</span></p>
+        </div>
+        <div class="build">
+            <div class="build-num">3D</div>
+            <h3 class="build-title">3D modelling</h3>
+            <p class="build-text">A growing portfolio of 3D models. Renders and the story behind each piece are coming soon.</p>
         </div>
     </div>
 </section>
@@ -209,9 +255,9 @@
     </div>
     <div class="skills">
         <div class="skill"><div class="skill-name">Central London Office Markets</div><div class="skill-detail">Submarkets, rental trends, vacancy dynamics, take-up analysis, agent research</div></div>
-        <div class="skill"><div class="skill-name">Python Development</div><div class="skill-detail">FastAPI, Pandas, scikit-learn, ReportLab, httpx, async programming</div></div>
-        <div class="skill"><div class="skill-name">AI &amp; Prompt Engineering</div><div class="skill-detail">Claude API integration, web search tools, structured output, cost management</div></div>
-        <div class="skill"><div class="skill-name">Data Analysis &amp; ML</div><div class="skill-detail">Feature engineering, regression modelling, vacancy forecasting, data visualisation</div></div>
+        <div class="skill"><div class="skill-name">AI-directed development</div><div class="skill-detail">Writing specs, directing Claude, reading and testing the code it writes in Python, JavaScript and Node</div></div>
+        <div class="skill"><div class="skill-name">AI &amp; Prompt Engineering</div><div class="skill-detail">Claude API integration, web search tools, structured output, caching and cost control</div></div>
+        <div class="skill"><div class="skill-name">Data Analysis &amp; ML</div><div class="skill-detail">Feature engineering, regression, walk-forward backtesting, open data feeds, data visualisation</div></div>
         <div class="skill"><div class="skill-name">Full Stack Deployment</div><div class="skill-detail">Vercel (frontend), Railway (backend), Git, environment variables, CI/CD</div></div>
         <div class="skill"><div class="skill-name">Real Estate Fundamentals</div><div class="skill-detail">Valuation, development appraisal, property law, asset management, CoStar</div></div>
     </div>
@@ -292,7 +338,7 @@
         <div>
             <div class="kicker">Get in touch</div>
             <h2 class="h1">Open to <em>opportunities</em></h2>
-            <p>I'm actively looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If this platform has caught your attention, I'd love to talk.</p>
+            <p>I'm actively looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If any of this caught your attention, I'd love to talk.</p>
         </div>
         <ul class="contact-list">
             <li><a href="mailto:dominic.d.mayne@gmail.com"><span class="c-label">Email</span><span class="c-val">dominic.d.mayne@gmail.com</span></a></li>
@@ -304,7 +350,7 @@
 
 <footer class="foot">
     <div class="wrap foot-in">
-        <span>© 2026 Dominic Mayne · West End Office Intelligence</span>
+        <span>© 2026 Dominic Mayne · dominicmayne.com</span>
         <span class="foot-links"><span>BSc Real Estate, Reading</span><span>Built with Claude</span></span>
     </div>
 </footer>
