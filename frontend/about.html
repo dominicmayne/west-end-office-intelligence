@@ -45,6 +45,12 @@
         .build-title { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.25; margin-bottom: 10px; }
         .build-text { font-size: 14.5px; color: var(--ink-2); line-height: 1.65; margin-bottom: 12px; }
 
+        .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; counter-reset: s; }
+        .steps li { counter-increment: s; border-top: 1px solid var(--rule); padding-top: 20px; }
+        .steps li::before { content: counter(s); display: block; font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.04em; color: var(--accent); margin-bottom: 16px; }
+        .steps h3 { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; margin-bottom: 10px; }
+        .steps p { color: var(--ink-2); line-height: 1.6; font-size: 15px; }
+        @media (max-width: 980px) { .steps { grid-template-columns: 1fr; gap: 28px; } }
         .skills { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; border-top: 1px solid var(--rule); }
         .skill { padding: 16px 0 18px; border-bottom: 1px solid var(--rule); }
         .skill-name { font-weight: 500; margin-bottom: 3px; }
@@ -95,11 +101,9 @@
     <div class="wrap mast-in">
         <a href="/" class="mark"><img src="/favicon.svg" alt="" width="28" height="28"><span class="mark-name">Dominic Mayne</span></a>
         <nav class="mast-nav" aria-label="Main">
-            <a href="#about" class="hide-sm">About</a>
-            <a href="#platform" class="hide-sm">Projects</a>
-            <a href="#experience" class="hide-sm">Experience</a>
+            <a href="/work">Work</a>
+            <a href="/about" aria-current="page">About</a>
             <a href="#contact" class="hide-sm">Contact</a>
-            <a href="/#work" class="btn btn-sm">See the work</a>
         </nav>
     </div>
 </header>
@@ -114,7 +118,7 @@
             <strong>BSc Real Estate, University of Reading (2:1).</strong> I build data products that put real estate knowledge to work, from a Central London office intelligence platform to a live service used by parents across the UK.
         </p>
         <div class="hero-actions">
-            <a href="/#work" class="btn btn-solid">See the work</a>
+            <a href="/work" class="btn btn-solid">See the work</a>
             <a href="#about" class="link">Read my story</a>
         </div>
     </div>
@@ -124,6 +128,7 @@
             <li><a href="#about">Why I built this</a></li>
             <li><a href="#platform">How the West End platform works</a></li>
             <li><a href="#more">Everything else I've built</a></li>
+            <li><a href="#method">How I build</a></li>
             <li><a href="#skills">Technical &amp; professional capability</a></li>
             <li><a href="#experience">Education &amp; work history</a></li>
             <li><a href="#contact">Get in touch</a></li>
@@ -144,14 +149,14 @@
             <p>I graduated from the <strong>University of Reading with a BSc in Real Estate (2:1)</strong>, with modules covering Real Estate Valuation, Development Appraisal, Applied Property Law and Asset Management. My final project received a First Class grade.</p>
             <p>During my studies and job search I noticed a gap: the tools used by institutional property professionals — CoStar, EG Propertylink, agent research platforms — are expensive, complex, and largely inaccessible to graduates. I wanted to understand how modern technology could democratise access to this kind of intelligence, so I built my own version.</p>
             <p>I had <strong>no coding background</strong>, so I built it the way I think a lot of work will be done from now on: I researched the data, wrote the specs, made every product and design call, and directed Claude to write the code. That meant learning enough Python, FastAPI and scikit-learn to read what it wrote, test it, and push back when it was wrong.</p>
-            <p>It worked well enough that I kept going. <strong>Hold</strong> now watches 510+ UK leisure centres for parents, and <strong>Unearthed</strong> launches this month.</p>
+            <p>It worked well enough that I kept going. <strong>Hold</strong> now helps parents across the UK get their children into swimming lessons, and <strong>Unearthed</strong> launches this month.</p>
             <p>I'm now looking to bring both sides of this — <strong>real estate knowledge and technical capability</strong> — into a graduate role at a firm where data, technology and property intersect.</p>
         </div>
         <div class="about-facts">
             <div><div class="stat-val">2:1</div><div class="stat-label">BSc Real Estate, Reading</div></div>
             <div><div class="stat-val">6</div><div class="stat-label">Projects built</div></div>
             <div><div class="stat-val">1st</div><div class="stat-label">Final Year Project</div></div>
-            <div><div class="stat-val">510+</div><div class="stat-label">Centres Hold watches</div></div>
+            <div><div class="stat-val">3</div><div class="stat-label">Firms I've worked with</div></div>
         </div>
     </div>
 </section>
@@ -165,37 +170,37 @@
         </div>
     </div>
     <div class="build-grid">
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">i.</div>
             <h3 class="build-title">Data Research &amp; Pipeline</h3>
             <p class="build-text">Researched and compiled quarterly market data across 8 Central London submarkets from published reports by Savills, CBRE, Colliers, Knight Frank and BNP Paribas. Built a structured CSV pipeline feeding a Python backend.</p>
             <p class="stack"><span>Python</span><span>Pandas</span><span>Market Research</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">ii.</div>
             <h3 class="build-title">Machine Learning Forecasting</h3>
             <p class="build-text">A ridge regression forecasts next quarter's vacancy change from momentum and relative take-up, four quarters ahead. Walk-forward backtesting shows it beats a no-change guess by 19%.</p>
             <p class="stack"><span>scikit-learn</span><span>Ridge Regression</span><span>Backtesting</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">iii.</div>
             <h3 class="build-title">FastAPI Backend</h3>
             <p class="build-text">Built a production REST API with FastAPI, deployed on Railway. Endpoints serve forecasts, AI commentary, live web data, deal tracking and PDF generation, with Claude responses cached to keep costs down.</p>
             <p class="stack"><span>FastAPI</span><span>Railway</span><span>REST API</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">iv.</div>
             <h3 class="build-title">Claude AI Integration</h3>
             <p class="build-text">Integrated the Anthropic Claude API to write market commentary in the style of an agency research note, and to search the web for the latest published market figures and deal transactions.</p>
             <p class="stack"><span>Anthropic API</span><span>Web Search</span><span>Prompt Engineering</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">v.</div>
             <h3 class="build-title">Frontend &amp; Product Design</h3>
             <p class="build-text">Vanilla HTML, CSS and JavaScript: an interactive submarket schematic, Chart.js visualisations, light and dark themes, and a saved data snapshot so the pages never sit blank when the API is down.</p>
             <p class="stack"><span>HTML/CSS/JS</span><span>Chart.js</span><span>SVG</span><span>Vercel</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">vi.</div>
             <h3 class="build-title">PDF Report Generation</h3>
             <p class="build-text">Built an automated PDF report generator using ReportLab that produces a branded, institutional-quality research note on demand — including AI commentary, KPI tables, quarterly data breakdown and a disclaimer footer.</p>
@@ -213,37 +218,59 @@
         </div>
     </div>
     <div class="build-grid">
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">Hold</div>
             <h3 class="build-title">Kids' class alerts for parents</h3>
-            <p class="build-text">Checks the live timetables of 510+ UK leisure centres across 22 operators and emails parents the moment a space opens. Its October report found 37% of 49,339 kids' swimming classes fully booked. <a class="link" href="https://www.gethold.co.uk" target="_blank" rel="noopener">gethold.co.uk ↗</a></p>
+            <p class="build-text">Watches leisure-centre timetables across the UK and emails parents the moment a space opens in the class they want. <a class="link" href="https://www.gethold.co.uk" target="_blank" rel="noopener">gethold.co.uk ↗</a></p>
             <p class="stack"><span>Python</span><span>Open data</span><span>Email</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">Unearthed</div>
             <h3 class="build-title">Fantasy football for wonderkids</h3>
             <p class="build-text">Pick seven real under-21s and score from what they actually do each week, in mini-leagues with friends. A career mode simulates five teenagers' next ten seasons. Gameweek 1 is 16 October 2026.</p>
             <p class="stack"><span>Node.js</span><span>API-Football</span><span>Game design</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">Talent</div>
             <h3 class="build-title">Built Environment Talent Intelligence</h3>
             <p class="build-text">Salary benchmarking and hiring-demand forecasting across five property, engineering and construction recruitment sectors. <a class="link" href="/talent-dashboard">View the demo</a></p>
             <p class="stack"><span>Python</span><span>Chart.js</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">Spurs</div>
             <h3 class="build-title">Stadium Commercial Intelligence</h3>
             <p class="build-text">The property and revenue model behind Tottenham Hotspur Stadium: NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study. <a class="link" href="/spurs">View the dashboard</a></p>
             <p class="stack"><span>Stadium economics</span><span>Chart.js</span></p>
         </div>
-        <div class="build">
+        <div data-reveal class="build">
             <div class="build-num">3D</div>
             <h3 class="build-title">3D modelling</h3>
             <p class="build-text">A growing portfolio of 3D models. Renders and the story behind each piece are coming soon.</p>
         </div>
     </div>
 </section>
+
+<section class="wrap section" id="method">
+        <div class="sec-head">
+        <div class="kicker">How I build</div>
+        <div><h2 class="h2">Judgement in, software out.</h2></div>
+    </div>
+        <ol class="steps">
+            <li>
+                <h3>Start with a real question</h3>
+                <p>Every project began with something I noticed. Graduates can't afford CoStar. Parents can't get a swimming place. Fans love spotting talent before anyone else.</p>
+            </li>
+            <li>
+                <h3>Direct the build</h3>
+                <p>I write the spec, make the product calls and direct Claude to write the code. I had no coding background, so I learned to read, test and question everything it produces.</p>
+            </li>
+            <li>
+                <h3>Ship it and be honest about it</h3>
+                <p>Everything here is deployed with real data. The West End forecast is backtested against a simple baseline, and Hold publishes how it measures what it reports.</p>
+            </li>
+        </ol>
+</section>
+
 
 <section class="wrap section" id="skills">
     <div class="sec-head">
@@ -269,7 +296,7 @@
         <div><h2 class="h2">Education &amp; work history</h2></div>
     </div>
     <div class="exp">
-        <div class="exp-item">
+        <div data-reveal class="exp-item">
             <div>
                 <div class="exp-date">2022 — 2025</div>
                 <div class="exp-company">University of Reading</div>
@@ -284,7 +311,7 @@
                 </ul>
             </div>
         </div>
-        <div class="exp-item">
+        <div data-reveal class="exp-item">
             <div>
                 <div class="exp-date">Aug 2024</div>
                 <div class="exp-company">Savills UK</div>
@@ -299,7 +326,7 @@
                 </ul>
             </div>
         </div>
-        <div class="exp-item">
+        <div data-reveal class="exp-item">
             <div>
                 <div class="exp-date">Oct 2025</div>
                 <div class="exp-company">Fletcher Morgan</div>
@@ -314,7 +341,7 @@
                 </ul>
             </div>
         </div>
-        <div class="exp-item">
+        <div data-reveal class="exp-item">
             <div>
                 <div class="exp-date">Oct 2025</div>
                 <div class="exp-company">PMG Cardiff Ltd</div>
@@ -355,5 +382,6 @@
     </div>
 </footer>
 
+<script src="/assets/motion.js"></script>
 </body>
 </html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Work · Dominic Mayne</title>
+    <meta name="description" content="Projects by Dominic Mayne: West End Office Intelligence, Built Environment Talent Intelligence, Tottenham Hotspur Stadium analysis, Hold, Unearthed and 3D modelling.">
+    <link rel="canonical" href="https://www.dominicmayne.com/work">
+    <meta property="og:title" content="Work · Dominic Mayne">
+    <meta property="og:image" content="https://www.dominicmayne.com/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
+    <style>
+        .work { padding-top: 88px; padding-bottom: 120px; }
+        .work .sec-head { margin-bottom: 64px; }
+        .work-title { font-size: clamp(48px, 7vw, 88px); }
+        @media (max-width: 640px) { .work { padding-top: 48px; padding-bottom: 80px; } }
+    </style>
+</head>
+<body>
+
+<header class="mast">
+    <div class="wrap mast-in">
+        <a href="/" class="mark"><img src="/favicon.svg" alt="" width="24" height="24"><span class="mark-name">Dominic Mayne</span></a>
+        <nav class="mast-nav" aria-label="Main">
+            <a href="/work" aria-current="page">Work</a>
+            <a href="/about">About</a>
+            <a href="/about#contact" class="hide-sm">Contact</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+<section class="wrap work">
+    <div class="sec-head">
+        <h1 class="display work-title">Things I've built.</h1>
+        <p>Each one started with a question from the real world: what the West End office market will do next, why parents can't get a swimming place, and who the next wonderkid is.</p>
+    </div>
+
+    <div class="group"><h3>Property &amp; data</h3><span>Where my degree meets the data</span></div>
+    <div class="tiles">
+        <a href="/west-end" data-reveal class="tile tile-wide">
+            <div>
+                <div class="tile-status"><span class="dot"></span>Live · dominicmayne.com/west-end</div>
+                <h3 class="tile-title">West End Office Intelligence Platform</h3>
+                <p class="tile-desc">Leasing analytics across 8 Central London office submarkets: a backtested vacancy forecast, research notes written by Claude, live market search, a deals tracker and one-click PDF reports.</p>
+                <p class="tile-proof">The forecast is tested on quarters it never saw and lands <strong><span data-backtest>19%</span> closer</strong> than assuming nothing changes.</p>
+                <p class="stack"><span>Python</span><span>scikit-learn</span><span>FastAPI</span><span>Claude API</span><span>Chart.js</span></p>
+                <span class="tile-go">Open the platform</span>
+            </div>
+            <div class="tile-art" aria-hidden="true">
+                <!-- The eight submarkets as the dashboard's schematic draws them, tinted by vacancy. -->
+                <svg viewBox="0 0 400 300">
+                    <g font-family="-apple-system, Inter, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
+                        <rect x="8" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 22%, transparent)"/><text x="68" y="57" style="fill:var(--ink)">Marylebone</text>
+                        <rect x="140" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 24%, transparent)"/><text x="200" y="57" style="fill:var(--ink)">Fitzrovia</text>
+                        <rect x="272" y="8" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--warn) 30%, transparent)"/><text x="332" y="57" style="fill:var(--ink)">Midtown</text>
+                        <rect x="8" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 34%, transparent)"/><text x="68" y="155" style="fill:var(--ink)">Mayfair</text>
+                        <rect x="140" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 18%, transparent)"/><text x="200" y="155" style="fill:var(--ink)">Soho</text>
+                        <rect x="272" y="106" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 22%, transparent)"/><text x="332" y="155" style="fill:var(--ink)">Covent Garden</text>
+                        <rect x="8" y="204" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--good) 28%, transparent)"/><text x="68" y="253" style="fill:var(--ink)">St James's</text>
+                        <rect x="140" y="204" width="120" height="88" rx="14" style="fill:color-mix(in srgb, var(--bad) 22%, transparent)"/><text x="200" y="253" style="fill:var(--ink)">Victoria</text>
+                    </g>
+                    <path d="M272 262 Q 320 240 392 256" fill="none" style="stroke:var(--paper-3)" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </a>
+
+        <a href="/talent-dashboard" data-reveal class="tile">
+            <div class="tile-status"><span class="dot demo"></span>Demo platform</div>
+            <h3 class="tile-title">Built Environment Talent Intelligence</h3>
+            <p class="tile-desc">Salary benchmarking and hiring-demand forecasting across five property, engineering and construction recruitment sectors, exploring how market intelligence could support recruitment consultancies.</p>
+            <p class="stack"><span>Python</span><span>Machine Learning</span><span>FastAPI</span><span>Chart.js</span><span>Recruitment Analytics</span></p>
+            <span class="tile-go">View platform</span>
+            <div class="tile-art" aria-hidden="true">
+                <!-- Salary line over placement bars, the dashboard's two main charts. -->
+                <svg viewBox="0 0 400 160">
+                    <g style="fill:var(--rule)">
+                        <rect x="6" y="110" width="30" height="50" rx="5"/><rect x="56" y="96" width="30" height="64" rx="5"/><rect x="106" y="104" width="30" height="56" rx="5"/><rect x="156" y="84" width="30" height="76" rx="5"/><rect x="206" y="90" width="30" height="70" rx="5"/><rect x="256" y="72" width="30" height="88" rx="5"/><rect x="306" y="66" width="30" height="94" rx="5"/>
+                        <rect x="356" y="52" width="30" height="108" rx="5" style="fill:var(--accent)"/>
+                    </g>
+                    <polyline points="21,86 71,78 121,80 171,60 221,58 271,40 321,34 371,18" fill="none" style="stroke:var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="371" cy="18" r="5" style="fill:var(--ink)"/>
+                </svg>
+            </div>
+        </a>
+
+        <a href="/spurs" data-reveal class="tile tile-dark tile-spurs">
+            <div class="tile-status"><span class="dot"></span>Live · Passion project</div>
+            <h3 class="tile-title">Tottenham Hotspur Stadium Commercial Intelligence</h3>
+            <p class="tile-desc">The commercial property and revenue model behind one of Europe's most commercially advanced venues: NFL, concerts, boxing, F1 Drive and a £1.2bn real estate case study.</p>
+            <p class="stack"><span>Stadium Economics</span><span>Commercial Real Estate</span><span>Sports Finance</span><span>Chart.js</span></p>
+            <span class="tile-go">View dashboard</span>
+            <div class="tile-art" aria-hidden="true">
+                <!-- The bowl from above: pitch, stands, and the single-tier south stand. -->
+                <svg viewBox="0 0 400 160">
+                    <ellipse cx="200" cy="150" rx="190" ry="120" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="22"/>
+                    <ellipse cx="200" cy="150" rx="150" ry="88" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="18"/>
+                    <path d="M40 150 A 160 104 0 0 1 360 150" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round" opacity="0.5"/>
+                    <rect x="120" y="102" width="160" height="58" rx="6" fill="rgba(255,255,255,0.12)"/>
+                    <line x1="200" y1="102" x2="200" y2="160" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+                    <circle cx="200" cy="140" r="12" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+                </svg>
+            </div>
+        </a>
+    </div>
+
+    <div class="group"><h3>Products people use</h3><span>Outside property, same instincts</span></div>
+    <div class="tiles">
+        <a href="https://www.gethold.co.uk" target="_blank" rel="noopener" data-reveal class="tile tile-dark tile-hold">
+            <div class="tile-status"><span class="dot"></span>Live · gethold.co.uk</div>
+            <h3 class="tile-title">Hold</h3>
+            <p class="tile-desc">Parents refresh leisure-centre booking pages for weeks to get a child into swimming lessons. Hold watches leisure-centre timetables across the UK and emails parents the moment a space opens. Free, no account needed.</p>
+            <p class="stack"><span>Python</span><span>Open data</span><span>Geosearch</span><span>Email alerts</span><span>SEO</span></p>
+            <span class="tile-go">Visit gethold.co.uk <span class="arrow">↗</span></span>
+            <div class="tile-art" aria-hidden="true">
+                <!-- A week of full classes; one opens up. -->
+                <svg viewBox="0 0 400 150">
+                    <g fill="rgba(255,255,255,0.1)">
+                        <rect x="0" y="0" width="70" height="30" rx="7"/><rect x="82" y="0" width="70" height="30" rx="7"/><rect x="164" y="0" width="70" height="30" rx="7"/><rect x="246" y="0" width="70" height="30" rx="7"/><rect x="328" y="0" width="70" height="30" rx="7"/>
+                        <rect x="0" y="40" width="70" height="30" rx="7"/><rect x="82" y="40" width="70" height="30" rx="7"/><rect x="246" y="40" width="70" height="30" rx="7"/><rect x="328" y="40" width="70" height="30" rx="7"/>
+                        <rect x="0" y="80" width="70" height="30" rx="7"/><rect x="82" y="80" width="70" height="30" rx="7"/><rect x="164" y="80" width="70" height="30" rx="7"/><rect x="246" y="80" width="70" height="30" rx="7"/><rect x="328" y="80" width="70" height="30" rx="7"/>
+                        <rect x="0" y="120" width="70" height="30" rx="7"/><rect x="82" y="120" width="70" height="30" rx="7"/><rect x="164" y="120" width="70" height="30" rx="7"/><rect x="246" y="120" width="70" height="30" rx="7"/><rect x="328" y="120" width="70" height="30" rx="7"/>
+                    </g>
+                    <rect class="slot-open" x="164" y="40" width="70" height="30" rx="7"/>
+                </svg>
+            </div>
+        </a>
+
+        <div data-reveal class="tile tile-dark tile-unearthed">
+            <div class="tile-status"><span class="dot soon"></span>Launching · Gameweek 1 on 16 October</div>
+            <h3 class="tile-title">Unearthed</h3>
+            <p class="tile-desc">Fantasy football for wonderkids. Pick seven real under-21s, score from what they actually do each week, and beat your mates in mini-leagues by finding them first. A career mode drafts five teenagers and plays out their next ten seasons.</p>
+            <p class="tile-proof">Points come from <strong>real match data every gameweek</strong>, so the scouting is the game.</p>
+            <p class="stack"><span>Node.js</span><span>API-Football</span><span>Game design</span><span>Simulation</span></p>
+            <div class="tile-art" aria-hidden="true">
+                <!-- Seven picks on a half pitch, one breaking out. -->
+                <svg viewBox="0 0 400 150">
+                    <rect x="1" y="1" width="398" height="148" rx="10" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <line x1="200" y1="1" x2="200" y2="149" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <circle cx="200" cy="75" r="30" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <rect x="1" y="35" width="50" height="80" fill="none" stroke="rgba(255,246,234,0.18)" stroke-width="2"/>
+                    <g fill="rgba(255,246,234,0.45)">
+                        <circle cx="30" cy="75" r="7"/><circle cx="95" cy="35" r="7"/><circle cx="95" cy="115" r="7"/>
+                        <circle cx="160" cy="55" r="7"/><circle cx="160" cy="105" r="7"/><circle cx="255" cy="40" r="7"/>
+                    </g>
+                    <circle cx="300" cy="92" r="11" fill="#ffd23f"/>
+                    <path d="M300 92 L 372 30" stroke="#ff4b2b" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 7"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="group"><h3>Making</h3><span>Away from the spreadsheets</span></div>
+    <div class="tiles">
+        <!-- TODO(dom): swap in a real description, software and a few renders. -->
+        <div data-reveal class="tile tile-wide">
+            <div>
+                <div class="tile-status"><span class="dot demo"></span>In progress</div>
+                <h3 class="tile-title">3D modelling</h3>
+                <p class="tile-desc">I'm building a portfolio of 3D models. Renders and the story behind each piece are on their way here.</p>
+            </div>
+            <div class="tile-art" aria-hidden="true">
+                <!-- A building shell in isometric wireframe: the stage before the render. -->
+                <svg viewBox="0 0 400 250" fill="none" stroke-linejoin="round">
+                    <path d="M200 30 L330 105 L200 180 L70 105 Z" style="fill:color-mix(in srgb, var(--accent) 7%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M70 105 L200 180 L200 240 L70 165 Z" style="fill:color-mix(in srgb, var(--accent) 16%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M200 180 L330 105 L330 165 L200 240 Z" style="fill:color-mix(in srgb, var(--accent) 28%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
+                    <path d="M70 165 L200 90 L330 165 M200 30 L200 90" style="stroke:var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity="0.55"/>
+                    <path d="M102.5 123.8 V183.8 M135 142.5 V202.5 M167.5 161.3 V221.3 M232.5 161.3 V221.3 M265 142.5 V202.5 M297.5 123.8 V183.8 M70 135 L200 210 L330 135" style="stroke:var(--accent)" stroke-width="0.7" opacity="0.45"/>
+                    <g style="fill:var(--surface);stroke:var(--accent)" stroke-width="1.4"><circle cx="200" cy="30" r="3.5"/><circle cx="330" cy="105" r="3.5"/><circle cx="200" cy="180" r="3.5"/><circle cx="70" cy="105" r="3.5"/><circle cx="70" cy="165" r="3.5"/><circle cx="200" cy="240" r="3.5"/><circle cx="330" cy="165" r="3.5"/></g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="foot">
+    <div class="wrap foot-in">
+        <span>© 2026 <strong>Dominic Mayne</strong> · dominicmayne.com</span>
+        <span class="foot-links"><a href="/">Home</a><a href="/about">About</a><a href="mailto:dominic.d.mayne@gmail.com">Email</a></span>
+    </div>
+</footer>
+
+<script src="/assets/motion.js"></script>
+<script>
+    // Keep the West End proof line in step with the latest backtest.
+    fetch('/data/forecast.json').then(r => r.json()).then(f => {
+        const el = document.querySelector('[data-backtest]');
+        if (el && f.backtest) el.textContent = Math.round(f.backtest.improvement_pct) + '%';
+    }).catch(() => {});
+</script>
+</body>
+</html>
