@@ -1,0 +1,187 @@
+{
+ "method": "Ridge regression on next-quarter vacancy change; features: last quarter's change and take-up relative to the submarket average",
+ "backtest": {
+  "mae_pp": 0.298,
+  "naive_mae_pp": 0.368,
+  "improvement_pct": 19.0,
+  "tests": 40
+ },
+ "areas": {
+  "Covent Garden": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 4.28
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 4.14
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 4.01
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 3.88
+   }
+  ],
+  "Fitzrovia": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 5.09
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 4.96
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 4.82
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 4.69
+   }
+  ],
+  "Marylebone": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 2.56
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 2.43
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 2.29
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 2.16
+   }
+  ],
+  "Mayfair": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 3.38
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 3.26
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 3.12
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 2.99
+   }
+  ],
+  "Midtown": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 6.46
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 6.31
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 6.18
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 6.05
+   }
+  ],
+  "Soho": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 3.98
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 3.84
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 3.71
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 3.58
+   }
+  ],
+  "St James's": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 2.86
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 2.73
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 2.59
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 2.46
+   }
+  ],
+  "Victoria": [
+   {
+    "year": 2025,
+    "quarter": "Q4",
+    "vacancy": 6.88
+   },
+   {
+    "year": 2026,
+    "quarter": "Q1",
+    "vacancy": 6.74
+   },
+   {
+    "year": 2026,
+    "quarter": "Q2",
+    "vacancy": 6.61
+   },
+   {
+    "year": 2026,
+    "quarter": "Q3",
+    "vacancy": 6.48
+   }
+  ]
+ }
+}

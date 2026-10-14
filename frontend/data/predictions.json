@@ -1,267 +1,135 @@
 [
  {
-  "area": "Mayfair",
+  "area": "Covent Garden",
   "year": 2023,
   "quarter": "Q1",
-  "rent_psf": 135.0,
-  "vacancy": 5.2,
-  "takeup_sqft": 148000,
-  "sentiment": "Improving",
-  "predicted": 4.028262855336976,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 4.0%"
- },
- {
-  "area": "Mayfair",
-  "year": 2023,
-  "quarter": "Q2",
-  "rent_psf": 138.0,
-  "vacancy": 4.9,
-  "takeup_sqft": 132000,
-  "sentiment": "Improving",
-  "predicted": 3.8442454786516294,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 3.8%"
- },
- {
-  "area": "Mayfair",
-  "year": 2023,
-  "quarter": "Q3",
-  "rent_psf": 140.0,
-  "vacancy": 4.6,
-  "takeup_sqft": 155000,
-  "sentiment": "Tightening",
-  "predicted": 3.707306306215827,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 3.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2023,
-  "quarter": "Q4",
-  "rent_psf": 140.0,
-  "vacancy": 4.5,
-  "takeup_sqft": 102000,
-  "sentiment": "Tightening",
-  "predicted": 3.6645235422790563,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 3.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2024,
-  "quarter": "Q1",
-  "rent_psf": 140.0,
-  "vacancy": 4.5,
-  "takeup_sqft": 102100,
-  "sentiment": "Tightening",
-  "predicted": 3.7200945527392832,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 3.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2024,
-  "quarter": "Q2",
-  "rent_psf": 140.0,
-  "vacancy": 4.2,
-  "takeup_sqft": 85000,
-  "sentiment": "Tightening",
-  "predicted": 3.6773117888025126,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 3.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2024,
-  "quarter": "Q3",
-  "rent_psf": 160.0,
-  "vacancy": 3.8,
-  "takeup_sqft": 95000,
-  "sentiment": "Tightening",
-  "predicted": 2.6929649398752247,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 2.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2024,
-  "quarter": "Q4",
-  "rent_psf": 160.0,
-  "vacancy": 3.4,
-  "takeup_sqft": 95000,
-  "sentiment": "Tightening",
-  "predicted": 2.650182175938454,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 2.7%"
- },
- {
-  "area": "Mayfair",
-  "year": 2025,
-  "quarter": "Q1",
-  "rent_psf": 165.0,
-  "vacancy": 3.5,
-  "takeup_sqft": 110000,
-  "sentiment": "Tightening",
-  "predicted": 2.4703621651510446,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 2.5%"
- },
- {
-  "area": "Mayfair",
-  "year": 2025,
-  "quarter": "Q2",
-  "rent_psf": 175.0,
-  "vacancy": 3.2,
-  "takeup_sqft": 95000,
-  "sentiment": "Tightening",
-  "predicted": 1.9567973587190295,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 2.0%"
- },
- {
-  "area": "Mayfair",
-  "year": 2025,
-  "quarter": "Q3",
-  "rent_psf": 185.0,
-  "vacancy": 3.6,
-  "takeup_sqft": 88000,
-  "sentiment": "Tightening",
-  "predicted": 1.4432325522870144,
-  "signal": "🟢 Attractive",
-  "insight": "Mayfair shows vacancy at 1.4%"
- },
- {
-  "area": "Soho",
-  "year": 2023,
-  "quarter": "Q1",
-  "rent_psf": 100.0,
+  "rent_psf": 82.5,
   "vacancy": 6.2,
-  "takeup_sqft": 62800,
+  "takeup_sqft": 58000,
   "sentiment": "Improving",
-  "predicted": 6.220422861154049,
+  "predicted": 6.2,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.2%"
+  "insight": "Covent Garden shows vacancy at 6.2%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2023,
   "quarter": "Q2",
-  "rent_psf": 100.0,
+  "rent_psf": 82.5,
   "vacancy": 6.0,
   "takeup_sqft": 68000,
   "sentiment": "Improving",
-  "predicted": 6.177640097217278,
+  "predicted": 6.043760441378797,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.2%"
+  "insight": "Covent Garden shows vacancy at 6.0%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2023,
   "quarter": "Q3",
-  "rent_psf": 100.0,
+  "rent_psf": 87.5,
   "vacancy": 5.8,
-  "takeup_sqft": 75000,
-  "sentiment": "Strong",
-  "predicted": 6.134857333280536,
+  "takeup_sqft": 90000,
+  "sentiment": "Improving",
+  "predicted": 5.882088970733032,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.1%"
+  "insight": "Covent Garden shows vacancy at 5.9%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2023,
   "quarter": "Q4",
-  "rent_psf": 100.0,
+  "rent_psf": 87.5,
   "vacancy": 5.5,
-  "takeup_sqft": 70000,
-  "sentiment": "Strong",
-  "predicted": 6.092074569343765,
+  "takeup_sqft": 75000,
+  "sentiment": "Improving",
+  "predicted": 5.6913447125140335,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.1%"
+  "insight": "Covent Garden shows vacancy at 5.7%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2024,
   "quarter": "Q1",
-  "rent_psf": 100.0,
-  "vacancy": 5.0,
+  "rent_psf": 87.5,
+  "vacancy": 5.6,
   "takeup_sqft": 62000,
-  "sentiment": "Strong",
-  "predicted": 6.147645579803992,
+  "sentiment": "Improving",
+  "predicted": 5.39647335821133,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.1%"
+  "insight": "Covent Garden shows vacancy at 5.4%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2024,
   "quarter": "Q2",
-  "rent_psf": 100.0,
-  "vacancy": 4.9,
-  "takeup_sqft": 62600,
-  "sentiment": "Strong",
-  "predicted": 6.104862815867222,
+  "rent_psf": 90.0,
+  "vacancy": 5.4,
+  "takeup_sqft": 80000,
+  "sentiment": "Improving",
+  "predicted": 5.42014117640838,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.1%"
+  "insight": "Covent Garden shows vacancy at 5.4%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2024,
   "quarter": "Q3",
-  "rent_psf": 100.0,
-  "vacancy": 4.5,
-  "takeup_sqft": 70000,
+  "rent_psf": 95.0,
+  "vacancy": 5.2,
+  "takeup_sqft": 88000,
   "sentiment": "Strong",
-  "predicted": 6.062080051930451,
+  "predicted": 5.283671777641605,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 6.1%"
+  "insight": "Covent Garden shows vacancy at 5.3%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2024,
   "quarter": "Q4",
-  "rent_psf": 105.0,
-  "vacancy": 4.8,
-  "takeup_sqft": 78000,
-  "sentiment": "Strong",
-  "predicted": 5.783906266746072,
-  "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 5.8%"
- },
- {
-  "area": "Soho",
-  "year": 2025,
-  "quarter": "Q1",
-  "rent_psf": 108.0,
-  "vacancy": 4.6,
-  "takeup_sqft": 58000,
-  "sentiment": "Strong",
-  "predicted": 5.698242664457723,
-  "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 5.7%"
- },
- {
-  "area": "Soho",
-  "year": 2025,
-  "quarter": "Q2",
-  "rent_psf": 112.0,
-  "vacancy": 4.3,
+  "rent_psf": 95.0,
+  "vacancy": 5.0,
   "takeup_sqft": 72000,
   "sentiment": "Strong",
-  "predicted": 5.467147083522832,
+  "predicted": 5.087674723930333,
   "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 5.5%"
+  "insight": "Covent Garden shows vacancy at 5.1%"
  },
  {
-  "area": "Soho",
+  "area": "Covent Garden",
   "year": 2025,
-  "quarter": "Q3",
-  "rent_psf": 115.0,
-  "vacancy": 4.1,
+  "quarter": "Q1",
+  "rent_psf": 98.0,
+  "vacancy": 4.8,
   "takeup_sqft": 68000,
   "sentiment": "Strong",
-  "predicted": 5.283129706837514,
-  "signal": "🟡 Neutral",
-  "insight": "Soho shows vacancy at 5.3%"
+  "predicted": 4.876228948955219,
+  "signal": "🟢 Attractive",
+  "insight": "Covent Garden shows vacancy at 4.9%"
+ },
+ {
+  "area": "Covent Garden",
+  "year": 2025,
+  "quarter": "Q2",
+  "rent_psf": 102.0,
+  "vacancy": 4.6,
+  "takeup_sqft": 75000,
+  "sentiment": "Strong",
+  "predicted": 4.673762938792117,
+  "signal": "🟢 Attractive",
+  "insight": "Covent Garden shows vacancy at 4.7%"
+ },
+ {
+  "area": "Covent Garden",
+  "year": 2025,
+  "quarter": "Q3",
+  "rent_psf": 105.0,
+  "vacancy": 4.4,
+  "takeup_sqft": 80000,
+  "sentiment": "Strong",
+  "predicted": 4.4788157698352515,
+  "signal": "🟢 Attractive",
+  "insight": "Covent Garden shows vacancy at 4.5%"
  },
  {
   "area": "Fitzrovia",
@@ -271,7 +139,7 @@
   "vacancy": 5.4,
   "takeup_sqft": 52000,
   "sentiment": "Improving",
-  "predicted": 5.366968168234337,
+  "predicted": 5.4,
   "signal": "🟡 Neutral",
   "insight": "Fitzrovia shows vacancy at 5.4%"
  },
@@ -283,9 +151,9 @@
   "vacancy": 5.6,
   "takeup_sqft": 53000,
   "sentiment": "Improving",
-  "predicted": 5.324185404297566,
+  "predicted": 5.2437604413787975,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.3%"
+  "insight": "Fitzrovia shows vacancy at 5.2%"
  },
  {
   "area": "Fitzrovia",
@@ -295,9 +163,9 @@
   "vacancy": 5.8,
   "takeup_sqft": 68000,
   "sentiment": "Improving",
-  "predicted": 5.281402640360824,
+  "predicted": 5.410253507743036,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.3%"
+  "insight": "Fitzrovia shows vacancy at 5.4%"
  },
  {
   "area": "Fitzrovia",
@@ -307,9 +175,9 @@
   "vacancy": 6.0,
   "takeup_sqft": 58000,
   "sentiment": "Improving",
-  "predicted": 5.238619876424053,
+  "predicted": 5.619456743501298,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.2%"
+  "insight": "Fitzrovia shows vacancy at 5.6%"
  },
  {
   "area": "Fitzrovia",
@@ -319,9 +187,9 @@
   "vacancy": 6.2,
   "takeup_sqft": 58000,
   "sentiment": "Improving",
-  "predicted": 5.29419088688428,
+  "predicted": 5.809971726175074,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.3%"
+  "insight": "Fitzrovia shows vacancy at 5.8%"
  },
  {
   "area": "Fitzrovia",
@@ -331,9 +199,9 @@
   "vacancy": 6.0,
   "takeup_sqft": 53000,
   "sentiment": "Improving",
-  "predicted": 5.133712612323706,
+  "predicted": 6.0099246000766255,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.1%"
+  "insight": "Fitzrovia shows vacancy at 6.0%"
  },
  {
   "area": "Fitzrovia",
@@ -343,9 +211,9 @@
   "vacancy": 5.8,
   "takeup_sqft": 72000,
   "sentiment": "Improving",
-  "predicted": 5.090929848386935,
+  "predicted": 5.873977451620185,
   "signal": "🟡 Neutral",
-  "insight": "Fitzrovia shows vacancy at 5.1%"
+  "insight": "Fitzrovia shows vacancy at 5.9%"
  },
  {
   "area": "Fitzrovia",
@@ -355,9 +223,9 @@
   "vacancy": 6.0,
   "takeup_sqft": 65000,
   "sentiment": "Improving",
-  "predicted": 4.930451573826332,
-  "signal": "🟢 Attractive",
-  "insight": "Fitzrovia shows vacancy at 4.9%"
+  "predicted": 5.6895759206064405,
+  "signal": "🟡 Neutral",
+  "insight": "Fitzrovia shows vacancy at 5.7%"
  },
  {
   "area": "Fitzrovia",
@@ -367,9 +235,9 @@
   "vacancy": 5.8,
   "takeup_sqft": 82000,
   "sentiment": "Improving",
-  "predicted": 4.891866175787527,
-  "signal": "🟢 Attractive",
-  "insight": "Fitzrovia shows vacancy at 4.9%"
+  "predicted": 5.814379833097693,
+  "signal": "🟡 Neutral",
+  "insight": "Fitzrovia shows vacancy at 5.8%"
  },
  {
   "area": "Fitzrovia",
@@ -379,9 +247,9 @@
   "vacancy": 5.5,
   "takeup_sqft": 75000,
   "sentiment": "Improving",
-  "predicted": 4.70784879910218,
-  "signal": "🟢 Attractive",
-  "insight": "Fitzrovia shows vacancy at 4.7%"
+  "predicted": 5.694898060962976,
+  "signal": "🟡 Neutral",
+  "insight": "Fitzrovia shows vacancy at 5.7%"
  },
  {
   "area": "Fitzrovia",
@@ -391,141 +259,273 @@
   "vacancy": 5.2,
   "takeup_sqft": 70000,
   "sentiment": "Improving",
-  "predicted": 4.523831422416862,
-  "signal": "🟢 Attractive",
-  "insight": "Fitzrovia shows vacancy at 4.5%"
- },
- {
-  "area": "Victoria",
-  "year": 2023,
-  "quarter": "Q1",
-  "rent_psf": 80.0,
-  "vacancy": 8.5,
-  "takeup_sqft": 48000,
-  "sentiment": "Neutral",
-  "predicted": 7.706409803228269,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.7%"
- },
- {
-  "area": "Victoria",
-  "year": 2023,
-  "quarter": "Q2",
-  "rent_psf": 82.0,
-  "vacancy": 8.3,
-  "takeup_sqft": 55000,
-  "sentiment": "Neutral",
-  "predicted": 7.569470630792438,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.6%"
- },
- {
-  "area": "Victoria",
-  "year": 2023,
-  "quarter": "Q3",
-  "rent_psf": 85.0,
-  "vacancy": 8.2,
-  "takeup_sqft": 62000,
-  "sentiment": "Neutral",
-  "predicted": 7.385453254107119,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.4%"
- },
- {
-  "area": "Victoria",
-  "year": 2023,
-  "quarter": "Q4",
-  "rent_psf": 85.0,
-  "vacancy": 8.0,
-  "takeup_sqft": 58000,
-  "sentiment": "Neutral",
-  "predicted": 7.342670490170349,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.3%"
- },
- {
-  "area": "Victoria",
-  "year": 2024,
-  "quarter": "Q1",
-  "rent_psf": 85.0,
-  "vacancy": 8.2,
-  "takeup_sqft": 45000,
-  "sentiment": "Neutral",
-  "predicted": 7.398241500630576,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.4%"
- },
- {
-  "area": "Victoria",
-  "year": 2024,
-  "quarter": "Q2",
-  "rent_psf": 90.0,
-  "vacancy": 7.8,
-  "takeup_sqft": 55000,
-  "sentiment": "Neutral",
-  "predicted": 7.120067715446169,
-  "signal": "🔴 Weakening",
-  "insight": "Victoria shows vacancy at 7.1%"
- },
- {
-  "area": "Victoria",
-  "year": 2024,
-  "quarter": "Q3",
-  "rent_psf": 96.0,
-  "vacancy": 7.78,
-  "takeup_sqft": 180000,
-  "sentiment": "Active",
-  "predicted": 6.794815726012246,
+  "predicted": 5.4045185343973925,
   "signal": "🟡 Neutral",
-  "insight": "Victoria shows vacancy at 6.8%"
+  "insight": "Fitzrovia shows vacancy at 5.4%"
  },
  {
-  "area": "Victoria",
-  "year": 2024,
-  "quarter": "Q4",
-  "rent_psf": 96.0,
-  "vacancy": 7.78,
-  "takeup_sqft": 85000,
-  "sentiment": "Active",
-  "predicted": 6.752032962075475,
-  "signal": "🟡 Neutral",
-  "insight": "Victoria shows vacancy at 6.8%"
- },
- {
-  "area": "Victoria",
-  "year": 2025,
+  "area": "Marylebone",
+  "year": 2023,
   "quarter": "Q1",
   "rent_psf": 100.0,
-  "vacancy": 7.5,
-  "takeup_sqft": 65000,
-  "sentiment": "Improving",
-  "predicted": 6.6192911555375815,
-  "signal": "🟡 Neutral",
-  "insight": "Victoria shows vacancy at 6.6%"
+  "vacancy": 3.8,
+  "takeup_sqft": 95000,
+  "sentiment": "Strong",
+  "predicted": 3.8,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.8%"
  },
  {
-  "area": "Victoria",
-  "year": 2025,
+  "area": "Marylebone",
+  "year": 2023,
+  "quarter": "Q2",
+  "rent_psf": 100.0,
+  "vacancy": 3.6,
+  "takeup_sqft": 88000,
+  "sentiment": "Strong",
+  "predicted": 3.643760441378797,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.6%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2023,
+  "quarter": "Q3",
+  "rent_psf": 105.0,
+  "vacancy": 3.4,
+  "takeup_sqft": 110000,
+  "sentiment": "Strong",
+  "predicted": 3.475709107545823,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.5%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2023,
+  "quarter": "Q4",
+  "rent_psf": 105.0,
+  "vacancy": 3.2,
+  "takeup_sqft": 85000,
+  "sentiment": "Strong",
+  "predicted": 3.284633767108093,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.3%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2024,
+  "quarter": "Q1",
+  "rent_psf": 105.0,
+  "vacancy": 3.5,
+  "takeup_sqft": 33600,
+  "sentiment": "Strong",
+  "predicted": 3.0723309793980236,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.1%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2024,
   "quarter": "Q2",
   "rent_psf": 105.0,
-  "vacancy": 7.2,
-  "takeup_sqft": 90000,
-  "sentiment": "Improving",
-  "predicted": 6.341117370353203,
-  "signal": "🟡 Neutral",
-  "insight": "Victoria shows vacancy at 6.3%"
+  "vacancy": 3.4,
+  "takeup_sqft": 55000,
+  "sentiment": "Strong",
+  "predicted": 3.2606221701203513,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.3%"
  },
  {
-  "area": "Victoria",
-  "year": 2025,
+  "area": "Marylebone",
+  "year": 2024,
   "quarter": "Q3",
   "rent_psf": 108.0,
-  "vacancy": 7.0,
-  "takeup_sqft": 95000,
+  "vacancy": 3.2,
+  "takeup_sqft": 62000,
+  "sentiment": "Strong",
+  "predicted": 3.244892252501458,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.2%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2024,
+  "quarter": "Q4",
+  "rent_psf": 108.0,
+  "vacancy": 3.0,
+  "takeup_sqft": 70000,
+  "sentiment": "Tightening",
+  "predicted": 3.0680764769330704,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 3.1%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2025,
+  "quarter": "Q1",
+  "rent_psf": 110.0,
+  "vacancy": 2.9,
+  "takeup_sqft": 85000,
+  "sentiment": "Tightening",
+  "predicted": 2.8742861831412756,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 2.9%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2025,
+  "quarter": "Q2",
+  "rent_psf": 112.0,
+  "vacancy": 2.8,
+  "takeup_sqft": 78000,
+  "sentiment": "Tightening",
+  "predicted": 2.7672312136419634,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 2.8%"
+ },
+ {
+  "area": "Marylebone",
+  "year": 2025,
+  "quarter": "Q3",
+  "rent_psf": 115.0,
+  "vacancy": 2.7,
+  "takeup_sqft": 72000,
+  "sentiment": "Tightening",
+  "predicted": 2.662082699450666,
+  "signal": "🟢 Attractive",
+  "insight": "Marylebone shows vacancy at 2.7%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2023,
+  "quarter": "Q1",
+  "rent_psf": 135.0,
+  "vacancy": 5.2,
+  "takeup_sqft": 148000,
   "sentiment": "Improving",
-  "predicted": 6.1570999936678845,
+  "predicted": 5.2,
   "signal": "🟡 Neutral",
-  "insight": "Victoria shows vacancy at 6.2%"
+  "insight": "Mayfair shows vacancy at 5.2%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2023,
+  "quarter": "Q2",
+  "rent_psf": 138.0,
+  "vacancy": 4.9,
+  "takeup_sqft": 132000,
+  "sentiment": "Improving",
+  "predicted": 5.043760441378797,
+  "signal": "🟡 Neutral",
+  "insight": "Mayfair shows vacancy at 5.0%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2023,
+  "quarter": "Q3",
+  "rent_psf": 140.0,
+  "vacancy": 4.6,
+  "takeup_sqft": 155000,
+  "sentiment": "Tightening",
+  "predicted": 4.791696143896745,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 4.8%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2023,
+  "quarter": "Q4",
+  "rent_psf": 140.0,
+  "vacancy": 4.5,
+  "takeup_sqft": 102000,
+  "sentiment": "Tightening",
+  "predicted": 4.498536634374187,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 4.5%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2024,
+  "quarter": "Q1",
+  "rent_psf": 140.0,
+  "vacancy": 4.5,
+  "takeup_sqft": 102100,
+  "sentiment": "Tightening",
+  "predicted": 4.347741778197409,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 4.3%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2024,
+  "quarter": "Q2",
+  "rent_psf": 140.0,
+  "vacancy": 4.2,
+  "takeup_sqft": 85000,
+  "sentiment": "Tightening",
+  "predicted": 4.33284564931855,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 4.3%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2024,
+  "quarter": "Q3",
+  "rent_psf": 160.0,
+  "vacancy": 3.8,
+  "takeup_sqft": 95000,
+  "sentiment": "Tightening",
+  "predicted": 4.078757326578099,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 4.1%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2024,
+  "quarter": "Q4",
+  "rent_psf": 160.0,
+  "vacancy": 3.4,
+  "takeup_sqft": 95000,
+  "sentiment": "Tightening",
+  "predicted": 3.7016026012776644,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 3.7%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2025,
+  "quarter": "Q1",
+  "rent_psf": 165.0,
+  "vacancy": 3.5,
+  "takeup_sqft": 110000,
+  "sentiment": "Tightening",
+  "predicted": 3.302663170267099,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 3.3%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2025,
+  "quarter": "Q2",
+  "rent_psf": 175.0,
+  "vacancy": 3.2,
+  "takeup_sqft": 95000,
+  "sentiment": "Tightening",
+  "predicted": 3.3249425184993946,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 3.3%"
+ },
+ {
+  "area": "Mayfair",
+  "year": 2025,
+  "quarter": "Q3",
+  "rent_psf": 185.0,
+  "vacancy": 3.6,
+  "takeup_sqft": 88000,
+  "sentiment": "Tightening",
+  "predicted": 3.0865994377264694,
+  "signal": "🟢 Attractive",
+  "insight": "Mayfair shows vacancy at 3.1%"
  },
  {
   "area": "Midtown",
@@ -535,9 +535,9 @@
   "vacancy": 7.8,
   "takeup_sqft": 160000,
   "sentiment": "Balanced",
-  "predicted": 7.0074710282265755,
+  "predicted": 7.8,
   "signal": "🔴 Weakening",
-  "insight": "Midtown shows vacancy at 7.0%"
+  "insight": "Midtown shows vacancy at 7.8%"
  },
  {
   "area": "Midtown",
@@ -547,9 +547,9 @@
   "vacancy": 7.5,
   "takeup_sqft": 175000,
   "sentiment": "Balanced",
-  "predicted": 6.964688264289805,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 7.0%"
+  "predicted": 7.643760441378797,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.6%"
  },
  {
   "area": "Midtown",
@@ -559,9 +559,9 @@
   "vacancy": 7.2,
   "takeup_sqft": 183000,
   "sentiment": "Balanced",
-  "predicted": 6.921905500353063,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.9%"
+  "predicted": 7.397224530032373,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.4%"
  },
  {
   "area": "Midtown",
@@ -571,9 +571,9 @@
   "vacancy": 7.0,
   "takeup_sqft": 190000,
   "sentiment": "Balanced",
-  "predicted": 6.761427225792488,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.8%"
+  "predicted": 7.098041940964448,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.1%"
  },
  {
   "area": "Midtown",
@@ -583,7 +583,7 @@
   "vacancy": 7.5,
   "takeup_sqft": 183000,
   "sentiment": "Balanced",
-  "predicted": 6.934693746876519,
+  "predicted": 6.881767920170664,
   "signal": "🟡 Neutral",
   "insight": "Midtown shows vacancy at 6.9%"
  },
@@ -595,9 +595,9 @@
   "vacancy": 6.3,
   "takeup_sqft": 183000,
   "sentiment": "Balanced",
-  "predicted": 6.8919109829397485,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.9%"
+  "predicted": 7.260162698047892,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.3%"
  },
  {
   "area": "Midtown",
@@ -607,9 +607,9 @@
   "vacancy": 5.0,
   "takeup_sqft": 254000,
   "sentiment": "Improving",
-  "predicted": 6.496041687131537,
+  "predicted": 6.349113773442802,
   "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.5%"
+  "insight": "Midtown shows vacancy at 6.3%"
  },
  {
   "area": "Midtown",
@@ -619,9 +619,9 @@
   "vacancy": 8.81,
   "takeup_sqft": 510000,
   "sentiment": "Strong",
-  "predicted": 6.688649944442403,
+  "predicted": 5.083293925346315,
   "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.7%"
+  "insight": "Midtown shows vacancy at 5.1%"
  },
  {
   "area": "Midtown",
@@ -631,9 +631,9 @@
   "vacancy": 7.8,
   "takeup_sqft": 183000,
   "sentiment": "Balanced",
-  "predicted": 6.65006454640357,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.7%"
+  "predicted": 8.07177791129293,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 8.1%"
  },
  {
   "area": "Midtown",
@@ -643,9 +643,9 @@
   "vacancy": 7.2,
   "takeup_sqft": 210000,
   "sentiment": "Improving",
-  "predicted": 6.466047169718223,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.5%"
+  "predicted": 7.805541251272859,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.8%"
  },
  {
   "area": "Midtown",
@@ -655,141 +655,141 @@
   "vacancy": 6.5,
   "takeup_sqft": 220000,
   "sentiment": "Improving",
-  "predicted": 6.282029793032905,
-  "signal": "🟡 Neutral",
-  "insight": "Midtown shows vacancy at 6.3%"
+  "predicted": 7.142645999811666,
+  "signal": "🔴 Weakening",
+  "insight": "Midtown shows vacancy at 7.1%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2023,
   "quarter": "Q1",
   "rent_psf": 100.0,
-  "vacancy": 3.8,
-  "takeup_sqft": 95000,
-  "sentiment": "Strong",
-  "predicted": 5.4037885755285515,
+  "vacancy": 6.2,
+  "takeup_sqft": 62800,
+  "sentiment": "Improving",
+  "predicted": 6.2,
   "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.4%"
+  "insight": "Soho shows vacancy at 6.2%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2023,
   "quarter": "Q2",
   "rent_psf": 100.0,
-  "vacancy": 3.6,
-  "takeup_sqft": 88000,
-  "sentiment": "Strong",
-  "predicted": 5.361005811591781,
+  "vacancy": 6.0,
+  "takeup_sqft": 68000,
+  "sentiment": "Improving",
+  "predicted": 6.043760441378797,
   "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.4%"
+  "insight": "Soho shows vacancy at 6.0%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2023,
   "quarter": "Q3",
-  "rent_psf": 105.0,
-  "vacancy": 3.4,
-  "takeup_sqft": 110000,
+  "rent_psf": 100.0,
+  "vacancy": 5.8,
+  "takeup_sqft": 75000,
   "sentiment": "Strong",
-  "predicted": 5.082832026407431,
+  "predicted": 5.879940422182205,
   "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.1%"
+  "insight": "Soho shows vacancy at 5.9%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2023,
   "quarter": "Q4",
-  "rent_psf": 105.0,
-  "vacancy": 3.2,
-  "takeup_sqft": 85000,
+  "rent_psf": 100.0,
+  "vacancy": 5.5,
+  "takeup_sqft": 70000,
   "sentiment": "Strong",
-  "predicted": 5.04004926247066,
+  "predicted": 5.682844541490665,
   "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.0%"
+  "insight": "Soho shows vacancy at 5.7%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2024,
   "quarter": "Q1",
-  "rent_psf": 105.0,
-  "vacancy": 3.5,
-  "takeup_sqft": 33600,
-  "sentiment": "Strong",
-  "predicted": 5.095620272930887,
-  "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.1%"
- },
- {
-  "area": "Marylebone",
-  "year": 2024,
-  "quarter": "Q2",
-  "rent_psf": 105.0,
-  "vacancy": 3.4,
-  "takeup_sqft": 55000,
-  "sentiment": "Strong",
-  "predicted": 5.052837508994116,
-  "signal": "🟡 Neutral",
-  "insight": "Marylebone shows vacancy at 5.1%"
- },
- {
-  "area": "Marylebone",
-  "year": 2024,
-  "quarter": "Q3",
-  "rent_psf": 108.0,
-  "vacancy": 3.2,
+  "rent_psf": 100.0,
+  "vacancy": 5.0,
   "takeup_sqft": 62000,
   "sentiment": "Strong",
-  "predicted": 4.86882013230877,
-  "signal": "🟢 Attractive",
-  "insight": "Marylebone shows vacancy at 4.9%"
+  "predicted": 5.3956217759438205,
+  "signal": "🟡 Neutral",
+  "insight": "Soho shows vacancy at 5.4%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
+  "year": 2024,
+  "quarter": "Q2",
+  "rent_psf": 100.0,
+  "vacancy": 4.9,
+  "takeup_sqft": 62600,
+  "sentiment": "Strong",
+  "predicted": 4.924355230328013,
+  "signal": "🟢 Attractive",
+  "insight": "Soho shows vacancy at 4.9%"
+ },
+ {
+  "area": "Soho",
+  "year": 2024,
+  "quarter": "Q3",
+  "rent_psf": 100.0,
+  "vacancy": 4.5,
+  "takeup_sqft": 70000,
+  "sentiment": "Strong",
+  "predicted": 4.757412504656984,
+  "signal": "🟢 Attractive",
+  "insight": "Soho shows vacancy at 4.8%"
+ },
+ {
+  "area": "Soho",
   "year": 2024,
   "quarter": "Q4",
-  "rent_psf": 108.0,
-  "vacancy": 3.0,
-  "takeup_sqft": 70000,
-  "sentiment": "Tightening",
-  "predicted": 4.826037368371999,
+  "rent_psf": 105.0,
+  "vacancy": 4.8,
+  "takeup_sqft": 78000,
+  "sentiment": "Strong",
+  "predicted": 4.414067630725883,
   "signal": "🟢 Attractive",
-  "insight": "Marylebone shows vacancy at 4.8%"
+  "insight": "Soho shows vacancy at 4.4%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2025,
   "quarter": "Q1",
-  "rent_psf": 110.0,
-  "vacancy": 2.9,
-  "takeup_sqft": 85000,
-  "sentiment": "Tightening",
-  "predicted": 4.787451970333166,
+  "rent_psf": 108.0,
+  "vacancy": 4.6,
+  "takeup_sqft": 58000,
+  "sentiment": "Strong",
+  "predicted": 4.600202835191966,
   "signal": "🟢 Attractive",
-  "insight": "Marylebone shows vacancy at 4.8%"
+  "insight": "Soho shows vacancy at 4.6%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2025,
   "quarter": "Q2",
   "rent_psf": 112.0,
-  "vacancy": 2.8,
-  "takeup_sqft": 78000,
-  "sentiment": "Tightening",
-  "predicted": 4.650512797897335,
+  "vacancy": 4.3,
+  "takeup_sqft": 72000,
+  "sentiment": "Strong",
+  "predicted": 4.470234328885156,
   "signal": "🟢 Attractive",
-  "insight": "Marylebone shows vacancy at 4.7%"
+  "insight": "Soho shows vacancy at 4.5%"
  },
  {
-  "area": "Marylebone",
+  "area": "Soho",
   "year": 2025,
   "quarter": "Q3",
   "rent_psf": 115.0,
-  "vacancy": 2.7,
-  "takeup_sqft": 72000,
-  "sentiment": "Tightening",
-  "predicted": 4.4664954212120165,
+  "vacancy": 4.1,
+  "takeup_sqft": 68000,
+  "sentiment": "Strong",
+  "predicted": 4.198121959888802,
   "signal": "🟢 Attractive",
-  "insight": "Marylebone shows vacancy at 4.5%"
+  "insight": "Soho shows vacancy at 4.2%"
  },
  {
   "area": "St James's",
@@ -799,9 +799,9 @@
   "vacancy": 4.2,
   "takeup_sqft": 72000,
   "sentiment": "Strong",
-  "predicted": 4.844897140962502,
+  "predicted": 4.2,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.8%"
+  "insight": "St James's shows vacancy at 4.2%"
  },
  {
   "area": "St James's",
@@ -811,9 +811,9 @@
   "vacancy": 4.0,
   "takeup_sqft": 68000,
   "sentiment": "Strong",
-  "predicted": 4.566723355778095,
+  "predicted": 4.043760441378797,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.6%"
+  "insight": "St James's shows vacancy at 4.0%"
  },
  {
   "area": "St James's",
@@ -823,9 +823,9 @@
   "vacancy": 3.8,
   "takeup_sqft": 75000,
   "sentiment": "Tightening",
-  "predicted": 4.288549570593716,
+  "predicted": 3.876234175932027,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.3%"
+  "insight": "St James's shows vacancy at 3.9%"
  },
  {
   "area": "St James's",
@@ -835,9 +835,9 @@
   "vacancy": 3.6,
   "takeup_sqft": 65000,
   "sentiment": "Tightening",
-  "predicted": 4.245766806656945,
+  "predicted": 3.6803069025480477,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.2%"
+  "insight": "St James's shows vacancy at 3.7%"
  },
  {
   "area": "St James's",
@@ -847,9 +847,9 @@
   "vacancy": 3.8,
   "takeup_sqft": 45000,
   "sentiment": "Tightening",
-  "predicted": 4.536728838364809,
+  "predicted": 3.473909477996334,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.5%"
+  "insight": "St James's shows vacancy at 3.5%"
  },
  {
   "area": "St James's",
@@ -859,9 +859,9 @@
   "vacancy": 3.6,
   "takeup_sqft": 48000,
   "sentiment": "Tightening",
-  "predicted": 4.493946074428038,
+  "predicted": 3.593046769176281,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.5%"
+  "insight": "St James's shows vacancy at 3.6%"
  },
  {
   "area": "St James's",
@@ -871,9 +871,9 @@
   "vacancy": 3.4,
   "takeup_sqft": 55000,
   "sentiment": "Tightening",
-  "predicted": 4.215772289243631,
+  "predicted": 3.465422980170322,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 4.2%"
+  "insight": "St James's shows vacancy at 3.5%"
  },
  {
   "area": "St James's",
@@ -883,9 +883,9 @@
   "vacancy": 3.4,
   "takeup_sqft": 52000,
   "sentiment": "Tightening",
-  "predicted": 3.9375985040592525,
+  "predicted": 3.272334332198785,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 3.9%"
+  "insight": "St James's shows vacancy at 3.3%"
  },
  {
   "area": "St James's",
@@ -895,9 +895,9 @@
   "vacancy": 3.3,
   "takeup_sqft": 58000,
   "sentiment": "Tightening",
-  "predicted": 3.757778493271843,
+  "predicted": 3.2365280478010843,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 3.8%"
+  "insight": "St James's shows vacancy at 3.2%"
  },
  {
   "area": "St James's",
@@ -907,9 +907,9 @@
   "vacancy": 3.1,
   "takeup_sqft": 65000,
   "sentiment": "Tightening",
-  "predicted": 3.479604708087436,
+  "predicted": 3.1591590346786007,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 3.5%"
+  "insight": "St James's shows vacancy at 3.2%"
  },
  {
   "area": "St James's",
@@ -919,140 +919,140 @@
   "vacancy": 3.0,
   "takeup_sqft": 60000,
   "sentiment": "Tightening",
-  "predicted": 3.2014309229030573,
+  "predicted": 2.9820118663238886,
   "signal": "🟢 Attractive",
-  "insight": "St James's shows vacancy at 3.2%"
+  "insight": "St James's shows vacancy at 3.0%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2023,
   "quarter": "Q1",
-  "rent_psf": 82.5,
-  "vacancy": 6.2,
-  "takeup_sqft": 58000,
-  "sentiment": "Improving",
-  "predicted": 5.683234292811591,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.7%"
+  "rent_psf": 80.0,
+  "vacancy": 8.5,
+  "takeup_sqft": 48000,
+  "sentiment": "Neutral",
+  "predicted": 8.5,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 8.5%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2023,
   "quarter": "Q2",
-  "rent_psf": 82.5,
-  "vacancy": 6.0,
-  "takeup_sqft": 68000,
-  "sentiment": "Improving",
-  "predicted": 5.64045152887482,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.6%"
+  "rent_psf": 82.0,
+  "vacancy": 8.3,
+  "takeup_sqft": 55000,
+  "sentiment": "Neutral",
+  "predicted": 8.343760441378796,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 8.3%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2023,
   "quarter": "Q3",
-  "rent_psf": 87.5,
-  "vacancy": 5.8,
-  "takeup_sqft": 90000,
-  "sentiment": "Improving",
-  "predicted": 5.362277743690441,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.4%"
+  "rent_psf": 85.0,
+  "vacancy": 8.2,
+  "takeup_sqft": 62000,
+  "sentiment": "Neutral",
+  "predicted": 8.181470388758056,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 8.2%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2023,
   "quarter": "Q4",
-  "rent_psf": 87.5,
-  "vacancy": 5.5,
-  "takeup_sqft": 75000,
-  "sentiment": "Improving",
-  "predicted": 5.319494979753671,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.3%"
+  "rent_psf": 85.0,
+  "vacancy": 8.0,
+  "takeup_sqft": 58000,
+  "sentiment": "Neutral",
+  "predicted": 8.0676758563824,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 8.1%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2024,
   "quarter": "Q1",
-  "rent_psf": 87.5,
-  "vacancy": 5.6,
-  "takeup_sqft": 62000,
-  "sentiment": "Improving",
-  "predicted": 5.375065990213898,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.4%"
+  "rent_psf": 85.0,
+  "vacancy": 8.2,
+  "takeup_sqft": 45000,
+  "sentiment": "Neutral",
+  "predicted": 7.8799731519840535,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.9%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2024,
   "quarter": "Q2",
   "rent_psf": 90.0,
-  "vacancy": 5.4,
-  "takeup_sqft": 80000,
-  "sentiment": "Improving",
-  "predicted": 5.214587715653323,
-  "signal": "🟡 Neutral",
-  "insight": "Covent Garden shows vacancy at 5.2%"
+  "vacancy": 7.8,
+  "takeup_sqft": 55000,
+  "sentiment": "Neutral",
+  "predicted": 8.001033748019635,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 8.0%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2024,
   "quarter": "Q3",
-  "rent_psf": 95.0,
-  "vacancy": 5.2,
-  "takeup_sqft": 88000,
-  "sentiment": "Strong",
-  "predicted": 4.936413930468916,
-  "signal": "🟢 Attractive",
-  "insight": "Covent Garden shows vacancy at 4.9%"
+  "rent_psf": 96.0,
+  "vacancy": 7.78,
+  "takeup_sqft": 180000,
+  "sentiment": "Active",
+  "predicted": 7.712983051580618,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.7%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2024,
   "quarter": "Q4",
-  "rent_psf": 95.0,
-  "vacancy": 5.0,
-  "takeup_sqft": 72000,
-  "sentiment": "Strong",
-  "predicted": 4.8936311665321455,
-  "signal": "🟢 Attractive",
-  "insight": "Covent Garden shows vacancy at 4.9%"
+  "rent_psf": 96.0,
+  "vacancy": 7.78,
+  "takeup_sqft": 85000,
+  "sentiment": "Active",
+  "predicted": 7.708796819621872,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.7%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2025,
   "quarter": "Q1",
-  "rent_psf": 98.0,
-  "vacancy": 4.8,
-  "takeup_sqft": 68000,
-  "sentiment": "Strong",
-  "predicted": 4.807967564243796,
-  "signal": "🟢 Attractive",
-  "insight": "Covent Garden shows vacancy at 4.8%"
+  "rent_psf": 100.0,
+  "vacancy": 7.5,
+  "takeup_sqft": 65000,
+  "sentiment": "Improving",
+  "predicted": 7.63224743384244,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.6%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2025,
   "quarter": "Q2",
-  "rent_psf": 102.0,
-  "vacancy": 4.6,
-  "takeup_sqft": 75000,
-  "sentiment": "Strong",
-  "predicted": 4.5768719833089335,
-  "signal": "🟢 Attractive",
-  "insight": "Covent Garden shows vacancy at 4.6%"
+  "rent_psf": 105.0,
+  "vacancy": 7.2,
+  "takeup_sqft": 90000,
+  "sentiment": "Improving",
+  "predicted": 7.385744810912953,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.4%"
  },
  {
-  "area": "Covent Garden",
+  "area": "Victoria",
   "year": 2025,
   "quarter": "Q3",
-  "rent_psf": 105.0,
-  "vacancy": 4.4,
-  "takeup_sqft": 80000,
-  "sentiment": "Strong",
-  "predicted": 4.392854606623615,
-  "signal": "🟢 Attractive",
-  "insight": "Covent Garden shows vacancy at 4.4%"
+  "rent_psf": 108.0,
+  "vacancy": 7.0,
+  "takeup_sqft": 95000,
+  "sentiment": "Improving",
+  "predicted": 7.106257576188423,
+  "signal": "🔴 Weakening",
+  "insight": "Victoria shows vacancy at 7.1%"
  }
 ]

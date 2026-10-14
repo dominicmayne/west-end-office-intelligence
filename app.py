@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 import os
 import httpx
 from datetime import datetime
@@ -13,8 +13,10 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
+import functools
 import json
 import re
+import time
 
 app = FastAPI()
 
@@ -36,11 +38,69 @@ AREA_CODES = {area: i for i, area in enumerate(sorted(data["area"].unique()))}
 data["area_code"] = data["area"].map(AREA_CODES)
 QUARTER_CODES = {"Q1": 1, "Q2": 2, "Q3": 3, "Q4": 4}
 data["quarter_code"] = data["quarter"].map(QUARTER_CODES)
-X = data[["year", "quarter_code", "rent_psf", "area_code"]]
-y = data["vacancy_rate"]
-model = LinearRegression()
-model.fit(X, y)
-data["predicted"] = model.predict(X)
+
+# Vacancy model: predicts NEXT quarter's change in vacancy from two signals,
+# momentum (last quarter's change) and take-up relative to the submarket's own
+# average to date. Ridge keeps the coefficients small, which matters with ~80 rows.
+data["t"] = (data["year"] - data["year"].min()) * 4 + data["quarter_code"] - 1
+data = data.sort_values(["area", "t"]).reset_index(drop=True)
+by_area = data.groupby("area")
+data["vac_change"] = by_area["vacancy_rate"].diff().fillna(0)
+data["takeup_rel"] = data["takeup_sqft"] / by_area["takeup_sqft"].transform(lambda s: s.expanding().mean())
+data["next_change"] = by_area["vacancy_rate"].shift(-1) - data["vacancy_rate"]
+FEATURES = ["vac_change", "takeup_rel"]
+train_rows = data.dropna(subset=["next_change"])
+
+
+def _fit(rows):
+    return Ridge(alpha=20.0).fit(rows[FEATURES], rows["next_change"])
+
+
+model = _fit(train_rows)
+
+# `predicted` is the model's estimate for each quarter made from the quarter
+# before it. The first quarter of each submarket has no prior, so it shows actual.
+step = data["vacancy_rate"] + model.predict(data[FEATURES])
+data["predicted"] = step.groupby(data["area"]).shift(1).fillna(data["vacancy_rate"])
+
+
+def _backtest():
+    """Walk-forward test: train on quarters before k, predict k, for every k after the first five."""
+    periods = sorted(train_rows["t"].unique())
+    errs, naive = [], []
+    for k in periods[5:]:
+        past, test = train_rows[train_rows["t"] < k], train_rows[train_rows["t"] == k]
+        guess = _fit(past).predict(test[FEATURES])
+        errs += list(abs(guess - test["next_change"]))
+        naive += list(abs(test["next_change"]))
+    mae, naive_mae = float(sum(errs) / len(errs)), float(sum(naive) / len(naive))
+    return {
+        "mae_pp": round(mae, 3),
+        "naive_mae_pp": round(naive_mae, 3),
+        "improvement_pct": round(100 * (1 - mae / naive_mae), 1),
+        "tests": len(errs),
+    }
+
+
+BACKTEST = _backtest()
+
+
+def _forecast_area(rows, quarters=4):
+    """Next `quarters` quarters, each fed by the last. Known limit: take-up is
+    assumed to run at the submarket's average (takeup_rel = 1) because we don't
+    forecast take-up itself, so the path drifts towards momentum alone."""
+    last = rows.iloc[-1]
+    vac, change = float(last["vacancy_rate"]), float(last["vac_change"])
+    year, q = int(last["year"]), int(last["quarter_code"])
+    out = []
+    for _ in range(quarters):
+        change = float(model.predict(pd.DataFrame([[change, 1.0]], columns=FEATURES))[0])
+        vac = max(0.0, vac + change)
+        q += 1
+        if q > 4:
+            year, q = year + 1, 1
+        out.append({"year": year, "quarter": f"Q{q}", "vacancy": round(vac, 2)})
+    return out
 
 # ── Load seed deals ──
 try:
@@ -75,7 +135,40 @@ def predictions():
         })
     return results
 
+@app.get("/forecast")
+def forecast():
+    return {
+        "method": "Ridge regression on next-quarter vacancy change; features: last quarter's change and take-up relative to the submarket average",
+        "backtest": BACKTEST,
+        "areas": {area: _forecast_area(rows) for area, rows in data.groupby("area")},
+    }
+
+
+# Claude calls cost money and the answers barely move within a day, so each
+# result is kept in memory for CACHE_SECONDS. Known limit: the cache is
+# per-process and empties on every deploy, which is fine at this traffic.
+CACHE_SECONDS = 12 * 60 * 60
+_cache = {}
+
+
+def cached(fn):
+    @functools.wraps(fn)
+    async def wrapper(area: str):
+        key = (fn.__name__, area)
+        hit = _cache.get(key)
+        if hit and time.time() - hit[0] < CACHE_SECONDS:
+            return hit[1]
+        result = await fn(area)
+        # Only keep good answers, so a failed call is retried next time.
+        failed = result.get("error") or result.get("live") is False or str(result.get("commentary", "")).startswith(("API ", "Commentary unavailable", "No data"))
+        if not failed:
+            _cache[key] = (time.time(), result)
+        return result
+    return wrapper
+
+
 @app.get("/commentary/{area}")
+@cached
 async def commentary(area: str):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -86,12 +179,12 @@ async def commentary(area: str):
     latest = area_data.iloc[-1]
     first = area_data.iloc[0]
     rent_change = float(latest["rent_psf"]) - float(first["rent_psf"])
-    avg_vacancy = float(area_data["predicted"].mean())
+    avg_vacancy = _forecast_area(area_data, 1)[0]["vacancy"]
     prompt = f"""You are a senior commercial real estate analyst covering Central London office markets.
 Write a concise professional market commentary (4-6 sentences) for the {area} office submarket:
 - Tracked period: {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']}
 - Prime rent: £{float(first['rent_psf'])} to £{float(latest['rent_psf'])} psf (£{rent_change:+.0f} psf change)
-- Average forecast vacancy: {avg_vacancy:.2f}%
+- Model forecast vacancy for next quarter: {avg_vacancy:.2f}% (latest recorded {float(latest['vacancy_rate']):.1f}%)
 - Latest take-up: {int(latest['takeup_sqft']):,} sq ft
 - Sentiment: {latest['sentiment']}
 Style of Savills/CBRE research note. No bullets. Don't start with '{area}'."""
@@ -110,6 +203,7 @@ Style of Savills/CBRE research note. No bullets. Don't start with '{area}'."""
         return {"commentary": f"Commentary unavailable: {str(e)}"}
 
 @app.get("/live-data/{area}")
+@cached
 async def live_data(area: str):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -161,6 +255,7 @@ def _build_fallback(row):
 
 # ── DEALS ENDPOINT ──
 @app.get("/deals/{area}")
+@cached
 async def deals(area: str):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     seed = [d for d in SEED_DEALS if d["area"] == area]
@@ -215,7 +310,7 @@ async def generate_report(area: str):
         return {"error": "No data found."}
     latest = area_data.iloc[-1]
     first = area_data.iloc[0]
-    avg_vacancy = float(area_data["predicted"].mean())
+    avg_vacancy = _forecast_area(area_data, 1)[0]["vacancy"]
     score = max(0, min(100, round(100 - (avg_vacancy * 10))))
     rent_change = float(latest["rent_psf"]) - float(first["rent_psf"])
     latest_takeup = int(latest["takeup_sqft"])
@@ -232,7 +327,7 @@ async def generate_report(area: str):
         prompt = f"""You are a senior commercial real estate analyst. Write a concise professional market commentary (4-6 sentences) for the {area} office submarket:
 - Period: {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']}
 - Prime rent: £{float(first['rent_psf'])} to £{float(latest['rent_psf'])} psf
-- Average forecast vacancy: {avg_vacancy:.2f}%
+- Model forecast vacancy for next quarter: {avg_vacancy:.2f}% (latest recorded {float(latest['vacancy_rate']):.1f}%)
 - Latest take-up: {latest_takeup:,} sq ft
 - Sentiment: {sentiment}
 Savills/CBRE style. No bullets. Don't start with '{area}'."""
@@ -285,7 +380,7 @@ Savills/CBRE style. No bullets. Don't start with '{area}'."""
          Paragraph(f'<b>{latest_takeup:,}</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
          Paragraph(f'<b>{score}/100</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
          Paragraph(f'<b>{sentiment}</b>', ParagraphStyle("kv", fontSize=16, fontName="Helvetica-Bold", textColor=dark_navy))],
-        [Paragraph("£ per sq ft", small_style), Paragraph("AI-predicted avg", small_style), Paragraph("sq ft leased", small_style), Paragraph("AI-derived score", small_style), Paragraph("Latest quarter", small_style)]
+        [Paragraph("£ per sq ft", small_style), Paragraph("Next-quarter forecast", small_style), Paragraph("sq ft leased", small_style), Paragraph("AI-derived score", small_style), Paragraph("Latest quarter", small_style)]
     ]
     kpi_table = Table(kpi_data, colWidths=[34*mm]*5, rowHeights=[14, 22, 12])
     kpi_table.setStyle(TableStyle([
