@@ -8,43 +8,44 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#f4f0e6">
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/site.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script src="/assets/chart-theme.js"></script>
     <script src="/assets/data.js"></script>
     <style>
         .kpi-grid { scroll-margin-top: 80px; }
-        .free-banner { display: none; align-items: center; gap: 12px 24px; flex-wrap: wrap; justify-content: space-between; background: var(--paper-2); border-left: 2px solid var(--accent); padding: 14px 18px; margin-bottom: 28px; font-size: 14.5px; color: var(--ink-2); }
+        .free-banner { display: none; align-items: center; gap: 12px 24px; flex-wrap: wrap; justify-content: space-between; background: var(--paper-2); border-radius: 14px; padding: 14px 18px; margin-bottom: 28px; font-size: 14.5px; color: var(--ink-2); }
         .free-banner strong { color: var(--ink); font-weight: 500; }
         .offline-note { font-size: 13.5px; color: var(--ink-3); margin: -14px 0 28px; display: none; max-width: 52em; }
         .offline-note.show { display: block; }
         .toolbar .btn { padding: 9px 14px; font-size: 13.5px; }
-        .live-banner-data { display: none; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; border-left: 2px solid var(--ink); padding: 8px 0 8px 16px; margin-bottom: 28px; font-size: 14px; color: var(--ink-2); }
-        .live-banner-data .src { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+        .live-banner-data { display: none; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; background: var(--paper-2); border-radius: 12px; padding: 10px 16px; margin-bottom: 28px; font-size: 14px; color: var(--ink-2); }
+        .live-banner-data .src { margin-left: auto; font-family: var(--sans); font-size: 12px; color: var(--ink-3); }
 
         /* Schematic */
         .map-container { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
-        .svg-map-wrap { border: 1px solid var(--rule); background: #f8f5ee; padding: 16px; }
-        svg#schematic { width: 100%; max-width: 600px; height: auto; display: block; margin: auto; }
+        .svg-map-wrap { border: 1px solid var(--rule); background: var(--surface); border-radius: var(--radius); padding: 16px; }
+        svg#schematic { color: var(--ink); width: 100%; max-width: 600px; height: auto; display: block; margin: auto; }
         .zone { cursor: pointer; }
         .zone rect { transition: fill 0.2s, stroke-width 0.2s; }
         .zone:hover rect { stroke-width: 2.5; }
-        .zone-label { pointer-events: none; font-family: var(--serif); font-weight: 500; }
-        .zone-sublabel { pointer-events: none; font-family: var(--mono); font-weight: 500; }
-        .seg { display: inline-flex; border: 1px solid var(--ink); }
-        .seg button { font: inherit; font-size: 13px; padding: 7px 14px; background: transparent; border: 0; color: var(--ink-2); cursor: pointer; }
-        .seg button + button { border-left: 1px solid var(--ink); }
-        .seg button.active { background: var(--ink); color: var(--paper); }
+        .zone-label { pointer-events: none; font-family: var(--display); font-weight: 600; }
+        .zone-sublabel { pointer-events: none; font-family: var(--sans); font-weight: 500; }
+        .seg { display: inline-flex; gap: 2px; padding: 2px; background: var(--paper-3); border-radius: 10px; }
+        .seg button { font: inherit; font-size: 13px; font-weight: 500; padding: 6px 14px; background: transparent; border: 0; border-radius: 8px; transition: background-color 0.2s, box-shadow 0.2s; color: var(--ink-2); cursor: pointer; }
+        
+        .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
         .map-side-panel { display: flex; flex-direction: column; gap: 28px; }
-        .side-title { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 8px; border-bottom: 1px solid var(--ink); margin-bottom: 4px; }
+        .side-title { font-family: var(--sans); font-size: 11.5px; letter-spacing: 0; color: var(--ink-3); padding-bottom: 8px; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
         .legend-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13.5px; color: var(--ink-2); }
         .legend-swatch { width: 22px; height: 10px; flex-shrink: 0; }
         .ranking-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) 56px 58px; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); cursor: pointer; font-size: 14px; }
-        .ranking-row::before { content: counter(r); counter-increment: r; font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+        .ranking-row::before { content: counter(r); counter-increment: r; font-family: var(--sans); font-size: 11px; color: var(--ink-3); }
         #rankingsList { counter-reset: r; }
         .ranking-row:hover .ranking-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
         .ranking-row.active-row { background: var(--paper-2); box-shadow: -8px 0 0 var(--paper-2), 8px 0 0 var(--paper-2); }
@@ -52,14 +53,14 @@
         .ranking-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .ranking-bar-wrap { height: 4px; background: var(--rule-soft); }
         .ranking-bar { height: 4px; transition: width 0.4s; }
-        .ranking-val { font-family: var(--mono); font-size: 12.5px; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .ranking-val { font-family: var(--sans); font-size: 12.5px; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
 
         /* Commentary */
-        .insight-panel { border-top: 1px solid var(--ink); padding-top: 14px; position: relative; }
+        .insight-panel { border-top: 1px solid var(--rule); padding-top: 14px; position: relative; }
         .insight-header { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; margin-bottom: 16px; }
-        .insight-label { font-family: var(--serif); font-size: 24px; }
-        .insight-powered { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
-        .insight-text { font-family: var(--serif); font-size: 19px; line-height: 1.6; color: var(--ink); max-width: 44em; }
+        .insight-label { font-family: var(--display); font-size: 24px; }
+        .insight-powered { margin-left: auto; font-family: var(--sans); font-size: 11.5px; color: var(--ink-3); }
+        .insight-text { font-family: var(--display); font-size: 19px; line-height: 1.6; color: var(--ink); max-width: 44em; }
         .insight-text::first-letter { font-size: 1.15em; }
         .insight-reason { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
         .typing-indicator { display: inline-flex; gap: 5px; align-items: center; padding: 6px 0; }
@@ -67,7 +68,7 @@
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
-        .locked-overlay .lock-mask { position: absolute; inset: 60px 0 0 0; background: linear-gradient(to bottom, rgba(244,240,230,0) 0%, var(--paper) 72%); display: flex; align-items: flex-end; padding-bottom: 6px; }
+        .locked-overlay .lock-mask { position: absolute; inset: 60px 0 0 0; background: linear-gradient(to bottom, transparent 0%, var(--paper) 72%); display: flex; align-items: flex-end; padding-bottom: 6px; }
         .blurred { filter: blur(3.5px); pointer-events: none; user-select: none; }
 
         @media (max-width: 980px) {
@@ -109,7 +110,7 @@
 
 <div class="free-banner" id="freeBanner">
     <div><strong>You're viewing the free preview.</strong> Sign in to unlock AI commentary, live data refresh, deals tracker and PDF reports.</div>
-    <a href="/login" class="btn btn-sm btn-solid">Get full access <span class="arrow">→</span></a>
+    <a href="/login" class="btn btn-sm btn-solid">Get full access</a>
 </div>
 
 <div class="toolbar">
@@ -174,20 +175,20 @@
                 <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(28,27,24,0.06)" stroke-width="0.6"/></pattern></defs>
                 <rect width="560" height="480" fill="url(#grid)"/>
                 <path d="M 0 420 Q 140 400 280 415 Q 420 430 560 410" fill="none" stroke="#c4cdcb" stroke-width="10" stroke-linecap="round"/>
-                <text x="240" y="448" fill="#7d8a88" font-size="9" font-family="IBM Plex Mono, monospace" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
+                <text x="240" y="448" fill="#7d8a88" font-size="9" font-family="Inter, -apple-system, sans-serif" letter-spacing="3" text-anchor="middle">RIVER THAMES</text>
                 <rect x="18" y="160" width="90" height="110" rx="3" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
-                <text x="63" y="218" fill="#5e7a5a" font-size="10" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">Hyde Park</text>
+                <text x="63" y="218" fill="#5e7a5a" font-size="10" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">Hyde Park</text>
                 <ellipse cx="200" cy="48" rx="55" ry="28" fill="rgba(76,113,72,0.08)" stroke="rgba(76,113,72,0.25)" stroke-width="1"/>
-                <text x="200" y="52" fill="#5e7a5a" font-size="10" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">Regent's Park</text>
-                <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Marylebone</text><text x="177" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Marylebone">—</text></g>
-                <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Fitzrovia</text><text x="307" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Fitzrovia">—</text></g>
-                <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="118" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Midtown</text><text x="437" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Midtown">—</text></g>
-                <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="228" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Mayfair</text><text x="177" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Mayfair">—</text></g>
-                <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="228" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Soho</text><text x="307" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Soho">—</text></g>
-                <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="221" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Covent</text><text x="437" y="237" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Garden</text><text x="437" y="255" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Covent Garden">—</text></g>
-                <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="338" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">St James's</text><text x="177" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-St James's">—</text></g>
-                <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="2" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="338" class="zone-label" font-size="14" fill="#1c1b18" text-anchor="middle">Victoria</text><text x="307" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Victoria">—</text></g>
-                <text x="516" y="70" fill="#6f695d" font-size="11" font-family="Newsreader, Georgia, serif" text-anchor="middle" font-style="italic">N</text>
+                <text x="200" y="52" fill="#5e7a5a" font-size="10" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">Regent's Park</text>
+                <g class="zone" id="zone-Marylebone" onclick="selectArea('Marylebone')"><rect x="118" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Marylebone</text><text x="177" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Marylebone">—</text></g>
+                <g class="zone" id="zone-Fitzrovia" onclick="selectArea('Fitzrovia')"><rect x="248" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Fitzrovia</text><text x="307" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Fitzrovia">—</text></g>
+                <g class="zone" id="zone-Midtown" onclick="selectArea('Midtown')"><rect x="378" y="78" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="118" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Midtown</text><text x="437" y="136" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Midtown">—</text></g>
+                <g class="zone" id="zone-Mayfair" onclick="selectArea('Mayfair')"><rect x="118" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="228" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Mayfair</text><text x="177" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Mayfair">—</text></g>
+                <g class="zone" id="zone-Soho" onclick="selectArea('Soho')"><rect x="248" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="228" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Soho</text><text x="307" y="246" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Soho">—</text></g>
+                <g class="zone" id="zone-Covent Garden" onclick="selectArea('Covent Garden')"><rect x="378" y="188" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="437" y="221" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Covent</text><text x="437" y="237" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Garden</text><text x="437" y="255" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Covent Garden">—</text></g>
+                <g class="zone" id="zone-St James's" onclick="selectArea(`St James's`)"><rect x="118" y="298" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="177" y="338" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">St James's</text><text x="177" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-St James's">—</text></g>
+                <g class="zone" id="zone-Victoria" onclick="selectArea('Victoria')"><rect x="248" y="298" width="118" height="90" rx="10" fill="#ece6d8" stroke="#a89f8a" stroke-width="1.5"/><text x="307" y="338" class="zone-label" font-size="14" fill="currentColor" text-anchor="middle">Victoria</text><text x="307" y="356" class="zone-sublabel" font-size="9.5" fill="#6f695d" text-anchor="middle" id="val-Victoria">—</text></g>
+                <text x="516" y="70" fill="#6f695d" font-size="11" font-family="Inter, -apple-system, sans-serif" text-anchor="middle">N</text>
                 <line x1="516" y1="58" x2="516" y2="40" stroke="#6f695d" stroke-width="1"/>
                 <polygon points="516,34 512.5,44 516,42 519.5,44" fill="#6f695d"/>
             </svg>
@@ -195,9 +196,9 @@
         <div class="map-side-panel">
             <div class="map-legend">
                 <div class="side-title" id="legendTitle">Vacancy rate</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> Below 5% — Strong</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> 5–7% — Monitor</div>
-                <div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Above 7% — Weakening</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> Below 5% — Strong</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> 5–7% — Monitor</div>
+                <div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Above 7% — Weakening</div>
             </div>
             <div class="map-rankings">
                 <div class="side-title" id="rankingsTitle">Ranked by vacancy</div>
@@ -286,7 +287,7 @@ function setupAuth() {
         navArea.innerHTML = `<a href="#" class="btn btn-sm" onclick="signOut(); return false;">Sign out</a>`;
         document.getElementById('freeBanner').style.display = 'none';
     } else {
-        navArea.innerHTML = `<a href="/login" class="btn btn-sm btn-solid">Sign in <span class="arrow">→</span></a>`;
+        navArea.innerHTML = `<a href="/login" class="btn btn-sm btn-solid">Sign in</a>`;
         document.getElementById('freeBanner').style.display = 'flex';
         ['downloadBtn', 'liveBtn', 'dealsRefreshBtn'].forEach(id => {
             const el = document.getElementById(id);
@@ -409,15 +410,15 @@ async function loadDeals(area, forceRefresh = false) {
 }
 
 function getVacancyColor(v) {
-    if (v < 5) return '#4c7148';
-    if (v < 7) return '#b98222';
-    return '#b0482a';
+    if (v < 5) return '#2fa560';
+    if (v < 7) return '#d68910';
+    return '#e5483d';
 }
 
 function getRentColor(r) {
-    if (r >= 150) return '#4c7148';
-    if (r >= 100) return '#b98222';
-    return '#b0482a';
+    if (r >= 150) return '#2fa560';
+    if (r >= 100) return '#d68910';
+    return '#e5483d';
 }
 
 function setMapMode(mode) {
@@ -426,9 +427,9 @@ function setMapMode(mode) {
     document.getElementById('toggleRent').classList.toggle('active', mode === 'rent');
     const legend = document.querySelector('.map-legend');
     if (mode === 'vacancy') {
-        legend.innerHTML = `<div class="side-title">Vacancy rate</div><div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Above 7% — Weakening</div>`;
+        legend.innerHTML = `<div class="side-title">Vacancy rate</div><div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> Below 5% — Strong</div><div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> 5–7% — Monitor</div><div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Above 7% — Weakening</div>`;
     } else {
-        legend.innerHTML = `<div class="side-title">Prime rent</div><div class="legend-row"><div class="legend-swatch" style="background:#4c7148"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#b98222"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#b0482a"></div> Below £100 psf — Value</div>`;
+        legend.innerHTML = `<div class="side-title">Prime rent</div><div class="legend-row"><div class="legend-swatch" style="background:#2fa560"></div> £150+ psf — Premium</div><div class="legend-row"><div class="legend-swatch" style="background:#d68910"></div> £100–150 psf — Mid</div><div class="legend-row"><div class="legend-swatch" style="background:#e5483d"></div> Below £100 psf — Value</div>`;
     }
     document.getElementById('rankingsTitle').textContent = mode === 'vacancy' ? 'Ranked by vacancy' : 'Ranked by prime rent';
     updateSchematic();
@@ -562,7 +563,7 @@ async function loadCommentary(area) {
             <div class="insight-panel locked-overlay">
                 <div class="insight-header"><h2 class="insight-label">AI market commentary</h2><div class="insight-powered">Written by Claude (Anthropic)</div></div>
                 <div class="insight-text blurred">Prime rents in ${esc(area)} have demonstrated resilience throughout the tracked period, with occupier demand remaining robust despite broader macroeconomic uncertainty. The flight-to-quality trend continues to underpin rental growth, with Grade A availability remaining constrained. Forward-looking indicators suggest continued tightening across the submarket as supply remains limited and new development completions remain pre-let.</div>
-                <div class="lock-mask"><a href="/login" class="btn btn-solid">Sign in to read AI commentary <span class="arrow">→</span></a></div>
+                <div class="lock-mask"><a href="/login" class="btn btn-solid">Sign in to read AI commentary</a></div>
             </div>`;
         return;
     }
@@ -727,9 +728,9 @@ function renderArea(selectedArea) {
         rentDelta.textContent = ''; vacDelta.textContent = '';
     }
     const badge = document.getElementById("signalBadge");
-    if (avgVacancy < 5) badge.innerHTML = '<span class="signal-dot" style="background:#4c7148"></span> Strong market';
-    else if (avgVacancy < 7) badge.innerHTML = '<span class="signal-dot" style="background:#b98222"></span> Monitor';
-    else badge.innerHTML = '<span class="signal-dot" style="background:#b0482a"></span> Weakening';
+    if (avgVacancy < 5) badge.innerHTML = '<span class="signal-dot" style="background:#2fa560"></span> Strong market';
+    else if (avgVacancy < 7) badge.innerHTML = '<span class="signal-dot" style="background:#d68910"></span> Monitor';
+    else badge.innerHTML = '<span class="signal-dot" style="background:#e5483d"></span> Weakening';
 
     clearTimeout(window.commentaryTimer);
     window.commentaryTimer = setTimeout(() => loadCommentary(selectedArea), dataSource === 'live' ? 800 : 0);

@@ -8,34 +8,36 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#f4f0e6">
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/site.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script src="/assets/chart-theme.js"></script>
     <style>
         /* This page swaps the brick accent for Spurs navy. */
-        :root { --accent: #132257; --accent-ink: #132257; --accent-wash: rgba(19,34,87,0.06); }
+        :root { --accent: #132257; --accent-ink: #0c1640; --accent-wash: rgba(19,34,87,0.07); }
+        @media (prefers-color-scheme: dark) { :root { --accent: #9fb1f0; --accent-ink: #c3cff7; --accent-wash: rgba(159,177,240,0.12); } }
         .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 56px; align-items: end; padding-top: 64px; padding-bottom: 40px; }
         .hero .kicker { margin-bottom: 24px; }
         .hero .h1 { font-size: clamp(36px, 5vw, 64px); margin-bottom: 20px; max-width: 13em; }
         .hero .lede { max-width: 34em; }
         .hero-meta { text-align: right; border-left: 1px solid var(--rule); padding-left: 32px; }
-        .hero-meta-val { font-family: var(--serif); font-size: 72px; line-height: 0.95; letter-spacing: -0.02em; color: var(--accent); }
+        .hero-meta-val { font-family: var(--display); font-size: 72px; line-height: 0.95; letter-spacing: -0.02em; color: var(--accent); }
         .hero-meta-label { font-size: 13.5px; color: var(--ink-2); margin-top: 10px; }
-        .hero-meta-sub { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+        .hero-meta-sub { font-family: var(--sans); font-size: 12px; color: var(--ink-3); margin-top: 2px; }
         .passion { margin-bottom: 44px; }
 
-        .kpi-trend { font-family: var(--mono); font-size: 12px; margin-top: 8px; color: var(--ink-2); }
+        .kpi-trend { font-family: var(--sans); font-size: 12px; margin-top: 8px; color: var(--ink-2); }
         .kpi-trend.up { color: var(--good); }
 
         .clubs { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 32px; }
         .club { border-top: 1px solid var(--rule); padding-top: 16px; }
         .club.featured { border-top: 3px solid var(--accent); padding-top: 14px; }
-        .club-name { font-family: var(--serif); font-size: 22px; line-height: 1.2; }
-        .club.featured .club-name::after { content: "Featured"; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-left: 10px; vertical-align: 3px; }
+        .club-name { font-family: var(--display); font-size: 22px; line-height: 1.2; }
+        .club.featured .club-name::after { content: "Featured"; font-family: var(--sans); font-size: 10.5px; letter-spacing: 0; color: var(--accent); margin-left: 10px; vertical-align: 3px; }
         .club-stadium { font-size: 13px; color: var(--ink-3); margin-bottom: 16px; }
         .club-stat { padding: 9px 0; border-top: 1px solid var(--rule-soft); }
         .club-stat-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
@@ -44,17 +46,17 @@
         .club-stat-bar { height: 3px; background: var(--rule-soft); margin-top: 6px; }
         .club-stat-fill { height: 3px; background: var(--ink-3); }
         .club.featured .club-stat-fill { background: var(--accent); }
-        .club-stat-note { font-size: 12px; color: var(--ink-3); margin-top: 4px; font-style: italic; }
+        .club-stat-note { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
 
         .ev-name { font-weight: 500; }
-        .ev-type { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-3); }
+        .ev-type { font-family: var(--sans); font-size: 11.5px; letter-spacing: 0; color: var(--ink-3); }
         table.data td:last-child { color: var(--ink-2); font-size: 13.5px; }
 
-        .analyst { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; border-top: 1px solid var(--ink); padding-top: 18px; }
+        .analyst { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; border-top: 1px solid var(--rule); padding-top: 18px; }
         .analyst-by { font-size: 13.5px; color: var(--ink-3); }
-        .analyst-by strong { display: block; font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 2px; }
-        .analyst-text { font-family: var(--serif); font-size: 20px; line-height: 1.6; max-width: 40em; }
-        .analyst-text strong { font-weight: 500; background: linear-gradient(transparent 62%, rgba(19,34,87,0.10) 62%); }
+        .analyst-by strong { display: block; font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+        .analyst-text { font-family: var(--display); font-weight: 400; letter-spacing: -0.015em; font-size: 20px; line-height: 1.6; max-width: 40em; }
+        .analyst-text strong { font-weight: 500; background: linear-gradient(transparent 62%, var(--accent-wash) 62%); }
 
         .sources-list { list-style: none; margin-top: 14px; border-top: 1px solid var(--rule); }
         .sources-list li { font-size: 14px; color: var(--ink-3); padding: 9px 0; border-bottom: 1px solid var(--rule-soft); }
@@ -329,8 +331,8 @@ if (typeof Chart === 'undefined') {
     document.querySelectorAll('canvas').forEach(c => { const n = document.createElement('div'); n.className = 'chart-empty'; n.textContent = 'Chart couldn\u2019t load (the charting library was blocked).'; c.replaceWith(n); });
 } else {
 const T = window.ChartTheme;
-const navy = '#132257';
-const navyDim = 'rgba(19,34,87,0.07)';
+const navy = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+const navyDim = getComputedStyle(document.documentElement).getPropertyValue('--accent-wash').trim();
 const gridColor = T.grid;
 const tickColor = T.ink3;
 
@@ -386,7 +388,7 @@ new Chart(document.getElementById('splitChart'), {
         labels: ['Commercial £277m', 'TV & Media £127m', 'Matchday £127m', 'UEFA prize money £35m'],
         datasets: [{
             data: [277.1, 127.0, 126.5, 34.7],
-            backgroundColor: [navy, T.rule, T.stone, '#e9e3d5'],
+            backgroundColor: [navy, T.rule, T.stone, T.paper3],
             borderColor: T.paper,
             borderWidth: 2,
             hoverOffset: 4
