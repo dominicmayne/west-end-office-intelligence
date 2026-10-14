@@ -8,37 +8,38 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#f4f0e6">
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/site.css">
     <style>
         .hero { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr); gap: 72px; padding-top: 72px; padding-bottom: 88px; align-items: end; }
         .hero .kicker { margin-bottom: 26px; }
         .hero .display { font-size: clamp(42px, 5.6vw, 72px); margin-bottom: 14px; }
-        .hero-role { font-family: var(--serif); font-style: italic; font-size: clamp(22px, 2.3vw, 30px); line-height: 1.2; color: var(--ink-2); margin-bottom: 28px; }
+        .hero-role { font-family: var(--display); font-size: clamp(22px, 2.3vw, 30px); line-height: 1.2; color: var(--ink-2); margin-bottom: 28px; }
         .hero .lede { margin-bottom: 32px; }
         .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
         .hero-actions .link { margin-left: 8px; font-size: 14.5px; }
         .contents .kicker { margin-bottom: 10px; }
-        .contents ol { list-style: none; border-top: 1px solid var(--ink); counter-reset: c; }
+        .contents ol { list-style: none; border-top: 1px solid var(--rule); counter-reset: c; }
         .contents li { counter-increment: c; border-bottom: 1px solid var(--rule); }
-        .contents a { display: flex; gap: 16px; align-items: baseline; padding: 13px 0; text-decoration: none; font-family: var(--serif); font-size: 19px; }
-        .contents a::before { content: counter(c, decimal-leading-zero); font-family: var(--mono); font-size: 12px; color: var(--ink-3); width: 22px; }
+        .contents a { display: flex; gap: 16px; align-items: baseline; padding: 13px 0; text-decoration: none; font-family: var(--display); font-size: 19px; }
+        .contents a::before { content: counter(c, decimal-leading-zero); font-family: var(--sans); font-size: 12px; color: var(--ink-3); width: 22px; }
         .contents a:hover { color: var(--accent-ink); }
 
         .section { padding-bottom: 88px; }
         .about-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 72px; align-items: start; }
-        .about-facts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); }
+        .about-facts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--rule); }
         .about-facts > div { padding: 18px 0 20px; border-bottom: 1px solid var(--rule); }
         .about-facts > div:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--rule); }
         .about-facts .stat-val { font-size: 44px; }
 
         .build-grid { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 40px; row-gap: 8px; }
         .build { border-top: 1px solid var(--rule); padding: 20px 0 28px; }
-        .build-num { font-family: var(--serif); font-style: italic; font-size: 30px; color: var(--accent); line-height: 1; margin-bottom: 14px; }
-        .build-title { font-family: var(--serif); font-size: 21px; font-weight: 500; line-height: 1.25; margin-bottom: 10px; }
+        .build-num { font-family: var(--display); font-size: 30px; color: var(--accent); line-height: 1; margin-bottom: 14px; }
+        .build-title { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.25; margin-bottom: 10px; }
         .build-text { font-size: 14.5px; color: var(--ink-2); line-height: 1.65; margin-bottom: 12px; }
 
         .skills { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; border-top: 1px solid var(--rule); }
@@ -48,10 +49,10 @@
 
         .exp { border-top: 1px solid var(--rule); }
         .exp-item { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; padding: 28px 0; border-bottom: 1px solid var(--rule); }
-        .exp-date { font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); margin-bottom: 8px; }
+        .exp-date { font-family: var(--sans); font-size: 12.5px; color: var(--ink-3); margin-bottom: 8px; }
         .exp-company { font-weight: 500; }
         .exp-location { font-size: 14px; color: var(--ink-3); }
-        .exp-title { font-family: var(--serif); font-weight: 500; font-size: 24px; line-height: 1.2; margin-bottom: 12px; }
+        .exp-title { font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1.2; margin-bottom: 12px; }
         .exp-points { list-style: none; }
         .exp-points li { color: var(--ink-2); line-height: 1.65; padding: 3px 0 3px 22px; position: relative; max-width: 44em; }
         .exp-points li::before { content: ""; position: absolute; left: 0; top: 0.95em; width: 10px; height: 1px; background: var(--accent); }
@@ -60,12 +61,12 @@
         .contact-in { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 72px; }
         .contact .h1 { margin: 16px 0 20px; }
         .contact p { color: var(--ink-2); max-width: 32em; }
-        .contact-list { list-style: none; border-top: 1px solid var(--ink); align-self: end; }
+        .contact-list { list-style: none; border-top: 1px solid var(--rule); align-self: end; }
         .contact-list li { border-bottom: 1px solid var(--rule); }
         .contact-list a { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 0; text-decoration: none; }
         .contact-list a:hover .c-val { color: var(--accent-ink); }
-        .c-label { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
-        .c-val { font-family: var(--serif); font-size: 21px; overflow-wrap: anywhere; text-align: right; }
+        .c-label { font-family: var(--sans); font-size: 11.5px; letter-spacing: 0; color: var(--ink-3); }
+        .c-val { font-family: var(--display); font-size: 21px; overflow-wrap: anywhere; text-align: right; }
 
         @media (max-width: 980px) {
             .hero { grid-template-columns: 1fr; gap: 44px; padding-top: 48px; padding-bottom: 64px; }
@@ -95,7 +96,7 @@
             <a href="#platform" class="hide-sm">The Platform</a>
             <a href="#experience" class="hide-sm">Experience</a>
             <a href="#contact" class="hide-sm">Contact</a>
-            <a href="/dashboard" class="btn btn-sm">View platform <span class="arrow">→</span></a>
+            <a href="/dashboard" class="btn btn-sm">View platform</a>
         </nav>
     </div>
 </header>
@@ -110,7 +111,7 @@
             <strong>BSc Real Estate, University of Reading (2:1).</strong> I built this platform independently to demonstrate that real estate knowledge and modern technology aren't separate disciplines — they're most powerful when combined.
         </p>
         <div class="hero-actions">
-            <a href="/dashboard" class="btn btn-solid">View the platform <span class="arrow">→</span></a>
+            <a href="/dashboard" class="btn btn-solid">View the platform</a>
             <a href="#about" class="link">Read my story</a>
         </div>
     </div>
@@ -128,7 +129,7 @@
 
 <section class="wrap section" id="about">
     <div class="sec-head">
-        <div class="kicker">01 — Background</div>
+        <div class="kicker">Background</div>
         <div>
             <h2 class="h2">Why I built this</h2>
             <p>A real estate degree meets modern technology — built independently, from scratch.</p>
@@ -152,7 +153,7 @@
 
 <section class="wrap section" id="platform">
     <div class="sec-head">
-        <div class="kicker">02 — The Platform</div>
+        <div class="kicker">The Platform</div>
         <div>
             <h2 class="h2">What I built and how</h2>
             <p>A full-stack proptech platform built from scratch — data pipeline, machine learning model, AI integration, and professional frontend.</p>
@@ -200,7 +201,7 @@
 
 <section class="wrap section" id="skills">
     <div class="sec-head">
-        <div class="kicker">03 — Skills Demonstrated</div>
+        <div class="kicker">Skills Demonstrated</div>
         <div>
             <h2 class="h2">Technical &amp; professional capability</h2>
             <p>Built through the project and underpinned by a real estate education.</p>
@@ -218,7 +219,7 @@
 
 <section class="wrap section" id="experience">
     <div class="sec-head">
-        <div class="kicker">04 — Experience</div>
+        <div class="kicker">Experience</div>
         <div><h2 class="h2">Education &amp; work history</h2></div>
     </div>
     <div class="exp">
@@ -289,7 +290,7 @@
 <section class="contact" id="contact">
     <div class="wrap contact-in">
         <div>
-            <div class="kicker">05 — Get in touch</div>
+            <div class="kicker">Get in touch</div>
             <h2 class="h1">Open to <em>opportunities</em></h2>
             <p>I'm actively looking for graduate roles in commercial property, proptech, real estate data or related fields across London. If this platform has caught your attention, I'd love to talk.</p>
         </div>
