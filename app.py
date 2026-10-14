@@ -160,47 +160,12 @@ def cached(fn):
             return hit[1]
         result = await fn(area)
         # Only keep good answers, so a failed call is retried next time.
-        failed = result.get("error") or result.get("live") is False or str(result.get("commentary", "")).startswith(("API ", "Commentary unavailable", "No data"))
+        failed = result.get("error") or result.get("live") is False
         if not failed:
             _cache[key] = (time.time(), result)
         return result
     return wrapper
 
-
-@app.get("/commentary/{area}")
-@cached
-async def commentary(area: str):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return {"commentary": "API key not configured."}
-    area_data = data[data["area"] == area].copy()
-    if area_data.empty:
-        return {"commentary": "No data available."}
-    latest = area_data.iloc[-1]
-    first = area_data.iloc[0]
-    rent_change = float(latest["rent_psf"]) - float(first["rent_psf"])
-    avg_vacancy = _forecast_area(area_data, 1)[0]["vacancy"]
-    prompt = f"""You are a senior commercial real estate analyst covering Central London office markets.
-Write a concise professional market commentary (4-6 sentences) for the {area} office submarket:
-- Tracked period: {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']}
-- Prime rent: £{float(first['rent_psf'])} to £{float(latest['rent_psf'])} psf (£{rent_change:+.0f} psf change)
-- Model forecast vacancy for next quarter: {avg_vacancy:.2f}% (latest recorded {float(latest['vacancy_rate']):.1f}%)
-- Latest take-up: {int(latest['takeup_sqft']):,} sq ft
-- Sentiment: {latest['sentiment']}
-Style of Savills/CBRE research note. No bullets. Don't start with '{area}'."""
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-sonnet-4-5", "max_tokens": 300, "messages": [{"role": "user", "content": prompt}]}
-            )
-            result = response.json()
-            if "content" not in result:
-                return {"commentary": f"API error: {result.get('error', {}).get('message', str(result))}"}
-            return {"commentary": result["content"][0]["text"]}
-    except Exception as e:
-        return {"commentary": f"Commentary unavailable: {str(e)}"}
 
 @app.get("/live-data/{area}")
 @cached
@@ -304,7 +269,6 @@ Return up to 8 deals. If rent is not publicly disclosed use null. Only include d
 # ── PDF REPORT ──
 @app.get("/report/{area}")
 async def generate_report(area: str):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
     area_data = data[data["area"] == area].copy()
     if area_data.empty:
         return {"error": "No data found."}
@@ -322,27 +286,15 @@ async def generate_report(area: str):
         signal_text, signal_color = "MONITOR", colors.HexColor("#f59e0b")
     else:
         signal_text, signal_color = "WEAKENING", colors.HexColor("#ef4444")
-    commentary_text = ""
-    if api_key:
-        prompt = f"""You are a senior commercial real estate analyst. Write a concise professional market commentary (4-6 sentences) for the {area} office submarket:
-- Period: {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']}
-- Prime rent: £{float(first['rent_psf'])} to £{float(latest['rent_psf'])} psf
-- Model forecast vacancy for next quarter: {avg_vacancy:.2f}% (latest recorded {float(latest['vacancy_rate']):.1f}%)
-- Latest take-up: {latest_takeup:,} sq ft
-- Sentiment: {sentiment}
-Savills/CBRE style. No bullets. Don't start with '{area}'."""
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                resp = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                    json={"model": "claude-sonnet-4-5", "max_tokens": 300, "messages": [{"role": "user", "content": prompt}]}
-                )
-                r = resp.json()
-                if "content" in r:
-                    commentary_text = r["content"][0]["text"]
-        except:
-            commentary_text = "Commentary unavailable."
+    avg_takeup = area_data["takeup_sqft"].mean()
+    summary_text = (
+        f"Across {quarters} quarters from {int(first['year'])} {first['quarter']} to {int(latest['year'])} {latest['quarter']}, "
+        f"prime rent moved from £{float(first['rent_psf']):.0f} to £{float(latest['rent_psf']):.0f} psf (£{rent_change:+.0f} psf). "
+        f"Recorded vacancy went from {float(first['vacancy_rate']):.1f}% to {float(latest['vacancy_rate']):.1f}%, "
+        f"and the model forecasts {avg_vacancy:.1f}% next quarter. "
+        f"Take-up in the latest quarter was {latest_takeup:,} sq ft, {'above' if latest_takeup >= avg_takeup else 'below'} "
+        f"the {avg_takeup:,.0f} sq ft quarterly average for the period."
+    )
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=20*mm, bottomMargin=20*mm)
     dark_navy = colors.HexColor("#0f172a")
@@ -350,15 +302,15 @@ Savills/CBRE style. No bullets. Don't start with '{area}'."""
     light_slate = colors.HexColor("#64748b")
     very_light = colors.HexColor("#f8fafc")
     border_color = colors.HexColor("#e2e8f0")
-    purple = colors.HexColor("#a855f7")
+    accent = colors.HexColor("#3b82f6")
     label_style = ParagraphStyle("label", fontSize=8, fontName="Helvetica-Bold", textColor=light_slate, spaceAfter=4, leading=10)
     body_style = ParagraphStyle("body", fontSize=10, fontName="Helvetica", textColor=mid_slate, leading=16, spaceAfter=0)
     small_style = ParagraphStyle("small", fontSize=8, fontName="Helvetica", textColor=light_slate, leading=12)
-    section_label_style = ParagraphStyle("section_label", fontSize=8, fontName="Helvetica-Bold", textColor=purple, spaceAfter=6, leading=10)
+    section_label_style = ParagraphStyle("section_label", fontSize=8, fontName="Helvetica-Bold", textColor=accent, spaceAfter=6, leading=10)
     elements = []
     header_data = [[
         Paragraph('<font color="#0f172a"><b>West End </b></font><font color="#3b82f6"><b>Office Intelligence</b></font>', ParagraphStyle("h", fontSize=16, fontName="Helvetica-Bold")),
-        Paragraph(f'<font color="#64748b">Generated: {datetime.now().strftime("%d %B %Y")}</font><br/><font color="#a855f7"><b>✦ Powered by Claude</b></font>', ParagraphStyle("hr", fontSize=9, fontName="Helvetica", alignment=TA_RIGHT, leading=14))
+        Paragraph(f'<font color="#64748b">Generated: {datetime.now().strftime("%d %B %Y")}</font>', ParagraphStyle("hr", fontSize=9, fontName="Helvetica", alignment=TA_RIGHT, leading=14))
     ]]
     ht = Table(header_data, colWidths=[110*mm, 60*mm])
     ht.setStyle(TableStyle([("VALIGN", (0,0), (-1,-1), "MIDDLE"), ("BOTTOMPADDING", (0,0), (-1,-1), 8)]))
@@ -380,7 +332,7 @@ Savills/CBRE style. No bullets. Don't start with '{area}'."""
          Paragraph(f'<b>{latest_takeup:,}</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
          Paragraph(f'<b>{score}/100</b>', ParagraphStyle("kv", fontSize=20, fontName="Helvetica-Bold", textColor=dark_navy)),
          Paragraph(f'<b>{sentiment}</b>', ParagraphStyle("kv", fontSize=16, fontName="Helvetica-Bold", textColor=dark_navy))],
-        [Paragraph("£ per sq ft", small_style), Paragraph("Next-quarter forecast", small_style), Paragraph("sq ft leased", small_style), Paragraph("AI-derived score", small_style), Paragraph("Latest quarter", small_style)]
+        [Paragraph("£ per sq ft", small_style), Paragraph("Next-quarter forecast", small_style), Paragraph("sq ft leased", small_style), Paragraph("From forecast vacancy", small_style), Paragraph("Latest quarter", small_style)]
     ]
     kpi_table = Table(kpi_data, colWidths=[34*mm]*5, rowHeights=[14, 22, 12])
     kpi_table.setStyle(TableStyle([
@@ -394,9 +346,9 @@ Savills/CBRE style. No bullets. Don't start with '{area}'."""
     ]))
     elements.append(kpi_table)
     elements.append(Spacer(1, 16))
-    elements.append(Paragraph("✦  AI MARKET COMMENTARY · CLAUDE", section_label_style))
-    cb = Table([[Paragraph(commentary_text, body_style)]], colWidths=[170*mm])
-    cb.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,-1), very_light), ("LEFTPADDING", (0,0), (-1,-1), 12), ("RIGHTPADDING", (0,0), (-1,-1), 12), ("TOPPADDING", (0,0), (-1,-1), 12), ("BOTTOMPADDING", (0,0), (-1,-1), 12), ("LINEBEFORE", (0,0), (0,-1), 3, purple)]))
+    elements.append(Paragraph("IN BRIEF", section_label_style))
+    cb = Table([[Paragraph(summary_text, body_style)]], colWidths=[170*mm])
+    cb.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,-1), very_light), ("LEFTPADDING", (0,0), (-1,-1), 12), ("RIGHTPADDING", (0,0), (-1,-1), 12), ("TOPPADDING", (0,0), (-1,-1), 12), ("BOTTOMPADDING", (0,0), (-1,-1), 12), ("LINEBEFORE", (0,0), (0,-1), 3, accent)]))
     elements.append(cb)
     elements.append(Spacer(1, 16))
     elements.append(Paragraph("QUARTERLY DATA BREAKDOWN", section_label_style))
@@ -418,7 +370,7 @@ Savills/CBRE style. No bullets. Don't start with '{area}'."""
     elements.append(HRFlowable(width="100%", thickness=0.5, color=border_color, spaceAfter=10))
     footer_data = [[
         Paragraph(f'<b>West End Office Intelligence</b><br/><font color="#94a3b8">Built by Dominic Mayne · © {datetime.now().year}</font>', ParagraphStyle("fl", fontSize=8, fontName="Helvetica", textColor=mid_slate, leading=12)),
-        Paragraph('<font color="#a855f7"><b>✦ Powered by Claude · Anthropic</b></font>', ParagraphStyle("fr", fontSize=8, fontName="Helvetica", alignment=TA_RIGHT, leading=12))
+        Paragraph('<font color="#94a3b8">dominicmayne.com/west-end</font>', ParagraphStyle("fr", fontSize=8, fontName="Helvetica", alignment=TA_RIGHT, leading=12))
     ]]
     ft = Table(footer_data, colWidths=[110*mm, 60*mm])
     ft.setStyle(TableStyle([("VALIGN", (0,0), (-1,-1), "TOP")]))

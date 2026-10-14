@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Work · Dominic Mayne</title>
-    <meta name="description" content="Projects by Dominic Mayne: West End Office Intelligence, Built Environment Talent Intelligence, Tottenham Hotspur Stadium analysis, Hold, Unearthed and 3D modelling.">
+    <meta name="description" content="Projects by Dominic Mayne: West End Office Intelligence, Built Environment Talent Intelligence, Tottenham Hotspur Stadium analysis, Samespot, Hold and Unearthed.">
     <link rel="canonical" href="https://www.dominicmayne.com/work">
     <meta property="og:title" content="Work · Dominic Mayne">
     <meta property="og:image" content="https://www.dominicmayne.com/og.png">
@@ -42,7 +42,7 @@
 <section class="wrap work">
     <div class="sec-head">
         <h1 class="display work-title">Things I've built.</h1>
-        <p>Each one started with a question from the real world: what the West End office market will do next, why parents can't get a swimming place, and who the next wonderkid is.</p>
+        <p>Each one started with a question from the real world: what the West End office market will do next, who pays when a tenant leaves a mark on the wall, why parents can't get a swimming place, and who the next wonderkid is.</p>
     </div>
 
     <div class="group"><h3>Property &amp; data</h3><span>Where my degree meets the data</span></div>
@@ -51,9 +51,9 @@
             <div>
                 <div class="tile-status"><span class="dot"></span>Live · dominicmayne.com/west-end</div>
                 <h3 class="tile-title">West End Office Intelligence Platform</h3>
-                <p class="tile-desc">Leasing analytics across 8 Central London office submarkets: a backtested vacancy forecast, research notes written by Claude, live market search, a deals tracker and one-click PDF reports.</p>
+                <p class="tile-desc">Leasing analytics across 8 Central London office submarkets: a backtested vacancy forecast, a submarket heat map, live market search, a deals tracker and one-click PDF reports.</p>
                 <p class="tile-proof">The forecast is tested on quarters it never saw and lands <strong><span data-backtest>19%</span> closer</strong> than assuming nothing changes.</p>
-                <p class="stack"><span>Python</span><span>scikit-learn</span><span>FastAPI</span><span>Claude API</span><span>Chart.js</span></p>
+                <p class="stack"><span>Python</span><span>scikit-learn</span><span>FastAPI</span><span>Chart.js</span></p>
                 <span class="tile-go">Open the platform</span>
             </div>
             <div class="tile-art" aria-hidden="true">
@@ -159,24 +159,41 @@
         </div>
     </div>
 
-    <div class="group"><h3>Making</h3><span>Away from the spreadsheets</span></div>
+    <div class="group"><h3>Building now</h3><span>PropTech for UK lettings</span></div>
     <div class="tiles">
-        <!-- TODO(dom): swap in a real description, software and a few renders. -->
-        <div data-reveal class="tile tile-wide">
+        <div data-reveal class="tile tile-wide tile-samespot">
             <div>
-                <div class="tile-status"><span class="dot demo"></span>In progress</div>
-                <h3 class="tile-title">3D modelling</h3>
-                <p class="tile-desc">I'm building a portfolio of 3D models. Renders and the story behind each piece are on their way here.</p>
+                <div class="tile-status"><span class="dot soon"></span>Working prototype</div>
+                <h3 class="tile-title">Samespot</h3>
+                <p class="tile-desc">Deposit disputes come down to one question: was that mark there at check-in? An agent films a slow walk round each room on a phone, in the browser with no app. Samespot builds a 3D map of the room, and at check-out it finds what changed and puts each mark beside the check-in photo of the same spot.</p>
+                <p class="tile-desc">Every photo and video is fingerprinted with SHA-256, so the condition report and one-tap dispute pack sent to myDeposits, TDS or DPS can be shown to be untouched. The agent portal adds a fair wear-and-tear charge calculator, tenant self check-in and a property history.</p>
+                <p class="tile-proof">In real rooms, change detection found <strong>all four test marks</strong>. Next up: cutting a 3 to 5 minute run on CPU down to seconds.</p>
+                <p class="stack"><span>3D reconstruction</span><span>Change detection</span><span>Claude</span><span>SHA-256</span><span>PropTech</span></p>
             </div>
             <div class="tile-art" aria-hidden="true">
-                <!-- A building shell in isometric wireframe: the stage before the render. -->
-                <svg viewBox="0 0 400 250" fill="none" stroke-linejoin="round">
-                    <path d="M200 30 L330 105 L200 180 L70 105 Z" style="fill:color-mix(in srgb, var(--accent) 7%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
-                    <path d="M70 105 L200 180 L200 240 L70 165 Z" style="fill:color-mix(in srgb, var(--accent) 16%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
-                    <path d="M200 180 L330 105 L330 165 L200 240 Z" style="fill:color-mix(in srgb, var(--accent) 28%, transparent);stroke:var(--accent)" stroke-width="1.4"/>
-                    <path d="M70 165 L200 90 L330 165 M200 30 L200 90" style="stroke:var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity="0.55"/>
-                    <path d="M102.5 123.8 V183.8 M135 142.5 V202.5 M167.5 161.3 V221.3 M232.5 161.3 V221.3 M265 142.5 V202.5 M297.5 123.8 V183.8 M70 135 L200 210 L330 135" style="stroke:var(--accent)" stroke-width="0.7" opacity="0.45"/>
-                    <g style="fill:var(--surface);stroke:var(--accent)" stroke-width="1.4"><circle cx="200" cy="30" r="3.5"/><circle cx="330" cy="105" r="3.5"/><circle cx="200" cy="180" r="3.5"/><circle cx="70" cy="105" r="3.5"/><circle cx="70" cy="165" r="3.5"/><circle cx="200" cy="240" r="3.5"/><circle cx="330" cy="165" r="3.5"/></g>
+                <!-- A room in isometric: the walk-round path on the floor, and a mark on the wall matched to the same spot at check-in. -->
+                <svg viewBox="0 0 400 260" fill="none" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M200 120 L330 195 L200 255 L70 195 Z" style="fill:color-mix(in srgb, var(--accent) 6%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M70 195 L200 120 L200 20 L70 95 Z" style="fill:color-mix(in srgb, var(--accent) 12%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M200 120 L330 195 L330 95 L200 20 Z" style="fill:color-mix(in srgb, var(--accent) 20%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M240 98 L290 127 L290 87 L240 58 Z" style="fill:var(--surface);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M265 72.5 V112.5 M240 78 L290 107" style="stroke:var(--ink-3)" stroke-width="0.8"/>
+                    <path d="M110 172 L150 149 L150 89 L110 112 Z" style="fill:color-mix(in srgb, var(--accent) 6%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <ellipse class="ss-path" cx="200" cy="190" rx="78" ry="38" style="stroke:var(--accent)" stroke-width="1.6" stroke-dasharray="1 7"/>
+                    <g style="fill:var(--accent)"><circle cx="122" cy="190" r="3"/><circle cx="155" cy="159" r="3"/><circle cx="245" cy="159" r="3"/><circle cx="278" cy="190" r="3"/><circle cx="200" cy="228" r="3"/></g>
+                    <path d="M245 159 L300 150" style="stroke:var(--accent)" stroke-width="1" opacity="0.5"/>
+                    <circle class="ss-mark" cx="306" cy="150" r="9" style="stroke:var(--accent)" stroke-width="1.6"/>
+                    <circle cx="306" cy="150" r="2.4" style="fill:var(--ink)"/>
+                    <g class="ss-pair">
+                        <rect x="300" y="8" width="44" height="34" rx="5" style="fill:var(--surface);stroke:var(--ink-3)" stroke-width="1"/>
+                        <rect x="350" y="8" width="44" height="34" rx="5" style="fill:var(--surface);stroke:var(--accent)" stroke-width="1.4"/>
+                        <path d="M306 34 H338 M356 34 H388 M322 8 V34 M372 8 V34" style="stroke:var(--ink-3)" stroke-width="0.8" opacity="0.6"/>
+                        <circle cx="379" cy="22" r="2.4" style="fill:var(--ink)"/>
+                        <text x="322" y="54" text-anchor="middle" style="fill:var(--ink-3)" font-size="8.5" font-family="inherit">Check-in</text>
+                        <text x="372" y="54" text-anchor="middle" style="fill:var(--accent)" font-size="8.5" font-family="inherit">Check-out</text>
+                        <path d="M306 141 C 306 110, 372 100, 372 76" style="stroke:var(--accent)" stroke-width="1" stroke-dasharray="2 4"/>
+                    </g>
+                    <text x="394" y="68" text-anchor="end" style="fill:var(--ink-3);font-family:var(--mono)" font-size="8">sha256 9f2c…e41a ✓</text>
                 </svg>
             </div>
         </div>
