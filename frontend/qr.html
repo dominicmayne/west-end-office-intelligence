@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Free QR code generator that builds your link as a tiny 3D world: a blossom tree, a rainforest, a coral reef or a mushroom glade. Tap bird's-eye view and it scans.">
+<meta name="description" content="Free QR code generator that builds your link as a tiny 3D world: a blossom tree, a rainforest, a coral reef or a mushroom glade. Tap the world and it turns into a code your phone can scan.">
 <link rel="canonical" href="https://www.dominicmayne.com/qr">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.dominicmayne.com/qr">
@@ -50,6 +50,7 @@ body {
   gap: 0;
 }
 .stage {
+  cursor: pointer;
   position: sticky; top: 0;
   height: 100vh; height: 100dvh;
   background:
@@ -232,7 +233,7 @@ body {
   </div>
 
   <aside class="deck" aria-label="Garden controls">
-    <p class="intro">Your link, built as a tiny world. Every dark square of the code is a blossom, a rainforest tree, a coral or a toadstool. Tap <b>Bird's-eye view</b> and the camera rises until it reads as a QR code your phone can scan.</p>
+    <p class="intro">Your link, built as a tiny world. Every dark square of the code is a blossom, a rainforest tree, a coral or a toadstool. Tap the world and the camera rises until it reads as a QR code your phone can scan. Drag to turn it round.</p>
 
     <div class="field">
       <label class="lbl" for="text">Link or text</label>
@@ -614,7 +615,7 @@ body {
   const WORLDS = {
     mushroom(cells, r, t0) {
       // a toadstool glade at dusk: every dark square is a mossy mound with mushrooms, the light squares are the stone path the gnomes walk
-      const g = { t0, topY: 3, noSlab: true };
+      const g = { t0, topY: 4.5, noSlab: true };
       const light = cells.filter((c) => !c.dark), dark = cells.filter((c) => c.dark);
       const half = SIZE / 2;
       const pathMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 1 });
@@ -626,21 +627,29 @@ body {
       const tuftM = inst(group, G.tuft, M.tuft, dark.length);
       // mushrooms: one big spotted toadstool, a cluster of small ones, or just moss and grass
       const caps = [], spots = [];
-      
       const ms = dark.map((c) => {
         const roll = r(), out = { ...c, born: t0 + 0.4 + c.d * 0.02 + r() * 0.15, shrooms: [] };
-        if (roll < 0.5) {
-          const sh = { ox: (r() - 0.5) * 0.1, oz: (r() - 0.5) * 0.1, stem: 0.45 + r() * 0.45, cap: 0.38 + r() * 0.06, tilt: (r() - 0.5) * 0.15, v: r() };
-          out.shrooms.push(sh); caps.push(sh);
-          for (let k = 0; k < 5; k++) spots.push({ m: sh, c: out, a: r() * 6.28, h: 0.25 + r() * 0.55 });
-        } else if (roll < 0.85) {
-          for (let k = 0; k < 3; k++) { const a = (k / 3) * 6.28 + r(); const sh = { ox: Math.cos(a) * 0.22, oz: Math.sin(a) * 0.22, stem: 0.2 + r() * 0.3, cap: 0.15 + r() * 0.08, tilt: (r() - 0.5) * 0.4, v: r() }; out.shrooms.push(sh); caps.push(sh); }
+        const add = (sh) => { sh.v = r(); sh.ph = r() * 6.28; out.shrooms.push(sh); caps.push(sh); return sh; };
+        if (roll < 0.34) {
+          // fly agaric: tall, round and spotted
+          const sh = add({ shape: 0, hue: 0, ox: (r() - 0.5) * 0.08, oz: (r() - 0.5) * 0.08, stem: 0.9 + r() * 1.4, cap: 0.4 + r() * 0.06, tilt: (r() - 0.5) * 0.12 });
+          for (let k = 0; k < 6; k++) spots.push({ m: sh, c: out, a: r() * 6.28, h: 0.2 + r() * 0.6 });
+        } else if (roll < 0.52) {
+          // parasol: a very tall thin stalk under a wide flat cap
+          add({ shape: 1, hue: 0.09, ox: 0, oz: 0, stem: 1.7 + r() * 1.5, cap: 0.44 + r() * 0.04, tilt: (r() - 0.5) * 0.1 });
+        } else if (roll < 0.7) {
+          // inkcaps: pairs of tall bells
+          for (let k = 0; k < 2; k++) add({ shape: 2, hue: -0.09, ox: (k ? 0.17 : -0.17) + (r() - 0.5) * 0.06, oz: (r() - 0.5) * 0.3, stem: 0.6 + r() * 1.0, cap: 0.2 + r() * 0.06, tilt: (r() - 0.5) * 0.3 });
+        } else {
+          // a crowded cluster of small ones
+          for (let k = 0; k < 4; k++) { const a = (k / 4) * 6.28 + r(); add({ shape: 0, hue: 0.17, ox: Math.cos(a) * 0.24, oz: Math.sin(a) * 0.24, stem: 0.3 + r() * 0.9, cap: 0.13 + r() * 0.08, tilt: (r() - 0.5) * 0.5 }); }
         }
         return out;
       });
       const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.62, 1);
+      const capGeos = [capGeo, new THREE.SphereGeometry(1, 18, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.26, 1), new THREE.ConeGeometry(1, 2.1, 14).translate(0, 0.75, 0)];
       const capMat = new THREE.MeshStandardMaterial({ roughness: 0.55 });
-      const capM = inst(group, capGeo, capMat, caps.length);
+      const capMs = capGeos.map((geo, k) => inst(group, geo, capMat, caps.filter((sh) => sh.shape === k).length));
       const stemM = inst(group, new THREE.CylinderGeometry(0.075, 0.11, 1, 8).translate(0, 0.5, 0), M.mushStem, caps.length);
       const spotM = inst(group, new THREE.SphereGeometry(0.055, 6, 4), new THREE.MeshStandardMaterial({ color: "#f6f0e6", roughness: 0.6 }), spots.length);
       // giant toadstools and dark trees ring the glade
@@ -687,26 +696,30 @@ body {
       const flies = Array.from({ length: 50 }, () => ({ x: (r() - 0.5) * (SIZE + 6), z: (r() - 0.5) * (SIZE + 6), y: 0.8 + r() * 2.2, ph: r() * 6.28, sp: 0.3 + r() * 0.5 }));
       g.readyAt = Math.max(t0, ...ms.map((c) => c.born)) + 0.9;
       g.update = (time, t, sway) => {
-        let ci = 0, si = 0;
+        let ci = 0; const cc = [0, 0, 0];
         ms.forEach((c, i) => {
           const k = Math.max(pop((time - c.born) / 0.55), 1e-4);
           _q.identity(); _p.set(c.x, 0, c.z); _s.set(k, k, k); _m.compose(_p, _q, _s); mounds.setMatrixAt(i, _m);
           _p.set(c.x, 0.3 * k, c.z); _s.set(k, k * 0.8, k); _m.compose(_p, _q, _s); tuftM.setMatrixAt(i, _m);
           c.shrooms.forEach((sh) => {
             const kk = Math.max(pop((time - c.born - 0.15) / 0.6), 1e-4), x = c.x + sh.ox, z = c.z + sh.oz, top = 0.3 + sh.stem * kk;
-            _e.set(sh.tilt * sway * 0.5 + sh.tilt * 0.5, 0, 0); _q.setFromEuler(_e);
-            _p.set(x, 0.3, z); _s.set(kk, sh.stem * kk, kk); _m.compose(_p, _q, _s); stemM.setMatrixAt(ci, _m);
-            _p.set(x, top, z); _s.setScalar(sh.cap * kk); _m.compose(_p, _q, _s); capM.setMatrixAt(ci, _m);
+            const w = sh.shape === 1 ? 0.65 : 1, lean = sh.tilt + Math.sin(time * 0.8 + sh.ph) * 0.05 * sway * Math.min(1, sh.stem);
+            _e.set(lean, 0, Math.cos(time * 0.7 + sh.ph) * 0.04 * sway); _q.setFromEuler(_e);
+            _p.set(x, 0.3, z); _s.set(kk * w, sh.stem * kk, kk * w); _m.compose(_p, _q, _s); stemM.setMatrixAt(ci, _m);
+            // the cap rides the top of the leaning stalk
+            _p.set(x, 0.3, z).add(new THREE.Vector3(0, sh.stem * kk, 0).applyQuaternion(_q));
+            _s.setScalar(sh.cap * kk); _m.compose(_p, _q, _s); capMs[sh.shape].setMatrixAt(cc[sh.shape]++, _m);
+            (sh.m4 || (sh.m4 = new THREE.Matrix4())).copy(_m);
             ci++;
           });
         });
+        // spots sit on the cap's surface, so they follow it as it leans
         spots.forEach((sp, i) => {
-          const sh = sp.m, c = sp.c;
-          const kk = Math.max(pop((time - c.born - 0.15) / 0.6), 1e-4), rr = sh.cap * sp.h;
-          const y = 0.3 + sh.stem * kk + Math.sqrt(Math.max(0, sh.cap * sh.cap - rr * rr)) * 0.62 * kk;
-          _q.identity(); _p.set(c.x + sh.ox + Math.cos(sp.a) * rr * kk, y, c.z + sh.oz + Math.sin(sp.a) * rr * kk); _s.setScalar(kk * (1 - smooth(t, 0.3, 0.85)) + 1e-4); _m.compose(_p, _q, _s); spotM.setMatrixAt(i, _m);
+          const sh = sp.m, fade = 1 - smooth(t, 0.3, 0.85);
+          _p.set(Math.cos(sp.a) * sp.h, Math.sqrt(1 - sp.h * sp.h) * 0.62, Math.sin(sp.a) * sp.h).applyMatrix4(sh.m4);
+          _q.identity(); _s.setScalar(sh.m4.getMaxScaleOnAxis() / sh.cap * fade + 1e-4); _m.compose(_p, _q, _s); spotM.setMatrixAt(i, _m);
         });
-        mounds.instanceMatrix.needsUpdate = tuftM.instanceMatrix.needsUpdate = capM.instanceMatrix.needsUpdate = stemM.instanceMatrix.needsUpdate = spotM.instanceMatrix.needsUpdate = true;
+        mounds.instanceMatrix.needsUpdate = tuftM.instanceMatrix.needsUpdate = stemM.instanceMatrix.needsUpdate = spotM.instanceMatrix.needsUpdate = true; capMs.forEach((m) => (m.instanceMatrix.needsUpdate = true));
         giants.forEach((o, i) => {
           const k = Math.max(pop((time - o.born) / 0.7), 1e-4), h = o.s * 0.9 * k;
           _q.identity(); _p.set(o.x, -0.22, o.z); _s.set(o.s * k * 1.6, h, o.s * k * 1.6); _m.compose(_p, _q, _s); gStem.setMatrixAt(i, _m);
@@ -731,11 +744,11 @@ body {
       };
       g.recolor = () => {
         const hsl = {}; new THREE.Color(crownColor).getHSL(hsl);
-        const tint = (v) => { _c.setHSL((hsl.h + (v - 0.5) * 0.06 + 1) % 1, hsl.s, clamp(hsl.l * (0.85 + v * 0.25), 0, 1)); const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.32) _c.multiplyScalar(0.32 / lum); return _c; };
-        caps.forEach((sh, i) => capM.setColorAt(i, tint(sh.v)));
-        giants.forEach((o, i) => gCap.setColorAt(i, tint(o.v)));
-        ms.forEach((c, i) => { _c.set("#34492a").multiplyScalar(0.9 + c.v * 0.2); mounds.setColorAt(i, _c); _c.set("#3f5a2e"); tuftM.setColorAt(i, _c); });
-        [capM, gCap, mounds, tuftM].forEach((m) => m.instanceColor && (m.instanceColor.needsUpdate = true));
+        const tint = (v, hue = 0) => { _c.setHSL((hsl.h + hue + (v - 0.5) * 0.06 + 1) % 1, hsl.s, clamp(hsl.l * (0.85 + v * 0.25), 0, 1)); const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.22) _c.multiplyScalar(0.22 / lum); return _c; };
+        const cc = [0, 0, 0]; caps.forEach((sh) => capMs[sh.shape].setColorAt(cc[sh.shape]++, tint(sh.v, sh.hue)));
+        giants.forEach((o, i) => gCap.setColorAt(i, tint(o.v, (o.v - 0.5) * 0.2)));
+        ms.forEach((c, i) => { _c.set("#2a3d22").multiplyScalar(0.9 + c.v * 0.2); mounds.setColorAt(i, _c); _c.set("#3f5a2e"); tuftM.setColorAt(i, _c); });
+        [...capMs, gCap, mounds, tuftM].forEach((m) => m.instanceColor && (m.instanceColor.needsUpdate = true));
       };
       g.count = `${caps.length} mushrooms`;
       return g;
@@ -863,7 +876,7 @@ body {
 
     reef(cells, r, t0) {
       // a coral reef: every dark square is a rock crusted with coral, the light squares are white sand
-      const g = { t0, topY: 3, noSlab: true };
+      const g = { t0, topY: 5.5, noSlab: true };
       const light = cells.filter((c) => !c.dark), dark = cells.filter((c) => c.dark);
       const half = SIZE / 2;
       const sandMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 1 });
@@ -892,10 +905,19 @@ body {
       const brain = at(new THREE.SphereGeometry(0.44, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), 0, 0, 0, 1, 0.75, 1);
       const tubes = merge(Array.from({ length: 6 }, (_, i) => { const a = (i / 6) * Math.PI * 2, h = 0.3 + ((i * 7) % 5) * 0.09; return new THREE.CylinderGeometry(0.1, 0.08, h, 7, 1, true).translate(Math.cos(a) * 0.24, h / 2, Math.sin(a) * 0.24); }));
       const fan = merge([new THREE.CircleGeometry(0.42, 10, 0, Math.PI).translate(0, 0.1, 0), new THREE.CylinderGeometry(0.03, 0.04, 0.2, 4).translate(0, 0.05, 0)]);
+      // pillar coral: a stand of upright columns
+      const pillar = merge([[0, 0, 0.13, 1], [0.24, 0.1, 0.1, 0.75], [-0.2, 0.14, 0.09, 0.62], [0.05, -0.24, 0.1, 0.85], [-0.18, -0.16, 0.08, 0.5]].map(([x, z, rad, h]) => new THREE.CylinderGeometry(rad * 0.85, rad, h, 8).translate(x, h / 2, z)));
+      // table coral: a wide plate on a stalk
+      const table = merge([new THREE.CylinderGeometry(0.06, 0.09, 0.6, 6).translate(0, 0.3, 0), new THREE.CylinderGeometry(0.46, 0.38, 0.07, 14).translate(0, 0.62, 0), new THREE.CylinderGeometry(0.3, 0.26, 0.06, 12).translate(0.06, 0.4, -0.04)]);
+      // anemone: a mop of tentacles
+      const anemone = merge([new THREE.CylinderGeometry(0.2, 0.26, 0.24, 10).translate(0, 0.12, 0), ...Array.from({ length: 16 }, (_, i) => { const a = (i / 16) * Math.PI * 2, d = 0.06 + (i % 3) * 0.05; const c = new THREE.ConeGeometry(0.035, 0.38, 4).translate(0, 0.19, 0); c.rotateZ(0.5 + (i % 2) * 0.3); c.rotateY(a); return c.translate(Math.cos(a) * d, 0.22, Math.sin(a) * d); })]);
       const fanMat = new THREE.MeshStandardMaterial({ roughness: 0.8, side: THREE.DoubleSide, flatShading: true });
-      const coral = dark.map((c) => ({ ...c, type: Math.floor(r() * 4), rot: r() * 6.28, hue: (r() - 0.5) * 0.34, born: t0 + 0.4 + c.d * 0.022 + r() * 0.2 }));
+      // how tall each kind grows, and how far its colour sits from the chosen one
+      const TALL = [[1.5, 2.8], [1.0, 1.5], [1.8, 3.4], [1.8, 3.0], [1.8, 3.6], [1.3, 2.4], [1.0, 1.4]];
+      const HUE = [0, 0.1, -0.1, 0.2, -0.2, 0.35, 0.5];
+      const coral = dark.map((c) => { const type = Math.floor(r() * 7), [lo, hi] = TALL[type]; return { ...c, type, rot: r() * 6.28, hs: lo + r() * (hi - lo), hue: HUE[type] + (r() - 0.5) * 0.08, born: t0 + 0.4 + c.d * 0.022 + r() * 0.2 }; });
       const rocks = inst(group, rockGeo, rockMat, coral.length);
-      const kinds = [branch, brain, tubes, fan].map((geo, k) => { const list = coral.filter((c) => c.type === k); return { list, mesh: inst(group, geo, k === 3 ? fanMat : coralMat, list.length) }; });
+      const kinds = [branch, brain, tubes, fan, pillar, table, anemone].map((geo, k) => { const list = coral.filter((c) => c.type === k); return { list, mesh: inst(group, geo, k === 3 ? fanMat : coralMat, list.length) }; });
       // kelp swaying beyond the quiet zone
       const kelpGeo = new THREE.BoxGeometry(0.28, 1, 0.05, 1, 6, 1).translate(0, 0.5, 0);
       const kelpMat = new THREE.MeshStandardMaterial({ color: "#5d7f2c", roughness: 0.9, side: THREE.DoubleSide });
@@ -911,7 +933,7 @@ body {
       tailGeoFix(fishGeo);
       const fishMat = new THREE.MeshStandardMaterial({ roughness: 0.5 });
       const SHOAL = ["#f07a22", "#f4c430", "#2f6fe0", "#f2f2ee", "#e2477a"];
-      const shoals = Array.from({ length: 6 }, () => ({ cx: (r() - 0.5) * SIZE * 0.5, cz: (r() - 0.5) * SIZE * 0.5, rx: 4 + r() * half * 0.6, rz: 4 + r() * half * 0.6, y: 1.4 + r() * 1.6, sp: (0.12 + r() * 0.1) * (r() < 0.5 ? 1 : -1), ph: r() * 6.28, c: SHOAL[Math.floor(r() * SHOAL.length)] }));
+      const shoals = Array.from({ length: 6 }, () => ({ cx: (r() - 0.5) * SIZE * 0.5, cz: (r() - 0.5) * SIZE * 0.5, rx: 4 + r() * half * 0.6, rz: 4 + r() * half * 0.6, y: 3.4 + r() * 2.4, sp: (0.12 + r() * 0.1) * (r() < 0.5 ? 1 : -1), ph: r() * 6.28, c: SHOAL[Math.floor(r() * SHOAL.length)] }));
       const fish = [];
       shoals.forEach((s) => { for (let i = 0; i < 12; i++) fish.push({ s, ox: (r() - 0.5) * 2.2, oy: (r() - 0.5) * 0.9, oz: (r() - 0.5) * 2.2, ph: r() * 6.28, sc: 1.4 + r() * 0.7 }); });
       const fishM = inst(group, fishGeo, fishMat, fish.length);
@@ -930,12 +952,12 @@ body {
       const bubs = Array.from({ length: 60 }, () => { const c = coral[Math.floor(r() * coral.length)] || { x: 0, z: 0 }; return { x: c.x, z: c.z, ph: r() * 5, sp: 0.5 + r() * 0.5 }; });
       g.readyAt = Math.max(t0, ...coral.map((c) => c.born)) + 0.8;
       g.update = (time, t, sway) => {
-        const counts = [0, 0, 0, 0];
+        const counts = kinds.map(() => 0);
         coral.forEach((c, i) => {
           const k = Math.max(pop((time - c.born) / 0.55), 1e-4);
           _q.identity(); _p.set(c.x, 0, c.z); _s.set(k, k, k); _m.compose(_p, _q, _s); rocks.setMatrixAt(i, _m);
-          const wob = c.type === 3 ? Math.sin(time * 1.2 + c.rot) * 0.12 * sway : 0;
-          _e.set(wob, c.rot, 0); _q.setFromEuler(_e); _p.set(c.x, 0.34 * k, c.z); _m.compose(_p, _q, _s);
+          const wob = c.type === 3 || c.type === 6 ? Math.sin(time * 1.2 + c.rot) * 0.12 * sway : 0;
+          _e.set(wob, c.rot, 0); _q.setFromEuler(_e); _p.set(c.x, 0.34 * k, c.z); _s.set(k, k * c.hs, k); _m.compose(_p, _q, _s);
           kinds[c.type].mesh.setMatrixAt(counts[c.type]++, _m);
         });
         rocks.instanceMatrix.needsUpdate = true; kinds.forEach((k) => (k.mesh.instanceMatrix.needsUpdate = true));
@@ -953,18 +975,18 @@ body {
         });
         fishM.instanceMatrix.needsUpdate = true;
         const ta = time * 0.06, R = half * 0.62;
-        turtle.position.set(Math.cos(ta) * R, 3.4 + Math.sin(time * 0.5) * 0.3 + t * 25, Math.sin(ta) * R);
+        turtle.position.set(Math.cos(ta) * R, 6 + Math.sin(time * 0.5) * 0.3 + t * 25, Math.sin(ta) * R);
         turtle.rotation.set(0, -ta, Math.sin(time * 0.8) * 0.06);
         turtle.scale.setScalar(Math.max(gone, 1e-4) * 0.9);
         flippers.forEach((p) => { p.rotation.z = p.userData.sx * Math.sin(time * 1.6 + (p.userData.front ? 0 : 1.2)) * (p.userData.front ? 0.5 : 0.25); });
-        bubs.forEach((b, i) => { const y = ((time * b.sp + b.ph) % 5); _p.set(b.x + Math.sin(time * 2 + b.ph) * 0.1, 0.6 + y, b.z); _s.setScalar((1 - y / 5) * gone + 1e-4); _q.identity(); _m.compose(_p, _q, _s); bubM.setMatrixAt(i, _m); });
+        bubs.forEach((b, i) => { const y = ((time * b.sp + b.ph) % 5); _p.set(b.x + Math.sin(time * 2 + b.ph) * 0.1, 1.6 + y, b.z); _s.setScalar((1 - y / 5) * gone + 1e-4); _q.identity(); _m.compose(_p, _q, _s); bubM.setMatrixAt(i, _m); });
         bubM.instanceMatrix.needsUpdate = true;
       };
       g.recolor = () => {
         const hsl = {}; new THREE.Color(crownColor).getHSL(hsl);
-        const counts = [0, 0, 0, 0];
+        const counts = kinds.map(() => 0);
         coral.forEach((c, i) => {
-          _c.setHSL((hsl.h + c.hue + 1) % 1, hsl.s, clamp(hsl.l * (0.85 + c.v * 0.25), 0, 1));
+          _c.setHSL((hsl.h + c.hue + 1) % 1, clamp(hsl.s * (0.8 + c.v * 0.3), 0, 1), clamp(hsl.l * (0.85 + c.v * 0.25), 0, 1));
           // some hues read much lighter than others; keep every coral dark enough to scan
           const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.3) _c.multiplyScalar(0.3 / lum);
           kinds[c.type].mesh.setColorAt(counts[c.type]++, _c);
@@ -1129,13 +1151,17 @@ body {
   function runScan() {
     const pill = $("scanPill");
     if (!window.jsQR) { pill.className = "pill bad"; pill.textContent = "Checker missing"; setStatus("bad", "Try your phone camera on the screen"); return; }
-    const src = renderer.domElement;
-    const k = Math.min(1, 900 / Math.max(src.width, src.height));
-    const w = Math.round(src.width * k), h = Math.round(src.height * k);
+    // look only at the code and a little border, the way a phone camera framed on it would
+    const src = renderer.domElement, e = SIZE / 2 + 1;
+    const a = new THREE.Vector3(-e, 0, -e).project(camera), b = new THREE.Vector3(e, 0, e).project(camera);
+    const sx = Math.max(0, Math.min(a.x, b.x) * 0.5 + 0.5) * src.width, ex = Math.min(1, Math.max(a.x, b.x) * 0.5 + 0.5) * src.width;
+    const sy = Math.max(0, 0.5 - Math.max(a.y, b.y) * 0.5) * src.height, ey = Math.min(1, 0.5 - Math.min(a.y, b.y) * 0.5) * src.height;
+    const cw = Math.max(1, ex - sx), ch = Math.max(1, ey - sy), k = Math.min(1, 900 / Math.max(cw, ch));
+    const w = Math.round(cw * k), h = Math.round(ch * k);
     scanCanvas.width = w; scanCanvas.height = h;
     const ctx = scanCanvas.getContext("2d", { willReadFrequently: true });
     ctx.fillStyle = "#f4efe6"; ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(src, 0, 0, w, h);
+    ctx.drawImage(src, sx, sy, cw, ch, 0, 0, w, h);
     let res = null;
     try { res = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: "dontInvert" }); } catch (e) {}
     window.__qrScan = res ? res.data : null;
@@ -1149,7 +1175,7 @@ body {
     target = target ? 0 : 1;
     see.setAttribute("aria-pressed", String(!!target));
     $("seeTxt").textContent = target ? "Back down" : "Bird's-eye view";
-    if (target) queueScan(0.1); else setStatus("wait", "Drag to turn it round");
+    if (target) queueScan(0.1); else setStatus("wait", "Tap the world to see the QR code");
   });
   const textEl = $("text");
   const updateCount = () => ($("count").textContent = `${textEl.value.length} / 160`);
@@ -1196,18 +1222,28 @@ body {
 
   // drag to turn
   let drag = null;
+  let tap = null;
   stage.addEventListener("pointerdown", (e) => {
-    if (target || e.target.closest("button, a")) return;
+    if (e.target.closest("button, a")) return;
+    tap = { x: e.clientX, y: e.clientY, moved: false };
+    if (target) return;
     drag = { x: e.clientX, y: e.clientY, az: baseAz, el: userEl };
     stage.setPointerCapture(e.pointerId); stage.classList.add("dragging");
   });
   stage.addEventListener("pointermove", (e) => {
+    if (tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 6) tap.moved = true;
     if (!drag) return;
     baseAz = drag.az - (e.clientX - drag.x) * 0.007;
     userEl = clamp(drag.el + (e.clientY - drag.y) * 0.004, 0.25, 1.2);
   });
   const endDrag = () => { drag = null; stage.classList.remove("dragging"); };
-  stage.addEventListener("pointerup", endDrag); stage.addEventListener("pointercancel", endDrag);
+  stage.addEventListener("pointerup", (e) => {
+    // a tap (not a drag) anywhere on the world flips between the 3D scene and the QR code
+    const wasTap = tap && !tap.moved && !e.target.closest("button, a");
+    endDrag(); tap = null;
+    if (wasTap) see.click();
+  });
+  stage.addEventListener("pointercancel", () => { endDrag(); tap = null; });
 
   // ---------- downloads: re-render off-screen at high resolution, then save as PNG ----------
   function capture(top) {
@@ -1350,7 +1386,7 @@ body {
       if (clock >= scanAt && garden && clock >= garden.readyAt) { scanQueued = false; runScan(); }
       else { $("scanPill").className = "pill wait"; $("scanPill").textContent = "Checking"; setStatus("wait", "Checking the scan"); }
     }
-    if (!scanQueued && prog === 0 && garden && clock > garden.readyAt && $("status").textContent === "Building your world") setStatus("wait", "Drag to turn it round");
+    if (!scanQueued && prog === 0 && garden && clock > garden.readyAt && $("status").textContent === "Building your world") setStatus("wait", "Tap the world to see the QR code");
   }
 
   function applyKind() {
