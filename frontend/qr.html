@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Free QR code generator that builds your link as a tiny 3D world: a blossom tree, a rainforest or a coral reef. Tap bird's-eye view and it scans.">
+<meta name="description" content="Free QR code generator that builds your link as a tiny 3D world: a blossom tree, a rainforest, a coral reef or a mushroom glade. Tap bird's-eye view and it scans.">
 <link rel="canonical" href="https://www.dominicmayne.com/qr">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.dominicmayne.com/qr">
@@ -16,23 +16,25 @@
 <title>QR Worlds · Dominic Mayne</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: one bright paper-cream world. A floating isometric diorama on top, a tactile control deck below (side column on wide screens). */
 :root {
-  --paper: #f4efe6;
-  --paper-2: #ebe3d6;
-  --card: #fffaf2;
-  --ink: #2b2622;
-  --muted: #8a7f73;
-  --line: rgba(43, 38, 34, 0.12);
+  --paper: #f5f5f7;
+  --paper-2: #eef1fb;
+  --card: #ffffff;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --line: rgba(0, 0, 0, 0.08);
   --sun: #f6c945;
+  --accent: #2850d8;
+  --accent-wash: rgba(40, 80, 216, 0.08);
   --clay: #b8703f;
   --ok: #2f8a4c;
   --bad: #c2413a;
-  --display: "Unbounded", "Avenir Next", system-ui, sans-serif;
-  --body: "Figtree", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --display: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   color-scheme: light;
 }
 html, body { height: 100%; }
@@ -48,8 +50,8 @@ body {
   gap: 0;
 }
 .stage {
-  position: relative;
-  min-height: 100vh;
+  position: sticky; top: 0;
+  height: 100vh; height: 100dvh;
   background:
     radial-gradient(60% 50% at 50% 55%, #fffaf1 0%, transparent 70%),
     radial-gradient(90% 70% at 50% 100%, #efe5d4 0%, transparent 70%),
@@ -69,29 +71,29 @@ body {
 .mark {
   display: flex; align-items: center; gap: 12px;
   font-family: var(--display);
-  font-weight: 800;
-  font-size: clamp(26px, 4.4vw, 40px);
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  font-size: clamp(24px, 3.6vw, 34px);
+  letter-spacing: -0.035em;
   line-height: 1;
   white-space: nowrap;
   color: var(--ink);
 }
 .mark i { width: 0.9em; height: 0.9em; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
 .mark i b { border: 3px solid currentColor; border-radius: 4px; }
-.mark i b:nth-child(4) { border: 0; background: var(--sun); border-radius: 50%; transform: scale(.7); }
+.mark i b:nth-child(4) { border: 0; background: var(--accent); border-radius: 50%; transform: scale(.7); }
 .stage.night .mark, .stage.dusk .mark { color: #fff8ee; }
 .stage.night .status { background: rgba(20, 26, 40, 0.7); }
 .see {
   pointer-events: auto;
   font: 600 14px var(--body);
-  color: var(--ink);
-  background: var(--sun);
+  color: #fff;
+  background: var(--accent);
   border: 0;
   border-radius: 999px;
-  padding: 8px 16px 8px 12px;
+  padding: 9px 18px 9px 14px;
   display: inline-flex; align-items: center; gap: 8px;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(214, 160, 20, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 22px rgba(40, 80, 216, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: transform .3s cubic-bezier(.2, .9, .3, 1.5), box-shadow .3s;
 }
 .see:hover { transform: translateY(-2px) scale(1.03); }
@@ -103,8 +105,8 @@ body {
   font: 600 14px var(--body);
   padding: 10px 18px;
   border-radius: 999px;
-  border: 1.5px solid currentColor;
-  background: rgba(255, 250, 242, 0.85);
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   white-space: nowrap;
@@ -118,7 +120,7 @@ body {
 
 .deck {
   border-left: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--card), var(--paper));
+  background: var(--paper);
   padding-block: 28px;
   padding-left: max(20px, env(safe-area-inset-left, 0px));
   padding-right: max(20px, env(safe-area-inset-right, 0px));
@@ -127,36 +129,37 @@ body {
   gap: 22px;
 }
 .intro { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; max-width: 60ch; }
-.lbl { font: 500 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.lbl { font: 600 13px var(--body); letter-spacing: -0.01em; color: var(--ink); }
 .field { display: grid; gap: 9px; }
 .input {
   width: 100%; box-sizing: border-box;
-  font: 500 17px var(--body);
+  font: 500 16px var(--body);
   color: var(--ink);
   background: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: inset 0 1px 2px rgba(43, 38, 34, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.input:focus-visible, button:focus-visible { outline: 2.5px solid var(--sun); outline-offset: 2px; }
-.hint { font: 12px var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--accent-wash); box-shadow: 0 0 0 1.5px var(--accent); }
+.hint { font: 12.5px var(--body); color: var(--muted); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
 .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .seg.three { grid-template-columns: repeat(3, 1fr); }
 .seg button {
-  font: 600 13.5px var(--body);
+  font: 500 13px var(--body);
   color: var(--ink);
   background: var(--card);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 11px 6px;
+  padding: 11px 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   display: flex; flex-direction: column; align-items: center; gap: 5px;
   cursor: pointer;
   transition: background .25s, transform .25s cubic-bezier(.2, .9, .3, 1.5), border-color .25s;
 }
 .seg button svg { width: 20px; height: 20px; }
 .seg button:hover { transform: translateY(-2px); }
-.seg button[aria-pressed="true"] { background: var(--paper-2); border-color: rgba(43, 38, 34, 0.28); }
+.seg button[aria-pressed="true"] { background: var(--paper-2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .dots { display: flex; gap: 12px; flex-wrap: wrap; }
 .dots button {
   width: 36px; height: 36px; border-radius: 50%;
@@ -175,12 +178,12 @@ body {
 }
 .dots label input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
-.pill { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 99px; border: 1.5px solid currentColor; white-space: nowrap; }
+.pill { font: 600 12px var(--body); padding: 4px 10px; border-radius: 99px; background: color-mix(in srgb, currentColor 10%, transparent); white-space: nowrap; }
 .pill.good { color: var(--ok); } .pill.bad { color: var(--bad); } .pill.wait { color: var(--muted); }
-.checks { display: grid; gap: 10px; padding: 14px 16px; border-radius: 16px; background: var(--card); border: 1.5px solid var(--line); }
-.dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.checks { display: grid; gap: 12px; padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+.dl { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .dl button {
-  font: 600 14px var(--body); color: var(--card); background: var(--ink);
+  font: 600 15px var(--body); color: #fff; background: var(--accent);
   border: 0; border-radius: 14px; padding: 12px 10px;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
   transition: transform .25s cubic-bezier(.2, .9, .3, 1.5), opacity .2s;
@@ -188,15 +191,15 @@ body {
 .dl button:hover { transform: translateY(-2px); }
 .dl button:disabled { opacity: .5; cursor: progress; }
 .dl svg { width: 18px; height: 18px; }
-.custom { display: grid; gap: 8px; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, #2b2622, #4a3a2c); color: #fff8ee; }
-.custom .soon { justify-self: start; font: 500 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); background: var(--sun); padding: 4px 9px; border-radius: 99px; }
+.custom { display: grid; gap: 8px; padding: 18px; border-radius: 18px; background: linear-gradient(135deg, #10172e, #24356e); color: #f5f5f7; }
+.custom .soon { justify-self: start; font: 600 12px var(--body); color: #1d1d1f; background: var(--sun); padding: 4px 10px; border-radius: 99px; }
 .custom b { font: 700 17px var(--body); }
 .custom p { margin: 0; font-size: 14px; line-height: 1.5; color: rgba(255, 248, 238, 0.75); }
 .custom a { justify-self: start; font: 600 14px var(--body); color: #fff8ee; text-decoration: underline; text-underline-offset: 3px; }
 .sound {
   justify-self: start;
-  font: 600 13px var(--body); color: var(--ink);
-  background: transparent; border: 1.5px solid var(--line); border-radius: 12px;
+  font: 500 14px var(--body); color: var(--ink);
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
   padding: 9px 12px; display: inline-flex; gap: 8px; align-items: center; cursor: pointer;
 }
 .sound svg { width: 18px; height: 18px; }
@@ -204,20 +207,20 @@ body {
 
 @media (max-width: 820px) {
   .app { grid-template-columns: 1fr; }
-  .stage { min-height: 0; height: min(78vh, 640px); }
+  .stage { position: relative; min-height: 0; height: min(78vh, 640px); }
   .deck { border-left: 0; border-top: 1px solid var(--line); }
 }
 @media (prefers-reduced-motion: reduce) {
   .see, .seg button, .dots button { transition: none; }
 }
 </style>
-<style>body{margin:0}[hidden]{display:none!important}.home{position:absolute;z-index:3;top:14px;left:16px;font:600 13px var(--body);color:inherit;opacity:.7;text-decoration:none}.home:hover{opacity:1}.stage.night .home{color:#fff8ee}@media (max-width:820px){.home{display:none}}</style>
+<style>body{margin:0}[hidden]{display:none!important}.home{position:absolute;z-index:3;top:14px;left:14px;display:inline-flex;align-items:center;gap:6px;font:500 13px var(--body);color:var(--ink);text-decoration:none;padding:7px 12px 7px 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.08);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:background .2s}.home:hover{background:#fff}.home svg{width:14px;height:14px}.stage.night .home,.stage.dusk .home{color:#f5f5f7;background:rgba(20,20,30,.45);border-color:rgba(255,255,255,.14)}@media (max-width:520px){.home span{display:none}.home{padding:8px}}</style>
 </head>
 <body>
 
 <div class="app">
   <div class="stage" id="stage">
-    <a class="home" href="/">← Dominic Mayne</a>
+    <a class="home" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>dominicmayne.com</span></a>
     <div class="brand">
       <div class="mark" aria-label="QR Worlds"><i aria-hidden="true"><b></b><b></b><b></b><b></b></i>QR Worlds</div>
       <button class="see" id="see" type="button" aria-pressed="false">
@@ -229,7 +232,7 @@ body {
   </div>
 
   <aside class="deck" aria-label="Garden controls">
-    <p class="intro">Your link, built as a tiny world. Every dark square of the code is a blossom, a rainforest tree or a coral. Tap <b>Bird's-eye view</b> and the camera rises until it reads as a QR code your phone can scan.</p>
+    <p class="intro">Your link, built as a tiny world. Every dark square of the code is a blossom, a rainforest tree, a coral or a toadstool. Tap <b>Bird's-eye view</b> and the camera rises until it reads as a QR code your phone can scan.</p>
 
     <div class="field">
       <label class="lbl" for="text">Link or text</label>
@@ -239,10 +242,11 @@ body {
 
     <div class="field">
       <span class="lbl">World</span>
-      <div class="seg three" id="kinds" role="group" aria-label="World">
+      <div class="seg" id="kinds" role="group" aria-label="World">
         <button type="button" data-k="tree" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M12 15v7M9 22h6M12 13l-3-3M12 12l3-2"/></svg>Blossom tree</button>
         <button type="button" data-k="jungle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21V11M12 11c-4 0-7-2-8-5 3-1 6 0 8 3 2-3 5-4 8-3-1 3-4 5-8 5zM8 21h8"/></svg>Rainforest</button>
         <button type="button" data-k="reef" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21v-6M12 15l-4-4V6M12 15l4-4V5M8 9l-3-2M16 8l3-2M4 21h16"/></svg>Coral reef</button>
+        <button type="button" data-k="mushroom" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12a9 7 0 0 1 18 0z"/><path d="M9.5 12v6a2.5 2 0 0 0 5 0v-6"/><circle cx="9" cy="8.5" r="1" fill="currentColor"/><circle cx="14.5" cy="7.5" r="1" fill="currentColor"/></svg>Mushrooms</button>
       </div>
     </div>
 
@@ -270,10 +274,9 @@ body {
     <div class="field">
       <span class="lbl">Download</span>
       <div class="dl">
-        <button type="button" id="dlQR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Scannable QR</button>
-        <button type="button" id="dl3D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>3D view</button>
+        <button type="button" id="dlQR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Download QR code</button>
       </div>
-      <span class="hint" id="dlNote">High-res PNGs. The QR is the bird's-eye view with its quiet zone.</span>
+      <span class="hint" id="dlNote">A 2048px PNG of the bird's-eye view, ready to print.</span>
     </div>
 
     <div class="custom">
@@ -316,10 +319,11 @@ body {
     autumn: { crown: "#d6582a", grass: "#7d6c22", flowers: ["#e8933a", "#c9452f"], tile: "#efe6d8", sun: "#ffd9a8", particle: "leaf" },
     winter: { crown: "#3f6f95", grass: "#47736a", flowers: ["#ffffff"], tile: "#f4f6f7", sun: "#eef4ff", particle: "snow" },
   };
-  const KIND_LABEL = { tree: "Blossom colour", jungle: "Canopy colour", reef: "Coral colour" };
+  const KIND_LABEL = { tree: "Blossom colour", jungle: "Canopy colour", reef: "Coral colour", mushroom: "Toadstool colour" };
   const KIND = {
     tree: { def: null, sky: "", mood: "" , sun: null },
     jungle: { def: "#2e6a31", sun: "#fff1d6", hemi: "#f2fae6", mood: "", sky: "radial-gradient(70% 55% at 50% 45%, #f3f7ec 0%, transparent 70%), linear-gradient(180deg, #e2ebd6 0%, #c3d4b4 100%)" },
+    mushroom: { def: "#b0342c", sun: "#ffc59a", hemi: "#d8cbff", hemiI: 0.5, mood: "dusk", sky: "radial-gradient(60% 45% at 50% 100%, rgba(255,190,140,.45), transparent 70%), linear-gradient(180deg, #2a2346 0%, #4f3d66 55%, #8a6378 100%)" },
     reef: { def: "#8e2f62", sun: "#d6f2ff", hemi: "#d4ecf2", hemiI: 0.6, mood: "night", sky: "radial-gradient(60% 40% at 50% 0%, rgba(160,230,255,.45), transparent 70%), linear-gradient(180deg, #1b6f8f 0%, #0f4a68 55%, #0a3049 100%)" },
   };
 
@@ -608,6 +612,134 @@ body {
 
   // ---------- other worlds: each returns its own update and recolor ----------
   const WORLDS = {
+    mushroom(cells, r, t0) {
+      // a toadstool glade at dusk: every dark square is a mossy mound with mushrooms, the light squares are the stone path the gnomes walk
+      const g = { t0, topY: 3, noSlab: true };
+      const light = cells.filter((c) => !c.dark), dark = cells.filter((c) => c.dark);
+      const half = SIZE / 2;
+      const pathMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 1 });
+      const path = inst(group, G.tile, pathMat, light.length, false);
+      light.forEach((c, i) => { _m.makeTranslation(c.x, 0, c.z); path.setMatrixAt(i, _m); _c.set("#f1eadb").multiplyScalar(0.96 + c.v * 0.06); path.setColorAt(i, _c); });
+      const moundGeo = new THREE.BoxGeometry(1.0, 0.3, 1.0).translate(0, 0.15, 0);
+      const moundMat = new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 });
+      const mounds = inst(group, moundGeo, moundMat, dark.length);
+      const tuftM = inst(group, G.tuft, M.tuft, dark.length);
+      // mushrooms: one big spotted toadstool, a cluster of small ones, or just moss and grass
+      const caps = [], spots = [];
+      
+      const ms = dark.map((c) => {
+        const roll = r(), out = { ...c, born: t0 + 0.4 + c.d * 0.02 + r() * 0.15, shrooms: [] };
+        if (roll < 0.5) {
+          const sh = { ox: (r() - 0.5) * 0.1, oz: (r() - 0.5) * 0.1, stem: 0.45 + r() * 0.45, cap: 0.38 + r() * 0.06, tilt: (r() - 0.5) * 0.15, v: r() };
+          out.shrooms.push(sh); caps.push(sh);
+          for (let k = 0; k < 5; k++) spots.push({ m: sh, c: out, a: r() * 6.28, h: 0.25 + r() * 0.55 });
+        } else if (roll < 0.85) {
+          for (let k = 0; k < 3; k++) { const a = (k / 3) * 6.28 + r(); const sh = { ox: Math.cos(a) * 0.22, oz: Math.sin(a) * 0.22, stem: 0.2 + r() * 0.3, cap: 0.15 + r() * 0.08, tilt: (r() - 0.5) * 0.4, v: r() }; out.shrooms.push(sh); caps.push(sh); }
+        }
+        return out;
+      });
+      const capGeo = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.62, 1);
+      const capMat = new THREE.MeshStandardMaterial({ roughness: 0.55 });
+      const capM = inst(group, capGeo, capMat, caps.length);
+      const stemM = inst(group, new THREE.CylinderGeometry(0.075, 0.11, 1, 8).translate(0, 0.5, 0), M.mushStem, caps.length);
+      const spotM = inst(group, new THREE.SphereGeometry(0.055, 6, 4), new THREE.MeshStandardMaterial({ color: "#f6f0e6", roughness: 0.6 }), spots.length);
+      // giant toadstools and dark trees ring the glade
+      const ring = [];
+      for (let i = 0; i < SIZE * 2.2; i++) {
+        // keep every giant clear of the quiet zone, so nothing overhangs the code from above
+        const a = r() * Math.PI * 2, k = Math.max(Math.abs(Math.cos(a)), Math.abs(Math.sin(a))), sz = 1.8 + r() * 2.6, tree = r() < 0.45;
+        const d = half + 0.5 + (tree ? sz * 0.53 : sz * 0.56) + r() * 3;
+        ring.push({ x: (Math.cos(a) / k) * d, z: (Math.sin(a) / k) * d, s: sz, v: r(), tree, born: t0 + 0.2 + r() * 0.8 });
+      }
+      const giants = ring.filter((o) => !o.tree), firs = ring.filter((o) => o.tree);
+      const gCap = inst(group, capGeo, capMat, giants.length), gStem = inst(group, new THREE.CylinderGeometry(0.075, 0.11, 1, 8).translate(0, 0.5, 0), M.mushStem, giants.length);
+      const firGeo = merge([at(new THREE.ConeGeometry(0.7, 1.4, 7), 0, 1.3, 0), at(new THREE.ConeGeometry(0.55, 1.1, 7), 0, 2.0, 0), at(new THREE.ConeGeometry(0.38, 0.9, 7), 0, 2.6, 0), at(new THREE.CylinderGeometry(0.09, 0.12, 0.8, 5), 0, 0.4, 0)]);
+      const firM = inst(group, firGeo, new THREE.MeshStandardMaterial({ color: "#2b3f2e", roughness: 1, flatShading: true }), firs.length);
+      const EDGE = half + 6;
+      const soil = new THREE.MeshStandardMaterial({ color: "#4a3426", roughness: 1 }), moss = new THREE.MeshStandardMaterial({ color: "#3a5230", roughness: 1 });
+      const island = new THREE.Mesh(new THREE.BoxGeometry(EDGE * 2, 1.4, EDGE * 2), [soil, soil, moss, soil, soil, soil]);
+      island.position.y = -0.93; island.receiveShadow = true; group.add(island);
+      // gnomes stroll the path from square to square
+      const coat = merge([at(new THREE.ConeGeometry(0.17, 0.36, 8), 0, 0.18, 0), at(new THREE.SphereGeometry(0.05, 6, 4), -0.07, 0.03, 0.02), at(new THREE.SphereGeometry(0.05, 6, 4), 0.07, 0.03, 0.02)]);
+      const head = merge([at(new THREE.SphereGeometry(0.09, 8, 6), 0, 0.42, 0), at(new THREE.SphereGeometry(0.03, 6, 4), 0, 0.41, 0.09)]);
+      const beard = new THREE.ConeGeometry(0.085, 0.17, 7).rotateX(Math.PI).translate(0, 0.33, 0.07);
+      const hat = at(new THREE.ConeGeometry(0.105, 0.32, 8), 0, 0.6, -0.01);
+      const gnomeMat = new THREE.MeshStandardMaterial({ roughness: 0.8, flatShading: true });
+      const skinMat = new THREE.MeshStandardMaterial({ color: "#f0c6a0", roughness: 0.8 });
+      const beardMat = new THREE.MeshStandardMaterial({ color: "#f4f1ea", roughness: 0.9, flatShading: true });
+      const byKey = new Map(light.map((c) => [c.row + "," + c.col, c]));
+      const walk = light.filter((c) => c.row >= -2 && c.col >= -2 && c.row < N + 2 && c.col < N + 2);
+      const gnomes = Array.from({ length: 14 }, () => { const a = walk[Math.floor(r() * walk.length)]; return { a, b: a, dr: 0, dc: 1, start: t0 + 1 + r() * 2, dur: 0.01, pause: 0, yaw: 0, coat: ["#3f6fb5", "#2f7d4a", "#7a4aa8", "#c07a26"][Math.floor(r() * 4)], hat: r() < 0.75 ? "#c8342c" : "#2f62c8", ph: r() * 6.28 }; });
+      const coatM = inst(group, coat, gnomeMat, gnomes.length), headM = inst(group, head, skinMat, gnomes.length), beardM = inst(group, beard, beardMat, gnomes.length), hatM = inst(group, hat, gnomeMat.clone(), gnomes.length);
+      gnomes.forEach((n, i) => { _c.set(n.coat); coatM.setColorAt(i, _c); _c.set(n.hat); hatM.setColorAt(i, _c); });
+      const step = (n) => {
+        n.a = n.b;
+        const dirs = [[n.dr, n.dc], [n.dc, -n.dr], [-n.dc, n.dr], [-n.dr, -n.dc]];
+        const opts = dirs.map(([dr, dc]) => ({ dr, dc, c: byKey.get((n.a.row + dr) + "," + (n.a.col + dc)) })).filter((o) => o.c);
+        // mostly keep going straight, sometimes turn, rarely turn back
+        let pick = opts[0] && opts[0].dr === n.dr && opts[0].dc === n.dc && r() < 0.7 ? opts[0] : opts.filter((o) => !(o.dr === -n.dr && o.dc === -n.dc))[Math.floor(r() * Math.max(1, opts.length - 1))] || opts[0];
+        if (!pick) { n.b = n.a; n.dur = 1; return; }
+        n.dr = pick.dr; n.dc = pick.dc; n.b = pick.c; n.dur = 0.85 + r() * 0.3; n.pause = r() < 0.12 ? 1 + r() * 2 : 0;
+        n.yaw = Math.atan2(n.b.x - n.a.x, n.b.z - n.a.z);
+      };
+      // fireflies drifting over the glade
+      const flyM = inst(group, new THREE.SphereGeometry(0.06, 6, 4), new THREE.MeshBasicMaterial({ color: "#ffe58a" }), 50, false);
+      const flies = Array.from({ length: 50 }, () => ({ x: (r() - 0.5) * (SIZE + 6), z: (r() - 0.5) * (SIZE + 6), y: 0.8 + r() * 2.2, ph: r() * 6.28, sp: 0.3 + r() * 0.5 }));
+      g.readyAt = Math.max(t0, ...ms.map((c) => c.born)) + 0.9;
+      g.update = (time, t, sway) => {
+        let ci = 0, si = 0;
+        ms.forEach((c, i) => {
+          const k = Math.max(pop((time - c.born) / 0.55), 1e-4);
+          _q.identity(); _p.set(c.x, 0, c.z); _s.set(k, k, k); _m.compose(_p, _q, _s); mounds.setMatrixAt(i, _m);
+          _p.set(c.x, 0.3 * k, c.z); _s.set(k, k * 0.8, k); _m.compose(_p, _q, _s); tuftM.setMatrixAt(i, _m);
+          c.shrooms.forEach((sh) => {
+            const kk = Math.max(pop((time - c.born - 0.15) / 0.6), 1e-4), x = c.x + sh.ox, z = c.z + sh.oz, top = 0.3 + sh.stem * kk;
+            _e.set(sh.tilt * sway * 0.5 + sh.tilt * 0.5, 0, 0); _q.setFromEuler(_e);
+            _p.set(x, 0.3, z); _s.set(kk, sh.stem * kk, kk); _m.compose(_p, _q, _s); stemM.setMatrixAt(ci, _m);
+            _p.set(x, top, z); _s.setScalar(sh.cap * kk); _m.compose(_p, _q, _s); capM.setMatrixAt(ci, _m);
+            ci++;
+          });
+        });
+        spots.forEach((sp, i) => {
+          const sh = sp.m, c = sp.c;
+          const kk = Math.max(pop((time - c.born - 0.15) / 0.6), 1e-4), rr = sh.cap * sp.h;
+          const y = 0.3 + sh.stem * kk + Math.sqrt(Math.max(0, sh.cap * sh.cap - rr * rr)) * 0.62 * kk;
+          _q.identity(); _p.set(c.x + sh.ox + Math.cos(sp.a) * rr * kk, y, c.z + sh.oz + Math.sin(sp.a) * rr * kk); _s.setScalar(kk * (1 - smooth(t, 0.3, 0.85)) + 1e-4); _m.compose(_p, _q, _s); spotM.setMatrixAt(i, _m);
+        });
+        mounds.instanceMatrix.needsUpdate = tuftM.instanceMatrix.needsUpdate = capM.instanceMatrix.needsUpdate = stemM.instanceMatrix.needsUpdate = spotM.instanceMatrix.needsUpdate = true;
+        giants.forEach((o, i) => {
+          const k = Math.max(pop((time - o.born) / 0.7), 1e-4), h = o.s * 0.9 * k;
+          _q.identity(); _p.set(o.x, -0.22, o.z); _s.set(o.s * k * 1.6, h, o.s * k * 1.6); _m.compose(_p, _q, _s); gStem.setMatrixAt(i, _m);
+          _p.set(o.x, h - 0.22, o.z); _s.setScalar(o.s * 0.55 * k); _m.compose(_p, _q, _s); gCap.setMatrixAt(i, _m);
+        });
+        firs.forEach((o, i) => { const k = Math.max(pop((time - o.born) / 0.7), 1e-4); _q.identity(); _p.set(o.x, -0.22, o.z); _s.setScalar(o.s * 0.75 * k); _m.compose(_p, _q, _s); firM.setMatrixAt(i, _m); });
+        gStem.instanceMatrix.needsUpdate = gCap.instanceMatrix.needsUpdate = firM.instanceMatrix.needsUpdate = true;
+        const gone = 1 - smooth(t, 0.02, 0.35);
+        gnomes.forEach((n, i) => {
+          if (time > n.start + n.dur + n.pause) { n.start = time; step(n); }
+          const f = clamp((time - n.start) / n.dur, 0, 1);
+          const x = lerp(n.a.x, n.b.x, f), z = lerp(n.a.z, n.b.z, f);
+          const walking = f < 1 && n.a !== n.b;
+          const bob = walking ? Math.abs(Math.sin(f * Math.PI * 2)) * 0.06 : 0;
+          const k = gone * Math.min(1, Math.max(0, (time - t0 - 1.1) * 2)) * 1.35 + 1e-4;
+          _e.set(0, n.yaw, walking ? Math.sin(f * Math.PI * 2) * 0.08 : 0); _q.setFromEuler(_e); _p.set(x, 0.01 + bob, z); _s.setScalar(k); _m.compose(_p, _q, _s);
+          coatM.setMatrixAt(i, _m); headM.setMatrixAt(i, _m); beardM.setMatrixAt(i, _m); hatM.setMatrixAt(i, _m);
+        });
+        coatM.instanceMatrix.needsUpdate = headM.instanceMatrix.needsUpdate = beardM.instanceMatrix.needsUpdate = hatM.instanceMatrix.needsUpdate = true;
+        flies.forEach((fl, i) => { const k = gone * (0.6 + 0.4 * Math.sin(time * 3 + fl.ph)) + 1e-4; _q.identity(); _p.set(fl.x + Math.sin(time * fl.sp + fl.ph) * 1.2, fl.y + Math.sin(time * 0.9 + fl.ph) * 0.4, fl.z + Math.cos(time * fl.sp * 0.8 + fl.ph) * 1.2); _s.setScalar(k); _m.compose(_p, _q, _s); flyM.setMatrixAt(i, _m); });
+        flyM.instanceMatrix.needsUpdate = true;
+      };
+      g.recolor = () => {
+        const hsl = {}; new THREE.Color(crownColor).getHSL(hsl);
+        const tint = (v) => { _c.setHSL((hsl.h + (v - 0.5) * 0.06 + 1) % 1, hsl.s, clamp(hsl.l * (0.85 + v * 0.25), 0, 1)); const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.32) _c.multiplyScalar(0.32 / lum); return _c; };
+        caps.forEach((sh, i) => capM.setColorAt(i, tint(sh.v)));
+        giants.forEach((o, i) => gCap.setColorAt(i, tint(o.v)));
+        ms.forEach((c, i) => { _c.set("#34492a").multiplyScalar(0.9 + c.v * 0.2); mounds.setColorAt(i, _c); _c.set("#3f5a2e"); tuftM.setColorAt(i, _c); });
+        [capM, gCap, mounds, tuftM].forEach((m) => m.instanceColor && (m.instanceColor.needsUpdate = true));
+      };
+      g.count = `${caps.length} mushrooms`;
+      return g;
+    },
     jungle(cells, r, t0) {
       // a rainforest canopy: every dark square is a tree crown, the light squares are the misty forest floor between them
       const g = { t0, topY: 7, noSlab: true };
@@ -636,7 +768,7 @@ body {
       const EDGE = half + 6;
       for (let i = 0; i < SIZE * 7; i++) {
         const a = r() * Math.PI * 2, k = Math.max(Math.abs(Math.cos(a)), Math.abs(Math.sin(a)));
-        const d = half + 1.4 + r() * 4.2, sc = 1.5 + r() * 1.1;
+        const sc = 1.5 + r() * 1.1, d = half + 0.5 + sc * 0.62 + r() * 3.6;
         ring.push({ x: (Math.cos(a) / k) * d, z: (Math.sin(a) / k) * d, h: 1.6 + r() * 2.4 + (d - half) * 0.25, rot: r() * 6.28, v: r(), bloom: r() < 0.06, born: t0 + 0.2 + r() * 0.8, outer: true, sc });
       }
       const all = trees.concat(ring);
@@ -1059,12 +1191,13 @@ body {
     applyKind();
     try { history.replaceState(null, "", "#" + kind); } catch (e) {}
     build();
+    if (audio) setSound(true);
   }));
 
   // drag to turn
   let drag = null;
   stage.addEventListener("pointerdown", (e) => {
-    if (target || e.target.closest("button")) return;
+    if (target || e.target.closest("button, a")) return;
     drag = { x: e.clientX, y: e.clientY, az: baseAz, el: userEl };
     stage.setPointerCapture(e.pointerId); stage.classList.add("dragging");
   });
@@ -1118,44 +1251,88 @@ body {
     btn.disabled = false;
   }
   $("dlQR").addEventListener("click", () => save(true));
-  $("dl3D").addEventListener("click", () => save(false));
-
-  // ---------- garden sounds: soft wind and the odd bird, made live ----------
+  
+  // ---------- sounds: a soundscape for each world, made live ----------
   let audio = null;
-  function startSound() {
+  function startSound(which) {
     const A = new (window.AudioContext || window.webkitAudioContext)();
-    const buf = A.createBuffer(1, A.sampleRate * 2, A.sampleRate), d = buf.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    const src = A.createBufferSource(); src.buffer = buf; src.loop = true;
-    const lp = A.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 380;
-    const gain = A.createGain(); gain.gain.value = 0.035;
-    const lfo = A.createOscillator(); lfo.frequency.value = 0.12;
-    const lfoG = A.createGain(); lfoG.gain.value = 0.02;
-    lfo.connect(lfoG).connect(gain.gain);
-    src.connect(lp).connect(gain).connect(A.destination);
-    src.start(); lfo.start();
-    let alive = true;
-    (function chirp() {
-      if (!alive) return;
-      const n = 2 + Math.floor(Math.random() * 3), base = 2200 + Math.random() * 1600;
-      for (let i = 0; i < n; i++) {
-        const o = A.createOscillator(), g = A.createGain(), t = A.currentTime + i * 0.11;
-        o.type = "sine";
-        o.frequency.setValueAtTime(base, t); o.frequency.exponentialRampToValueAtTime(base * 1.35, t + 0.07);
-        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.03, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-        o.connect(g).connect(A.destination); o.start(t); o.stop(t + 0.1);
-      }
-      setTimeout(chirp, 1800 + Math.random() * 4200);
-    })();
-    return { stop() { alive = false; A.close(); } };
+    const out = A.createGain(); out.gain.value = 0; out.connect(A.destination);
+    out.gain.linearRampToValueAtTime(1, A.currentTime + 1.2);
+    const noiseBuf = A.createBuffer(1, A.sampleRate * 2, A.sampleRate), nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    // a looping filtered noise bed (wind, rain, the sea)
+    function bed(type, freq, q, vol, lfoHz, lfoAmt) {
+      const src = A.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = A.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+      const g = A.createGain(); g.gain.value = vol;
+      if (lfoHz) { const l = A.createOscillator(), lg = A.createGain(); l.frequency.value = lfoHz; lg.gain.value = lfoAmt; l.connect(lg).connect(g.gain); l.start(); }
+      src.connect(f).connect(g).connect(out); src.start();
+    }
+    // one short pitched note with an envelope
+    function tone(type, f0, f1, at, dur, vol, filt) {
+      const o = A.createOscillator(), g = A.createGain(); o.type = type;
+      o.frequency.setValueAtTime(f0, at); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, at + dur * 0.8);
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + Math.min(0.02, dur * 0.2)); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+      let node = o.connect(g);
+      if (filt) { const f = A.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = filt; f.Q.value = 3; node = g.connect(f); node.connect(out); } else g.connect(out);
+      o.start(at); o.stop(at + dur + 0.05);
+    }
+    const timers = [];
+    function every(min, max, fn) { (function go() { fn(A.currentTime + 0.05); timers.push(setTimeout(go, rnd(min, max) * 1000)); })(); }
+
+    if (which === "jungle") {
+      bed("highpass", 4200, 0.7, 0.012, 0.07, 0.006);   // rain on leaves
+      bed("bandpass", 600, 0.8, 0.02, 0.05, 0.01);      // warm humid air
+      // cicadas: a buzzing band that swells and fades
+      const cic = A.createOscillator(), cg = A.createGain(), cf = A.createBiquadFilter(), am = A.createOscillator(), amg = A.createGain();
+      cic.type = "sawtooth"; cic.frequency.value = 4600; cf.type = "bandpass"; cf.frequency.value = 4800; cf.Q.value = 8;
+      am.frequency.value = 38; amg.gain.value = 0.004; cg.gain.value = 0.004; am.connect(amg).connect(cg.gain);
+      const swell = A.createOscillator(), sg = A.createGain(); swell.frequency.value = 0.08; sg.gain.value = 0.004; swell.connect(sg).connect(cg.gain);
+      cic.connect(cf).connect(cg).connect(out); cic.start(); am.start(); swell.start();
+      // macaw squawks
+      every(4, 9, (t) => { const n = 1 + Math.floor(rnd(0, 2)); for (let i = 0; i < n; i++) tone("sawtooth", rnd(900, 1300), rnd(500, 700), t + i * 0.28, 0.22, 0.045, 1400); });
+      // tropical whistlers
+      every(2, 5, (t) => { const b = rnd(1800, 3000); for (let i = 0; i < 3; i++) tone("sine", b * (i % 2 ? 1.25 : 1), b * (i % 2 ? 1 : 1.3), t + i * 0.16, 0.14, 0.03); });
+      // monkey hoots
+      every(7, 15, (t) => { const n = 3 + Math.floor(rnd(0, 4)); for (let i = 0; i < n; i++) tone("triangle", 380 + i * 60, 620 + i * 80, t + i * 0.22, 0.2, 0.06); });
+    } else if (which === "reef") {
+      bed("lowpass", 220, 0.7, 0.09, 0.06, 0.04);       // the deep sea rumble
+      bed("bandpass", 900, 0.6, 0.006, 0.11, 0.004);    // surface shimmer
+      // a slow, soft pad
+      [110, 164.8, 220].forEach((f, i) => { const o = A.createOscillator(), g = A.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.value = 0.012; const l = A.createOscillator(), lg = A.createGain(); l.frequency.value = 0.05 + i * 0.03; lg.gain.value = 0.01; l.connect(lg).connect(g.gain); o.connect(g).connect(out); o.start(); l.start(); });
+      // bubbles
+      every(0.6, 2.2, (t) => { const n = 1 + Math.floor(rnd(0, 5)); for (let i = 0; i < n; i++) tone("sine", rnd(250, 500), rnd(900, 1800), t + i * rnd(0.05, 0.12), 0.07, 0.035); });
+      // a far-off whale
+      every(14, 26, (t) => tone("sine", rnd(180, 260), rnd(110, 150), t, 2.6, 0.03));
+    } else if (which === "mushroom") {
+      bed("lowpass", 500, 0.6, 0.02, 0.09, 0.012);      // soft evening breeze
+      // crickets
+      every(0.4, 1.1, (t) => { const f = rnd(4200, 5200); for (let i = 0; i < 3; i++) tone("sine", f, f, t + i * 0.045, 0.03, 0.012); });
+      // a music box wandering a pentatonic scale
+      const scale = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5];
+      let idx = 3;
+      every(0.38, 0.9, (t) => { idx = clamp(idx + Math.round(rnd(-2, 2)), 0, scale.length - 1); tone("triangle", scale[idx], scale[idx], t, 1.4, 0.035); if (Math.random() < 0.25) tone("sine", scale[idx] * 2, scale[idx] * 2, t, 0.9, 0.012); });
+      // an owl now and then
+      every(12, 22, (t) => { tone("sine", 420, 380, t, 0.35, 0.04); tone("sine", 430, 370, t + 0.5, 0.6, 0.04); });
+    } else {
+      bed("lowpass", 380, 0.7, 0.035, 0.12, 0.02);      // wind through the branches
+      every(1.8, 6, (t) => { const n = 2 + Math.floor(rnd(0, 3)), base = rnd(2200, 3800); for (let i = 0; i < n; i++) tone("sine", base, base * 1.35, t + i * 0.11, 0.09, 0.03); });
+      // wind chimes
+      const chime = [1567.98, 1760, 2093, 2349.3, 2637];
+      every(3, 8, (t) => { const n = 2 + Math.floor(rnd(0, 3)); for (let i = 0; i < n; i++) { const f = chime[Math.floor(rnd(0, chime.length))]; tone("sine", f, f, t + i * rnd(0.12, 0.3), 2.2, 0.012); } });
+    }
+    return { stop() { timers.forEach(clearTimeout); out.gain.linearRampToValueAtTime(0, A.currentTime + 0.3); setTimeout(() => A.close(), 400); } };
   }
-  $("sound").addEventListener("click", () => {
+  function setSound(on) {
     try {
-      if (audio) { audio.stop(); audio = null; } else audio = startSound();
+      if (audio) { audio.stop(); audio = null; }
+      if (on) audio = startSound(kind);
     } catch (e) { audio = null; }
     $("sound").setAttribute("aria-pressed", String(!!audio));
     $("soundTxt").textContent = audio ? "Mute sounds" : "Play sounds";
-  });
+  }
+  $("sound").addEventListener("click", () => setSound(!audio));
 
   // ---------- loop ----------
   function frame(now) {
