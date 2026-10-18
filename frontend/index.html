@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dominic Mayne · Real estate, data and product</title>
-    <meta name="description" content="Real estate graduate (BSc, Reading) who builds and ships data products: West End office intelligence, Hold for parents, and Unearthed for football fans.">
+    <meta name="description" content="Real estate graduate (BSc, Reading) who builds and ships data products: West End office intelligence, Samespot for lettings, Hold for parents, and Unearthed for football fans.">
     <link rel="canonical" href="https://www.dominicmayne.com/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.dominicmayne.com/">
@@ -129,7 +129,7 @@
         .products .sec-head { margin: 0 auto 56px; text-align: center; max-width: 40em; }
         .products .sec-head p { margin-inline: auto; }
         .products .tiles { gap: 24px; }
-        .products .tile { min-height: 560px; }
+        .products .tile:not(.tile-wide) { min-height: 560px; }
         .more { display: flex; justify-content: center; margin-top: 48px; }
 
         /* ---------- Close ---------- */
@@ -217,6 +217,42 @@
         <p>The same instincts, pointed at everyday problems.</p>
     </div>
     <div class="tiles">
+        <div data-reveal class="tile tile-wide tile-samespot">
+            <div>
+                <div class="tile-status"><span class="dot soon"></span>Working prototype</div>
+                <h3 class="tile-title">Samespot</h3>
+                <p class="tile-desc">Deposit disputes come down to one question: was that mark there at check-in? An agent films a slow walk round each room on a phone, in the browser with no app. Samespot builds a 3D map of the room, and at check-out it finds what changed and puts each mark beside the check-in photo of the same spot.</p>
+                <p class="tile-desc">Every photo and video is fingerprinted with SHA-256, so the condition report and one-tap dispute pack sent to myDeposits, TDS or DPS can be shown to be untouched. The agent portal adds a fair wear-and-tear charge calculator, tenant self check-in and a property history.</p>
+                <p class="tile-proof">In real rooms, change detection found <strong>all four test marks</strong>. Next up: cutting a 3 to 5 minute run on CPU down to seconds.</p>
+                <p class="stack"><span>3D reconstruction</span><span>Change detection</span><span>Claude</span><span>SHA-256</span><span>PropTech</span></p>
+            </div>
+            <div class="tile-art" aria-hidden="true">
+                <!-- A room in isometric: the walk-round path on the floor, and a mark on the wall matched to the same spot at check-in. -->
+                <svg viewBox="0 0 400 260" fill="none" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M200 120 L330 195 L200 255 L70 195 Z" style="fill:color-mix(in srgb, var(--accent) 6%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M70 195 L200 120 L200 20 L70 95 Z" style="fill:color-mix(in srgb, var(--accent) 12%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M200 120 L330 195 L330 95 L200 20 Z" style="fill:color-mix(in srgb, var(--accent) 20%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M240 98 L290 127 L290 87 L240 58 Z" style="fill:var(--surface);stroke:var(--ink-3)" stroke-width="1"/>
+                    <path d="M265 72.5 V112.5 M240 78 L290 107" style="stroke:var(--ink-3)" stroke-width="0.8"/>
+                    <path d="M110 172 L150 149 L150 89 L110 112 Z" style="fill:color-mix(in srgb, var(--accent) 6%, transparent);stroke:var(--ink-3)" stroke-width="1"/>
+                    <ellipse class="ss-path" cx="200" cy="190" rx="78" ry="38" style="stroke:var(--accent)" stroke-width="1.6" stroke-dasharray="1 7"/>
+                    <g style="fill:var(--accent)"><circle cx="122" cy="190" r="3"/><circle cx="155" cy="159" r="3"/><circle cx="245" cy="159" r="3"/><circle cx="278" cy="190" r="3"/><circle cx="200" cy="228" r="3"/></g>
+                    <path d="M245 159 L300 150" style="stroke:var(--accent)" stroke-width="1" opacity="0.5"/>
+                    <circle class="ss-mark" cx="306" cy="150" r="9" style="stroke:var(--accent)" stroke-width="1.6"/>
+                    <circle cx="306" cy="150" r="2.4" style="fill:var(--ink)"/>
+                    <g class="ss-pair">
+                        <rect x="300" y="8" width="44" height="34" rx="5" style="fill:var(--surface);stroke:var(--ink-3)" stroke-width="1"/>
+                        <rect x="350" y="8" width="44" height="34" rx="5" style="fill:var(--surface);stroke:var(--accent)" stroke-width="1.4"/>
+                        <path d="M306 34 H338 M356 34 H388 M322 8 V34 M372 8 V34" style="stroke:var(--ink-3)" stroke-width="0.8" opacity="0.6"/>
+                        <circle cx="379" cy="22" r="2.4" style="fill:var(--ink)"/>
+                        <text x="322" y="54" text-anchor="middle" style="fill:var(--ink-3)" font-size="8.5" font-family="inherit">Check-in</text>
+                        <text x="372" y="54" text-anchor="middle" style="fill:var(--accent)" font-size="8.5" font-family="inherit">Check-out</text>
+                        <path d="M306 141 C 306 110, 372 100, 372 76" style="stroke:var(--accent)" stroke-width="1" stroke-dasharray="2 4"/>
+                    </g>
+                    <text x="394" y="68" text-anchor="end" style="fill:var(--ink-3);font-family:var(--mono)" font-size="8">sha256 9f2c…e41a ✓</text>
+                </svg>
+            </div>
+        </div>
         <a href="https://www.gethold.co.uk" target="_blank" rel="noopener" data-reveal class="tile tile-dark tile-hold">
             <div class="tile-status"><span class="dot"></span>Founder · Live at gethold.co.uk</div>
             <h3 class="tile-title">Hold</h3>
@@ -257,11 +293,13 @@
             </div>
         </div>
 
-        <a href="/qr" data-reveal class="tile tile-dark tile-qr">
-            <div class="tile-status"><span class="dot"></span>Live · Free tool</div>
-            <h3 class="tile-title">QR Worlds</h3>
-            <p class="tile-desc">Turn any link into a tiny 3D world: a rainforest full of macaws and monkeys, a coral reef or a mushroom glade with gnomes. Look down from above and it scans as a QR code.</p>
-            <span class="tile-go">Make one</span>
+        <a href="/qr" data-reveal class="tile tile-wide tile-dark tile-qr">
+            <div>
+                <div class="tile-status"><span class="dot"></span>Live · Free tool</div>
+                <h3 class="tile-title">QR Worlds</h3>
+                <p class="tile-desc">Turn any link into a tiny 3D world: a rainforest full of macaws and monkeys, a coral reef or a mushroom glade with gnomes. Tap it and it flips into a QR code your phone can scan.</p>
+                <span class="tile-go">Make one</span>
+            </div>
             <div class="tile-art" aria-hidden="true">
                 <!-- The rainforest world from the side: the canopy is the code, with macaws circling and monkeys hopping across. -->
                 <svg viewBox="0 0 400 210" class="qw-art">
@@ -397,22 +435,6 @@
                 </svg>
             </div>
         </a>
-
-        <div data-reveal class="tile tile-m3">
-            <div class="tile-status"><span class="dot soon"></span>Coming soon</div>
-            <h3 class="tile-title">3D Modelling</h3>
-            <p class="tile-desc">Custom 3D models and animated scenes for brands and property: interactive building models, logo worlds that scan as QR codes, and reveal videos.</p>
-            <div class="tile-art" aria-hidden="true">
-                <!-- A schematic building drawn edge by edge, then filled in. -->
-                <svg viewBox="0 0 400 230" class="m3-art">
-                    <g class="m3-grid"><path d="M200.0 46.0 L-8.0 150.0"/><path d="M200.0 46.0 L408.0 150.0"/><path d="M226.0 59.0 L18.0 163.0"/><path d="M174.0 59.0 L382.0 163.0"/><path d="M252.0 72.0 L44.0 176.0"/><path d="M148.0 72.0 L356.0 176.0"/><path d="M278.0 85.0 L70.0 189.0"/><path d="M122.0 85.0 L330.0 189.0"/><path d="M304.0 98.0 L96.0 202.0"/><path d="M96.0 98.0 L304.0 202.0"/><path d="M330.0 111.0 L122.0 215.0"/><path d="M70.0 111.0 L278.0 215.0"/><path d="M356.0 124.0 L148.0 228.0"/><path d="M44.0 124.0 L252.0 228.0"/><path d="M382.0 137.0 L174.0 241.0"/><path d="M18.0 137.0 L226.0 241.0"/><path d="M408.0 150.0 L200.0 254.0"/><path d="M-8.0 150.0 L200.0 254.0"/></g>
-                    <g class="m3-faces"><polygon class="m3-f m3-f1" points="272.8,144.8 189.6,186.4 189.6,144.8 272.8,103.2"/><polygon class="m3-f m3-f2" points="101.2,142.2 189.6,186.4 189.6,144.8 101.2,100.6"/><polygon class="m3-f m3-f1" points="241.6,103.2 189.6,129.2 189.6,87.6 241.6,61.6"/><polygon class="m3-f m3-f2" points="137.6,103.2 189.6,129.2 189.6,87.6 137.6,61.6"/><polygon class="m3-f m3-f1" points="283.2,176.0 241.6,196.8 241.6,170.8 283.2,150.0"/><polygon class="m3-f m3-f2" points="205.2,178.6 241.6,196.8 241.6,170.8 205.2,152.6"/></g>
-                    <g class="m3-lines"><path pathLength="1" style="animation-delay:0.00s" d="M184.4 100.6 L272.8 144.8"/><path pathLength="1" style="animation-delay:0.09s" d="M272.8 144.8 L189.6 186.4"/><path pathLength="1" style="animation-delay:0.18s" d="M189.6 186.4 L101.2 142.2"/><path pathLength="1" style="animation-delay:0.27s" d="M101.2 142.2 L184.4 100.6"/><path pathLength="1" style="animation-delay:0.36s" d="M184.4 100.6 L184.4 59.0"/><path pathLength="1" style="animation-delay:0.45s" d="M272.8 144.8 L272.8 103.2"/><path pathLength="1" style="animation-delay:0.54s" d="M189.6 186.4 L189.6 144.8"/><path pathLength="1" style="animation-delay:0.63s" d="M101.2 142.2 L101.2 100.6"/><path pathLength="1" style="animation-delay:0.72s" d="M184.4 59.0 L272.8 103.2"/><path pathLength="1" style="animation-delay:0.81s" d="M272.8 103.2 L189.6 144.8"/><path pathLength="1" style="animation-delay:0.90s" d="M189.6 144.8 L101.2 100.6"/><path pathLength="1" style="animation-delay:0.99s" d="M101.2 100.6 L184.4 59.0"/><path pathLength="1" style="animation-delay:1.08s" d="M189.6 77.2 L241.6 103.2"/><path pathLength="1" style="animation-delay:1.17s" d="M241.6 103.2 L189.6 129.2"/><path pathLength="1" style="animation-delay:1.26s" d="M189.6 129.2 L137.6 103.2"/><path pathLength="1" style="animation-delay:1.35s" d="M137.6 103.2 L189.6 77.2"/><path pathLength="1" style="animation-delay:1.44s" d="M189.6 77.2 L189.6 35.6"/><path pathLength="1" style="animation-delay:1.53s" d="M241.6 103.2 L241.6 61.6"/><path pathLength="1" style="animation-delay:1.62s" d="M189.6 129.2 L189.6 87.6"/><path pathLength="1" style="animation-delay:1.71s" d="M137.6 103.2 L137.6 61.6"/><path pathLength="1" style="animation-delay:1.80s" d="M189.6 35.6 L241.6 61.6"/><path pathLength="1" style="animation-delay:1.89s" d="M241.6 61.6 L189.6 87.6"/><path pathLength="1" style="animation-delay:1.98s" d="M189.6 87.6 L137.6 61.6"/><path pathLength="1" style="animation-delay:2.07s" d="M137.6 61.6 L189.6 35.6"/><path pathLength="1" style="animation-delay:2.16s" d="M246.8 157.8 L283.2 176.0"/><path pathLength="1" style="animation-delay:2.25s" d="M283.2 176.0 L241.6 196.8"/><path pathLength="1" style="animation-delay:2.34s" d="M241.6 196.8 L205.2 178.6"/><path pathLength="1" style="animation-delay:2.43s" d="M205.2 178.6 L246.8 157.8"/><path pathLength="1" style="animation-delay:2.52s" d="M246.8 157.8 L246.8 131.8"/><path pathLength="1" style="animation-delay:2.61s" d="M283.2 176.0 L283.2 150.0"/><path pathLength="1" style="animation-delay:2.70s" d="M241.6 196.8 L241.6 170.8"/><path pathLength="1" style="animation-delay:2.79s" d="M205.2 178.6 L205.2 152.6"/><path pathLength="1" style="animation-delay:2.88s" d="M246.8 131.8 L283.2 150.0"/><path pathLength="1" style="animation-delay:2.97s" d="M283.2 150.0 L241.6 170.8"/><path pathLength="1" style="animation-delay:3.06s" d="M241.6 170.8 L205.2 152.6"/><path pathLength="1" style="animation-delay:3.15s" d="M205.2 152.6 L246.8 131.8"/><path pathLength="1" style="animation-delay:3.24s" d="M189.6 35.6 L215.6 30.4"/><path pathLength="1" style="animation-delay:3.33s" d="M241.6 61.6 L215.6 30.4"/><path pathLength="1" style="animation-delay:3.42s" d="M137.6 61.6 L163.6 56.4"/><path pathLength="1" style="animation-delay:3.51s" d="M189.6 87.6 L163.6 56.4"/><path pathLength="1" style="animation-delay:3.60s" d="M215.6 30.4 L163.6 56.4"/></g>
-                    <g class="m3-dim"><path d="M93.4 146.1 L181.8 190.3"/><text x="143.6" y="186.2">12.4 m</text></g>
-                    <circle class="m3-node" r="4" cx="215.6" cy="30.4"/>
-                </svg>
-            </div>
-        </div>
     </div>
     <div class="more" data-reveal><a href="/work" class="btn">See all projects</a></div>
 </section>
