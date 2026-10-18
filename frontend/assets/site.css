@@ -471,3 +471,38 @@ a.tile:hover .tile-go { text-decoration: underline; text-underline-offset: 3px; 
 }
 @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; translate: none; scale: none; } }
 .mast-nav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+
+/* QR Worlds: the rainforest world from the side, macaws circling and monkeys hopping across the canopy. */
+.tile-qr { background: #0c1d14; color: #eef6ee; box-shadow: none; }
+.tile-qr .tile-go { color: #8fe3a5; }
+.qw-tree { transform-box: fill-box; transform-origin: 50% 100%; animation: qw-grow 0.9s var(--spring) both; }
+@keyframes qw-grow { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+
+/* 3D Modelling: a schematic building drawn edge by edge, then filled in, on a loop. */
+.m3-grid path { stroke: var(--rule); stroke-width: 1; fill: none; }
+.m3-lines path { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: m3-draw 9s ease-in-out infinite; }
+@keyframes m3-draw { 0% { stroke-dashoffset: 1; opacity: 1; } 8%, 84% { stroke-dashoffset: 0; opacity: 1; } 94%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+.m3-f { opacity: 0; animation: m3-fill 9s ease-in-out 4.4s infinite; }
+.m3-f1 { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.m3-f2 { fill: color-mix(in srgb, var(--accent) 12%, transparent); }
+@keyframes m3-fill { 0% { opacity: 0; } 10%, 40% { opacity: 1; } 52%, 100% { opacity: 0; } }
+.m3-dim path { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 4; }
+.m3-dim text { fill: var(--ink-3); font-size: 11px; font-family: var(--sans); }
+.m3-node { fill: var(--accent); animation: m3-pulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes m3-pulse { 50% { transform: scale(1.6); opacity: 0.5; } }
+
+/* Compact rows for smaller projects on /work. */
+.mini { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 28px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow); text-decoration: none; color: var(--ink); }
+.mini-main { display: grid; gap: 4px; }
+.mini-main strong { font-weight: 600; font-size: 17px; letter-spacing: -0.015em; }
+.mini-main span { color: var(--ink-3); font-size: 15px; line-height: 1.45; }
+.mini-go { color: var(--accent); font-weight: 500; white-space: nowrap; }
+.mini:hover .mini-go { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) { .mini { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px 22px; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .qw-tree, .m3-node { animation: none; }
+    .m3-lines path { animation: none; stroke-dashoffset: 0; }
+    .m3-f { animation: none; opacity: 1; }
+    .qw-bird, .qw-monkey { display: none; }
+}
