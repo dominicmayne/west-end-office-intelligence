@@ -23,6 +23,30 @@
       // their order-and-pay link; {table} is replaced with the table number from the code
       order: "#order?table={table}", table: "12",
       poster: "/worlds/demo-top.jpg",
+      // the venue's floor plan in metres: x across from the left wall, z from the back wall to the street
+      map: {
+        w: 16, d: 11,
+        zones: [{ x: 0, z: 0, w: 11, d: 11, floor: "oak" }, { x: 7.5, z: 0, w: 3.5, d: 3.6, floor: "tile" }, { x: 11, z: 0, w: 4.2, d: 11, floor: "deck" }, { x: 15.2, z: 0, w: 0.8, d: 11, floor: "grass" }],
+        walls: [
+          [0, 0, 11, 0], [0, 0, 0, 11], [0, 11, 5, 11], [6.6, 11, 11, 11], [11, 0, 11, 6], [11, 7.6, 11, 11],
+          [7.5, 0, 7.5, 3.6], [7.5, 3.6, 8.4, 3.6], [9.6, 3.6, 11, 3.6], [9.4, 0, 9.4, 2.3],
+          [11, 0, 16, 0, "fence"], [16, 0, 16, 9.4, "fence"], [11, 11, 16, 11, "fence"],
+        ],
+        counters: [[0.9, 3.0, 0.8, 4.6], [0.9, 2.2, 3.4, 0.8]],
+        machines: [[1.6, 2.6], [3.2, 2.6]],
+        sofas: [[0.3, 8.3, 0.7, 2.2]],
+        fixtures: [[8.4, 0.5, 0.5, 0.6], [10.3, 0.5, 0.6, 0.7], [6.6, 0.35, 1.1, 0.5, "#9fc4d6"]],
+        plants: [[0.6, 10.4], [10.4, 10.4], [11.6, 0.6, 1.3], [15.4, 10.2, 1.2], [13.7, 6.9, 1.1], [4.4, 0.5, 0.8]],
+        tables: [[1, 4.6, 4.8, 4], [2, 6.6, 4.8, 4], [3, 8.8, 5.1, 2], [4, 4.6, 6.9, 4], [5, 6.6, 6.9, 4], [6, 8.9, 7.3, 2], [7, 2.2, 9.4, 2], [8, 4.4, 9.4, 2], [9, 6.4, 9.0, 2], [10, 7.9, 9.7, 2], [11, 5.4, 1.6, 2], [12, 9.7, 9.5, 2], [13, 12.8, 2.3, 4], [14, 14.6, 4.6, 4], [15, 12.8, 8.6, 4]],
+        places: [
+          { id: "order", icon: "☕", short: "Order", label: "Order at the bar", x: 2.2, z: 5.2, how: "Pay at the bar or tap Order & pay." },
+          { id: "toilets", icon: "🚻", short: "Toilets", label: "Toilets", x: 8.4, z: 1.4, how: "Through the door by table 3." },
+          { id: "access", icon: "♿", short: "Accessible · baby change", label: "Accessible toilet and baby change", x: 10.2, z: 1.4, how: "Step-free, through the door by table 3." },
+          { id: "garden", icon: "🌿", short: "Garden", label: "The garden", x: 13.6, z: 5.6, how: "Out the side door by table 6." },
+          { id: "water", icon: "💧", short: "Water", label: "Free tap water", x: 6.6, z: 1.0, how: "Help yourself, glasses on the side." },
+          { id: "exit", icon: "🚪", short: "Way out", label: "Way out", x: 5.8, z: 10.4, how: "The front door, onto the street." },
+        ],
+      },
       bg: "radial-gradient(70% 55% at 50% 45%, #fff8ee 0%, transparent 70%), linear-gradient(180deg, #f6ecdd 0%, #e6d3bb 100%)",
     },
   };
@@ -320,9 +344,17 @@ body.live .stage { background: transparent !important; }
 .order:active { transform: scale(.97); }
 .order svg { width: 20px; height: 20px; }
 .order small { font-weight: 600; opacity: .8; }
-.sheet.peek { transform: translateY(calc(100% - 178px - env(safe-area-inset-bottom))); }
+.sheet.peek { transform: translateY(calc(100% - var(--peek, 178px) - env(safe-area-inset-bottom))); }
 .sheet.peek.up { transform: none; }
 .sheet.peek .grab { cursor: pointer; }
+.find { margin: 12px 0 2px; }
+.find > b { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin: 0 0 8px 2px; }
+.places { display: flex; flex-wrap: wrap; gap: 7px; }
+.places button { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border: 0; border-radius: 99px; background: #fff; color: var(--ink); font: 600 14px var(--body); box-shadow: 0 1px 2px rgba(0, 0, 0, .06); cursor: pointer; transition: transform .25s cubic-bezier(.2, .9, .3, 1.5), background .2s, color .2s; }
+.places button:active { transform: scale(.95); }
+.places button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.route { margin: 10px 2px 0; font-size: 14px; line-height: 1.4; }
+.find[hidden], .route[hidden] { display: none; }
 .veil { position: fixed; inset: 0; z-index: 20; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
 .veil.on { opacity: 1; pointer-events: auto; }
 model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
@@ -598,6 +630,8 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   let recording = false;
   // camera mode: the scan page tracks the printed code and the world stands on it
   let ar = null;
+  // the scan page can hang its own scene off the engine (the venue map): a per-frame callback, taps, and framing
+  let hook = null;
 
   function makeQR(text) {
     // capitals, digits and URL punctuation pack into alphanumeric mode, which gives a smaller code with bigger squares
@@ -1733,7 +1767,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     let half = Math.max(fitH / 2, fitW / 2 / aspect) * margin;
     if (!clean) half = aspect < 0.9 ? Math.max(fitW / 2 / aspect * 1.0, fitH / 2 / (1 - topPad - botPad) * 0.9) : half / (1 - topPad - botPad) * 0.86;
     // the scan page comes in close on the café so the people and tables read on a phone
-    if (SCAN && !clean) half *= lerp(0.82, 1, t);
+    if (SCAN && !clean) half *= hook && hook.zoom ? hook.zoom : lerp(0.82, 1, t);
     camera.left = -half * aspect; camera.right = half * aspect; camera.top = half; camera.bottom = -half;
     // shift down a little so the title and the status pill have room
     const vshift = half * (topPad - botPad);
@@ -1865,6 +1899,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     // a tap (not a drag) anywhere on the world flips between the 3D scene and the QR code
     const wasTap = tap && !tap.moved && !e.target.closest("button, a");
     endDrag(); tap = null;
+    if (wasTap && hook && hook.onTap && hook.onTap(e)) return;
     if (wasTap) see.click();
   });
   stage.addEventListener("pointercancel", () => { endDrag(); tap = null; });
@@ -2214,6 +2249,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     const sway = reduced ? 0 : 1 - t;
     update(clock, t, sway);
     placeCamera(t);
+    if (hook && hook.onFrame) hook.onFrame(clock, dt);
     renderer.render(scene, camera);
     if (scanQueued && prog >= 1) {
       if (clock >= scanAt && garden && clock >= garden.readyAt) { scanQueued = false; runScan(); }
@@ -2321,6 +2357,8 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     up: () => { target = 1; },
     isTop: () => target === 1,
     live,
+    hook: (h) => { hook = h; },
+    three: { scene, stage, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
   })));
 
   window.__qrGarden = {
@@ -2333,10 +2371,224 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   };
 })();
 </script>
+<script>
+// Venue map: after the code's world, the venue's real layout in 3D, with "you're here" at the table and a route to whatever they tap.
+window.QRW_MAP = (api, V) => {
+  const L = V.map, T = api.three, scene = T.scene;
+  if (!L || !window.THREE) return null;
+  const S = (w, h) => new THREE.Vector3(w, h, 1);
+  const std = (color, rough = 0.85, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: rough, ...extra });
+  const accent = new THREE.Color(V.colour);
+
+  // ---- the plan, in metres, centred on the code's footprint ----
+  const root = new THREE.Group(), body = new THREE.Group(), labels = new THREE.Group();
+  root.add(body, labels); scene.add(root); root.visible = false;
+  const k = (T.size() * 0.92) / Math.max(L.w, L.d);
+  root.scale.setScalar(k);
+  const X = (x) => x - L.w / 2, Z = (z) => z - L.d / 2;
+  const box = (w, h, d, mat, x, y, z, parent = body) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; };
+
+  // floors: each zone its own surface, raised a hair so the edges read
+  const FLOORS = { oak: "#ead9bd", tile: "#e3e9ea", deck: "#c79f72", grass: "#8dbb62" };
+  const floorTex = (kind) => {
+    const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d");
+    x.fillStyle = FLOORS[kind] || "#eee"; x.fillRect(0, 0, 256, 256);
+    if (kind === "oak" || kind === "deck") { x.fillStyle = "rgba(90,60,30,.12)"; for (let i = 0; i < 8; i++) x.fillRect(0, i * 32, 256, 2); for (let i = 0; i < 16; i++) x.fillRect(((i * 97) % 256), Math.floor(i / 2) * 32, 2, 32); }
+    if (kind === "tile") { x.strokeStyle = "rgba(0,0,0,.08)"; for (let i = 0; i <= 8; i++) { x.beginPath(); x.moveTo(i * 32, 0); x.lineTo(i * 32, 256); x.moveTo(0, i * 32); x.lineTo(256, i * 32); x.stroke(); } }
+    if (kind === "grass") { for (let i = 0; i < 500; i++) { x.fillStyle = `rgba(40,90,20,${0.08 + Math.random() * 0.1})`; x.fillRect(Math.random() * 256, Math.random() * 256, 2, 4); } }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+  };
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(L.w + 0.6, 0.3, L.d + 0.6), std("#5a3f2e")); slab.position.y = -0.15; slab.receiveShadow = true; body.add(slab);
+  L.zones.forEach((zn) => {
+    const t = floorTex(zn.floor); t.repeat.set(zn.w / 2.5, zn.d / 2.5);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(zn.w, 0.04, zn.d), std("#ffffff", 0.9, { map: t }));
+    m.position.set(X(zn.x + zn.w / 2), 0.02, Z(zn.z + zn.d / 2)); m.receiveShadow = true; body.add(m);
+  });
+  // walls cut away at shoulder height, like a doll's house, with a dark cap so the plan reads from above
+  const wallM = std("#f4ebdd", 1), capM = std("#4a3a30", 0.8), fenceM = std("#9c7552", 0.9);
+  L.walls.forEach(([x1, z1, x2, z2, kind]) => {
+    const len = Math.hypot(x2 - x1, z2 - z1), h = kind === "fence" ? 0.8 : 1.3, th = kind === "fence" ? 0.08 : 0.16;
+    const g = new THREE.Group(); g.position.set(X((x1 + x2) / 2), 0, Z((z1 + z2) / 2)); g.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
+    box(len + th, h, th, kind === "fence" ? fenceM : wallM, 0, h / 2, 0, g);
+    if (kind !== "fence") box(len + th, 0.05, th + 0.02, capM, 0, h + 0.025, 0, g);
+    body.add(g);
+  });
+  // the bar, in the café's colour
+  const barM = std("#ffffff", 0.6); barM.color.copy(accent);
+  L.counters.forEach(([x, z, w, d]) => { box(w, 1.05, d, barM, X(x + w / 2), 0.525, Z(z + d / 2)); box(w + 0.08, 0.06, d + 0.08, std("#2a2523", 0.4), X(x + w / 2), 1.08, Z(z + d / 2)); });
+  (L.machines || []).forEach(([x, z]) => box(0.6, 0.4, 0.4, std("#c9ccd1", 0.25, { metalness: 0.8 }), X(x), 1.31, Z(z)));
+  // tables with chairs and a number on top
+  const topM = std("#3b2a20", 0.6), chairM = std("#c69a6c", 0.7), legM = std("#2b2622", 0.5, { metalness: 0.4 });
+  const tableTop = new THREE.CylinderGeometry(0.42, 0.42, 0.05, 24), tableLeg = new THREE.CylinderGeometry(0.04, 0.05, 0.72, 8), seat = new THREE.CylinderGeometry(0.17, 0.17, 0.05, 12);
+  const numTex = (n) => { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"); x.fillStyle = "#fff"; x.beginPath(); x.arc(64, 64, 56, 0, 7); x.fill(); x.fillStyle = "#2b1d16"; x.font = "700 64px -apple-system, system-ui, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(n, 64, 68); return new THREE.CanvasTexture(c); };
+  const tables = {};
+  L.tables.forEach(([id, x, z, seats = 2]) => {
+    const g = new THREE.Group(); g.position.set(X(x), 0, Z(z)); body.add(g);
+    const leg = new THREE.Mesh(tableLeg, legM); leg.position.y = 0.36; g.add(leg);
+    const top = new THREE.Mesh(tableTop, topM); top.position.y = 0.74; top.castShadow = true; g.add(top);
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(0.2, 20).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: numTex(id), transparent: true })); disc.position.y = 0.771; g.add(disc);
+    for (let i = 0; i < seats; i++) { const a = (i / seats) * Math.PI * 2 + 0.4; const c = new THREE.Mesh(seat, chairM); c.position.set(Math.cos(a) * 0.62, 0.45, Math.sin(a) * 0.62); c.castShadow = true; g.add(c); const l = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.45, 5), legM); l.position.set(Math.cos(a) * 0.62, 0.22, Math.sin(a) * 0.62); g.add(l); }
+    tables[id] = { x, z, g };
+  });
+  (L.sofas || []).forEach(([x, z, w, d]) => { box(w, 0.45, d, std("#3f5a4a", 0.8), X(x + w / 2), 0.225, Z(z + d / 2)); });
+  (L.fixtures || []).forEach(([x, z, w, d, c]) => box(w, 0.45, d, std(c || "#ffffff", 0.3), X(x), 0.225, Z(z)));
+  const leafM = std("#3f7a3a", 1, { flatShading: true }), potM = std("#b8703f", 0.9);
+  (L.plants || []).forEach(([x, z, s = 1]) => { box(0.4 * s, 0.4 * s, 0.4 * s, potM, X(x), 0.2 * s, Z(z)); const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.45 * s, 1), leafM); b.position.set(X(x), 0.75 * s, Z(z)); b.castShadow = true; body.add(b); });
+  (L.labels || []).forEach(([text, x, z]) => { const sp = textSprite(text, { size: 30, fg: "rgba(60,45,35,.75)", bg: null }); sp.position.set(X(x), 0.08, Z(z)); sp.material.depthTest = true; body.add(sp); });
+
+  // ---- pins: one floating label per thing you might be looking for ----
+  function textSprite(text, o = {}) {
+    const size = o.size || 44, pad = o.bg ? 22 : 4, c = document.createElement("canvas"), x = c.getContext("2d");
+    x.font = `700 ${size}px -apple-system, system-ui, sans-serif`;
+    const w = Math.ceil(x.measureText(text).width) + pad * 2, h = size + pad * 1.4;
+    c.width = w; c.height = h;
+    x.font = `700 ${size}px -apple-system, system-ui, sans-serif`;
+    if (o.bg) { x.fillStyle = o.bg; const r = h / 2; x.beginPath(); x.moveTo(r, 0); x.arcTo(w, 0, w, h, r); x.arcTo(w, h, 0, h, r); x.arcTo(0, h, 0, 0, r); x.arcTo(0, 0, w, 0, r); x.fill(); }
+    x.fillStyle = o.fg || "#1d1d1f"; x.textBaseline = "middle"; x.fillText(text, pad, h / 2 + 2);
+    const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+    const H = (o.h || 0.85); sp.scale.copy(S(H * w / h, H)); sp.renderOrder = 10; sp.userData.base = sp.scale.clone();
+    return sp;
+  }
+  const pins = {};
+  L.places.forEach((p) => {
+    const sp = textSprite(`${p.icon}  ${p.short || p.label}`, { bg: "rgba(255,255,255,.94)" });
+    sp.position.set(X(p.x), 1.9, Z(p.z)); sp.userData.id = p.id; labels.add(sp);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.6, 5), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.8 })); stem.position.set(X(p.x), 0.85, Z(p.z)); labels.add(stem);
+    pins[p.id] = { ...p, sp, stem };
+  });
+  // you are here
+  const here = tables[V.table] || tables[Object.keys(tables)[0]];
+  const hereRing = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.05, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.9, depthWrite: false }));
+  hereRing.position.set(X(here.x), 0.06, Z(here.z)); labels.add(hereRing);
+  const hereTag = textSprite(`You're at table ${V.table || ""}`.trim(), { bg: V.colour, fg: "#ffffff", h: 0.95 });
+  hereTag.position.set(X(here.x), 2.2, Z(here.z)); labels.add(hereTag);
+  const hereStem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.9, 5), new THREE.MeshBasicMaterial({ color: accent })); hereStem.position.set(X(here.x), 1.0, Z(here.z)); labels.add(hereStem);
+  const hereDot = new THREE.Mesh(new THREE.CircleGeometry(0.75, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.35, depthWrite: false })); hereDot.position.set(X(here.x), 0.05, Z(here.z)); labels.add(hereDot);
+
+  // ---- routes: a walking grid over the plan, kept clear of walls and furniture ----
+  const R = 0.2, GW = Math.ceil(L.w / R), GD = Math.ceil(L.d / R), blocked = new Uint8Array(GW * GD);
+  const mark = (fn) => { for (let j = 0; j < GD; j++) for (let i = 0; i < GW; i++) if (fn((i + 0.5) * R, (j + 0.5) * R)) blocked[j * GW + i] = 1; };
+  const segDist = (px, pz, x1, z1, x2, z2) => { const dx = x2 - x1, dz = z2 - z1, t = Math.max(0, Math.min(1, ((px - x1) * dx + (pz - z1) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(px - x1 - t * dx, pz - z1 - t * dz); };
+  const CL = 0.3;
+  mark((x, z) => L.walls.some(([x1, z1, x2, z2]) => segDist(x, z, x1, z1, x2, z2) < CL));
+  mark((x, z) => L.counters.some(([cx, cz, w, d]) => x > cx - CL && x < cx + w + CL && z > cz - CL && z < cz + d + CL));
+  mark((x, z) => (L.sofas || []).concat((L.fixtures || []).map(([fx, fz, w, d]) => [fx - w / 2, fz - d / 2, w, d])).some(([cx, cz, w, d]) => x > cx - CL && x < cx + w + CL && z > cz - CL && z < cz + d + CL));
+  mark((x, z) => L.tables.some(([, tx, tz]) => Math.hypot(x - tx, z - tz) < 0.55));
+  mark((x, z) => (L.plants || []).some(([px, pz]) => Math.hypot(x - px, z - pz) < 0.45));
+  mark((x, z) => !L.zones.some((zn) => x > zn.x && x < zn.x + zn.w && z > zn.z && z < zn.z + zn.d));
+  const cell = (x, z) => [Math.max(0, Math.min(GW - 1, Math.floor(x / R))), Math.max(0, Math.min(GD - 1, Math.floor(z / R)))];
+  const nearestFree = (x, z) => {
+    const [ci, cj] = cell(x, z); let best = null, bd = 1e9;
+    for (let r = 0; r < 20 && !best; r++) for (let j = cj - r; j <= cj + r; j++) for (let i = ci - r; i <= ci + r; i++) {
+      if (i < 0 || j < 0 || i >= GW || j >= GD || blocked[j * GW + i]) continue;
+      const d = Math.hypot(i - ci, j - cj); if (d < bd) { bd = d; best = [i, j]; }
+    }
+    return best;
+  };
+  function route(from, to) {
+    const a = nearestFree(from.x, from.z), b = nearestFree(to.x, to.z); if (!a || !b) return null;
+    const N = GW * GD, g = new Float32Array(N).fill(1e9), came = new Int32Array(N).fill(-1), open = [], start = a[1] * GW + a[0], goal = b[1] * GW + b[0];
+    const h = (n) => Math.hypot((n % GW) - b[0], Math.floor(n / GW) - b[1]);
+    g[start] = 0; open.push([h(start), start]);
+    const closed = new Uint8Array(N);
+    while (open.length) {
+      let bi = 0; for (let i = 1; i < open.length; i++) if (open[i][0] < open[bi][0]) bi = i;
+      const [, n] = open.splice(bi, 1)[0]; if (n === goal) break; if (closed[n]) continue; closed[n] = 1;
+      const ni = n % GW, nj = Math.floor(n / GW);
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+        if (!di && !dj) continue; const i = ni + di, j = nj + dj; if (i < 0 || j < 0 || i >= GW || j >= GD) continue;
+        const m = j * GW + i; if (blocked[m] || (di && dj && (blocked[nj * GW + i] || blocked[j * GW + ni]))) continue;
+        const c = g[n] + (di && dj ? 1.414 : 1); if (c < g[m]) { g[m] = c; came[m] = n; open.push([c + h(m), m]); }
+      }
+    }
+    if (came[goal] < 0 && goal !== start) return null;
+    let pts = []; for (let n = goal; n >= 0; n = came[n]) { pts.push([((n % GW) + 0.5) * R, (Math.floor(n / GW) + 0.5) * R]); if (n === start) break; }
+    pts.reverse();
+    // pull the string: skip corners you can see past
+    const clear = (p, q) => { const n = Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / (R * 0.5)); for (let s = 0; s <= n; s++) { const [i, j] = cell(p[0] + (q[0] - p[0]) * s / n, p[1] + (q[1] - p[1]) * s / n); if (blocked[j * GW + i]) return false; } return true; };
+    const out = [pts[0]]; let i = 0;
+    while (i < pts.length - 1) { let j = pts.length - 1; while (j > i + 1 && !clear(pts[i], pts[j])) j--; out.push(pts[j]); i = j; }
+    return out;
+  }
+  // the route drawn as glowing beads that run from the table to the place
+  const DOTS = 160, dotM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.15, 10, 8), new THREE.MeshBasicMaterial({ color: accent.clone().lerp(new THREE.Color("#ff8a3d"), 0.45) }), DOTS);
+  dotM.count = 0; labels.add(dotM);
+  const goalRing = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.8, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: accent, transparent: true, depthWrite: false })); goalRing.visible = false; labels.add(goalRing);
+  let path = null, pathLen = 0, pathAt = 0, active = null;
+  const _m = new THREE.Matrix4();
+  function go(id) {
+    const p = pins[id]; if (!p) return null;
+    const pts = route(here, p); if (!pts) return null;
+    let len = 0; const segs = []; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); segs.push([pts[i - 1], pts[i], len, d]); len += d; }
+    path = segs; pathLen = len; pathAt = clockNow; active = id;
+    goalRing.position.set(X(p.x), 0.07, Z(p.z)); goalRing.visible = true;
+    return { metres: Math.round(len), steps: Math.max(1, Math.round(len / 0.7)), label: p.label, how: p.how || "" };
+  }
+  const at = (d) => { for (const [a, b, s, l] of path) if (d <= s + l) { const f = (d - s) / l; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } const e = path[path.length - 1][1]; return e; };
+
+  // ---- showing and hiding: the code's world folds flat and the plan rises out of the floor ----
+  let shown = false, flipAt = -10, clockNow = 0;
+  const rc = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const hk = {
+    zoom: null,
+    onFrame(time) {
+      clockNow = time;
+      const u = Math.max(0, Math.min(1, (time - flipAt) / 1.4)), e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2, s = shown ? e : 1 - e;
+      const qg = T.group();
+      if (qg) { qg.visible = s < 0.98; qg.scale.set(1 - s * 0.08, Math.max(1 - s * 1.6, 0.001), 1 - s * 0.08); }
+      root.visible = s > 0.02;
+      const rise = Math.max(0.001, Math.min(1, (s - 0.35) / 0.65));
+      body.scale.set(1, 1 - Math.pow(1 - rise, 3) * 0.999, 1);
+      const pinK = Math.max(0, Math.min(1, (s - 0.75) / 0.25));
+      labels.visible = pinK > 0.01;
+      Object.values(pins).forEach((p, i) => {
+        const big = active === p.id ? 1.25 : 1, bob = Math.sin(time * 2 + i) * 0.06;
+        p.sp.scale.copy(p.sp.userData.base).multiplyScalar(pinK * big + 1e-3); p.sp.position.y = 1.9 + bob + (active === p.id ? 0.25 : 0);
+        p.stem.scale.y = pinK + 1e-3;
+      });
+      hereTag.scale.copy(hereTag.userData.base).multiplyScalar(pinK + 1e-3); hereTag.position.y = 2.2 + Math.sin(time * 2.4) * 0.08;
+      const pulse = (time * 0.8) % 1; hereRing.scale.setScalar(0.7 + pulse * 0.8); hereRing.material.opacity = 0.9 * (1 - pulse) * pinK;
+      if (path && pinK > 0.5) {
+        // beads lay themselves along the route, then a brighter wave runs down it on repeat
+        const grow = Math.min(1, (time - pathAt) / 1.1), n = Math.min(DOTS, Math.max(2, Math.floor(pathLen / 0.28))), wave = ((time - pathAt) * 0.9) % 1.4;
+        dotM.count = n;
+        for (let i = 0; i < n; i++) {
+          const f = i / (n - 1), [x, z] = at(f * pathLen), on = f <= grow ? 1 : 0, w = Math.max(0, 1 - Math.abs(f - wave) * 6);
+          _m.makeScale(on * (1 + w * 0.8), on * (1 + w * 0.8), on * (1 + w * 0.8)).setPosition(X(x), 0.12 + w * 0.08, Z(z)); dotM.setMatrixAt(i, _m);
+        }
+        dotM.instanceMatrix.needsUpdate = true;
+        goalRing.scale.setScalar(1 + Math.sin(time * 4) * 0.12);
+      } else dotM.count = 0;
+    },
+    onTap(e) {
+      if (!shown) return false;
+      const r = T.stage.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      rc.setFromCamera(ndc, T.camera());
+      const hit = rc.intersectObjects(Object.values(pins).map((p) => p.sp))[0];
+      if (hit && ctl.onPick) ctl.onPick(hit.object.userData.id);
+      return true;
+    },
+  };
+  api.hook(hk);
+  const ctl = {
+    show() { if (shown) return; shown = true; flipAt = clockNow; hk.zoom = 0.68; },
+    hide() { if (!shown) return; shown = false; hk.zoom = null; flipAt = clockNow; path = null; active = null; goalRing.visible = false; },
+    shown: () => shown,
+    go, places: L.places, onPick: null,
+  };
+  return ctl;
+};
+</script>
 <section class="sheet" id="sheet" aria-label="What this code is for">
   <div class="grab"></div>
   <div class="who"><div><h1 id="vName"></h1><p id="vPlace"></p></div><span class="tag" id="vDemo" hidden>Demo café</span></div>
   <a class="order" id="vOrder" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Order &amp; pay <small id="vTable"></small></a>
+  <div class="find" id="find" hidden>
+    <b>Find your way</b>
+    <div class="places" id="places"></div>
+    <p class="route" id="route" hidden></p>
+  </div>
   <div class="special" id="vSpecial"><b></b><span></span></div>
   <div class="acts">
     <button class="act" type="button" data-more="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Menu</button>
@@ -2352,6 +2604,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
 </section>
 <div class="toast" id="toast" role="status"></div>
 <div class="topbar">
+  <button class="chip" id="view" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span id="viewTxt">Café world</span></button>
   <button class="chip" id="skip" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>Skip camera</button>
   <button class="chip" id="snd" type="button" hidden aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span id="sndTxt">Play music</span></button>
 </div>
@@ -2406,11 +2659,46 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   // the menu sheet peeks up in camera mode so the world stays in view; tap the handle for the rest
   $("sheet").addEventListener("click", (e) => { if ($("sheet").classList.contains("peek") && (e.target.closest(".grab") || e.target.closest(".who"))) $("sheet").classList.toggle("up"); });
 
+  // the venue map: after the reveal the code's world folds away and the café's own floor plan rises in its place
+  let map = null;
+  const showRoute = (id) => {
+    if (!map) return;
+    if (!map.shown()) setView(true);
+    const r = map.go(id);
+    document.querySelectorAll("#places button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+    const el = $("route");
+    if (!r) { el.hidden = false; el.textContent = "Ask at the bar and we'll point you there."; return; }
+    el.hidden = false; el.innerHTML = `<b>${esc(r.label)}</b> · ${r.metres} m, about ${r.steps} steps. ${esc(r.how)}`;
+    const f = $("find"); $("sheet").style.setProperty("--peek", f.offsetTop + f.offsetHeight + 14 + "px");
+  };
+  function setView(mapOn) {
+    if (!map) return;
+    mapOn ? map.show() : map.hide();
+    // with the map up, the sheet drops to just the wayfinding so the plan has the screen; the handle pulls up the rest
+    const sh = $("sheet"), f = $("find");
+    if (mapOn) { sh.style.setProperty("--peek", f.offsetTop + f.offsetHeight + 14 + "px"); sh.classList.add("peek"); sh.classList.remove("up"); }
+    else { sh.classList.remove("peek"); sh.classList.add("up"); }
+    $("viewTxt").textContent = mapOn ? "Café world" : "Map";
+    if (!mapOn) { document.querySelectorAll("#places button").forEach((b) => b.setAttribute("aria-pressed", "false")); $("route").hidden = true; }
+  }
+  $("view").addEventListener("click", () => setView(!map.shown()));
+  function startMap(api) {
+    try { map = window.QRW_MAP && window.QRW_MAP(api, V); } catch (e) { map = null; }
+    if (!map) return;
+    $("places").innerHTML = map.places.map((p) => `<button type="button" data-id="${esc(p.id)}" aria-pressed="false"><span>${p.icon}</span>${esc(p.short || p.label)}</button>`).join("");
+    $("places").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) showRoute(b.dataset.id); });
+    map.onPick = (id) => showRoute(id);
+    $("find").hidden = false;
+    document.querySelector(".made").firstChild.textContent = "Tap a sign on the map to find it · ";
+    setTimeout(() => { setView(true); $("view").hidden = false; }, 4200);
+  }
+
   function flatOpen(api) {
     $("poster").classList.add("gone");
     setTimeout(() => api.down(), 500);
     setTimeout(() => $("sheet").classList.add("up"), 1500);
     sndBtn.hidden = false;
+    startMap(api);
     loadAR();
   }
 
@@ -2425,7 +2713,8 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   const JSQR = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
   async function startLive(api) {
     const coarse = matchMedia("(pointer: coarse)").matches;
-    if (!api.live || !coarse || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || new URLSearchParams(location.search).has("flat")) return false;
+    // the in-page camera is off unless asked for with ?live: a scan should open straight onto the world
+    if (!api.live || !coarse || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !new URLSearchParams(location.search).has("live")) return false;
     hint("Allow the camera to bring the café to life");
     let stream;
     try { stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } }); }
