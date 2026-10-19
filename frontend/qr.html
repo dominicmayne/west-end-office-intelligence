@@ -480,6 +480,8 @@ body {
   let recording = false;
   // camera mode: the scan page tracks the printed code and the world stands on it
   let ar = null;
+  // the scan page can hang its own scene off the engine (the venue map): a per-frame callback, taps, and framing
+  let hook = null;
 
   function makeQR(text) {
     // capitals, digits and URL punctuation pack into alphanumeric mode, which gives a smaller code with bigger squares
@@ -1615,7 +1617,7 @@ body {
     let half = Math.max(fitH / 2, fitW / 2 / aspect) * margin;
     if (!clean) half = aspect < 0.9 ? Math.max(fitW / 2 / aspect * 1.0, fitH / 2 / (1 - topPad - botPad) * 0.9) : half / (1 - topPad - botPad) * 0.86;
     // the scan page comes in close on the café so the people and tables read on a phone
-    if (SCAN && !clean) half *= lerp(0.82, 1, t);
+    if (SCAN && !clean) half *= hook && hook.zoom ? hook.zoom : lerp(0.82, 1, t);
     camera.left = -half * aspect; camera.right = half * aspect; camera.top = half; camera.bottom = -half;
     // shift down a little so the title and the status pill have room
     const vshift = half * (topPad - botPad);
@@ -1747,6 +1749,7 @@ body {
     // a tap (not a drag) anywhere on the world flips between the 3D scene and the QR code
     const wasTap = tap && !tap.moved && !e.target.closest("button, a");
     endDrag(); tap = null;
+    if (wasTap && hook && hook.onTap && hook.onTap(e)) return;
     if (wasTap) see.click();
   });
   stage.addEventListener("pointercancel", () => { endDrag(); tap = null; });
@@ -2096,6 +2099,7 @@ body {
     const sway = reduced ? 0 : 1 - t;
     update(clock, t, sway);
     placeCamera(t);
+    if (hook && hook.onFrame) hook.onFrame(clock, dt);
     renderer.render(scene, camera);
     if (scanQueued && prog >= 1) {
       if (clock >= scanAt && garden && clock >= garden.readyAt) { scanQueued = false; runScan(); }
@@ -2203,6 +2207,8 @@ body {
     up: () => { target = 1; },
     isTop: () => target === 1,
     live,
+    hook: (h) => { hook = h; },
+    three: { scene, stage, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
   })));
 
   window.__qrGarden = {
