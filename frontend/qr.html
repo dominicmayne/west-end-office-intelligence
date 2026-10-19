@@ -2208,7 +2208,7 @@ body {
     isTop: () => target === 1,
     live,
     hook: (h) => { hook = h; },
-    three: { scene, stage, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
+    three: { scene, stage, renderer: () => renderer, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
   })));
 
   window.__qrGarden = {

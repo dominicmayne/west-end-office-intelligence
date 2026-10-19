@@ -359,6 +359,18 @@ body.live .stage { background: transparent !important; }
 .veil.on { opacity: 1; pointer-events: auto; }
 model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .sheet, .poster { transition: none; } }
+/* the one big ask once the world is up: turn it into the map */
+.tomap { position: fixed; z-index: 5; left: 50%; bottom: calc(var(--peek, 178px) + 18px + env(safe-area-inset-bottom)); display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border: 0; border-radius: 99px; background: var(--accent); color: #fff; font: 700 17px var(--body); letter-spacing: -0.01em; box-shadow: 0 10px 30px rgba(0, 0, 0, .28), 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); cursor: pointer; opacity: 0; transform: translate(-50%, 24px) scale(.9); transition: transform .5s cubic-bezier(.2, .9, .3, 1.3), opacity .35s, background .3s, color .3s, bottom .45s cubic-bezier(.2, .9, .3, 1); white-space: nowrap; }
+.tomap.in { opacity: 1; transform: translate(-50%, 0); animation: tomapPulse 2.4s ease-out .6s 3; }
+.tomap svg { width: 22px; height: 22px; }
+.tomap:active { transform: translate(-50%, 0) scale(.95); }
+.tomap:disabled { opacity: .55; }
+.tomap.back { padding: 11px 20px; font-size: 15px; background: rgba(255, 255, 255, .86); color: var(--ink); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); animation: none; }
+.tomap.back svg { width: 18px; height: 18px; color: var(--accent); }
+.tomap[hidden] { display: none; }
+@keyframes tomapPulse { 0% { box-shadow: 0 10px 30px rgba(0, 0, 0, .28), 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); } 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, .28), 0 0 0 18px color-mix(in srgb, var(--accent) 0%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .tomap.in { animation: none; } }
+.sheet.up ~ .tomap { opacity: 0; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -2358,7 +2370,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     isTop: () => target === 1,
     live,
     hook: (h) => { hook = h; },
-    three: { scene, stage, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
+    three: { scene, stage, renderer: () => renderer, camera: () => camera, group: () => group, size: () => SIZE, colour: () => crownColor },
   })));
 
   window.__qrGarden = {
@@ -2527,20 +2539,57 @@ window.QRW_MAP = (api, V) => {
   }
   const at = (d) => { for (const [a, b, s, l] of path) if (d <= s + l) { const f = (d - s) / l; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } const e = path[path.length - 1][1]; return e; };
 
-  // ---- showing and hiding: the code's world folds flat and the plan rises out of the floor ----
+  // ---- the change: a bright line sweeps across the café, wiping the world away and building the plan up in its wake ----
+  const RR = T.renderer && T.renderer(); if (RR) RR.localClippingEnabled = true;
+  const cutWorld = new THREE.Plane(new THREE.Vector3(1, 0, 0), 1e4), cutMap = new THREE.Plane(new THREE.Vector3(-1, 0, 0), -1e4);
+  const clip = (obj, plane) => obj.traverse((o) => { if (o.isSprite) return; (o.material ? [].concat(o.material) : []).forEach((m) => { if (!m.clippingPlanes || m.clippingPlanes[0] !== plane) { m.clippingPlanes = [plane]; m.clipShadows = true; m.needsUpdate = true; } }); });
+  clip(body, cutMap);
+  const beamTex = (() => { const c = document.createElement("canvas"); c.width = 8; c.height = 256; const x = c.getContext("2d"), g = x.createLinearGradient(0, 256, 0, 0); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(0.08, "rgba(255,236,200,.75)"); g.addColorStop(1, "rgba(255,200,140,0)"); x.fillStyle = g; x.fillRect(0, 0, 8, 256); return new THREE.CanvasTexture(c); })();
+  const beamM = new THREE.MeshBasicMaterial({ map: beamTex, color: accent.clone().lerp(new THREE.Color("#ffb46b"), 0.35), transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  const beam = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateY(Math.PI / 2), beamM); beam.visible = false; scene.add(beam);
+  const seam = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: accent, transparent: true, depthWrite: false })); seam.visible = false; scene.add(seam);
+  let sweep = null, worldClipped = null;
+  const _v = new THREE.Vector3();
+  function measure() {
+    // the sweep runs from just outside one edge of whichever is wider, the café or the plan, to just past the other
+    const qg = T.group(), bb = new THREE.Box3();
+    root.visible = true; body.scale.set(1, 1, 1); body.children.forEach((c) => c.scale.copy(c.userData.s0 || c.scale));
+    bb.setFromObject(root); if (qg) bb.union(new THREE.Box3().setFromObject(qg));
+    root.updateMatrixWorld(true);
+    body.children.forEach((c) => { c.userData.s0 = c.userData.s0 || c.scale.clone(); c.userData.wx = c.getWorldPosition(_v).x; });
+    const pad = (bb.max.x - bb.min.x) * 0.04, h = (bb.max.y - bb.min.y) * 1.25 + T.size() * 0.12;
+    sweep = { a: bb.min.x - pad, b: bb.max.x + pad, zc: (bb.min.z + bb.max.z) / 2, d: bb.max.z - bb.min.z + pad * 2, h, ramp: T.size() * 0.16 };
+    beam.scale.set(1, h, sweep.d); seam.scale.set(T.size() * 0.008, T.size() * 0.006, sweep.d);
+  }
+
+  // ---- showing and hiding ----
   let shown = false, flipAt = -10, clockNow = 0;
   const rc = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const DUR = 2.1;
   const hk = {
     zoom: null,
     onFrame(time) {
       clockNow = time;
-      const u = Math.max(0, Math.min(1, (time - flipAt) / 1.4)), e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2, s = shown ? e : 1 - e;
+      const u = Math.max(0, Math.min(1, (time - flipAt) / DUR)), e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2, s = shown ? e : 1 - e;
       const qg = T.group();
-      if (qg) { qg.visible = s < 0.98; qg.scale.set(1 - s * 0.08, Math.max(1 - s * 1.6, 0.001), 1 - s * 0.08); }
-      root.visible = s > 0.02;
-      const rise = Math.max(0.001, Math.min(1, (s - 0.35) / 0.65));
-      body.scale.set(1, 1 - Math.pow(1 - rise, 3) * 0.999, 1);
-      const pinK = Math.max(0, Math.min(1, (s - 0.75) / 0.25));
+      if (qg && worldClipped !== qg) { clip(qg, cutWorld); worldClipped = qg; }
+      // the camera eases back a touch so the whole plan fits as it builds
+      hk.zoom = s > 0.001 ? 1 - 0.32 * s : null;
+      const moving = u < 1 && sweep;
+      if (sweep) {
+        const w = sweep.a + (sweep.b - sweep.a) * s;
+        cutWorld.constant = s < 0.001 ? 1e4 : -w; cutMap.constant = s > 0.999 ? 1e4 : w;
+        if (qg) qg.visible = s < 0.999;
+        root.visible = s > 0.001;
+        body.children.forEach((c) => {
+          const r = Math.max(0, Math.min(1, (w - c.userData.wx) / sweep.ramp)), back = r === 0 ? 0 : 1 + 2.2 * Math.pow(r - 1, 3) + 1.2 * Math.pow(r - 1, 2);
+          c.scale.set(c.userData.s0.x, c.userData.s0.y * Math.max(0.001, back), c.userData.s0.z);
+        });
+        const lit = moving && s > 0.001 && s < 0.999;
+        beam.visible = seam.visible = lit;
+        if (lit) { const fade = Math.min(1, s * 8, (1 - s) * 8); beam.position.set(w, sweep.h / 2, sweep.zc); seam.position.set(w, 0.02, sweep.zc); beamM.opacity = 0.6 * fade; seam.material.opacity = fade; }
+      } else { root.visible = false; }
+      const pinK = shown ? Math.max(0, Math.min(1, (u - 0.8) / 0.2)) : Math.max(0, 1 - u * 4);
       labels.visible = pinK > 0.01;
       Object.values(pins).forEach((p, i) => {
         const big = active === p.id ? 1.25 : 1, bob = Math.sin(time * 2 + i) * 0.06;
@@ -2572,8 +2621,8 @@ window.QRW_MAP = (api, V) => {
   };
   api.hook(hk);
   const ctl = {
-    show() { if (shown) return; shown = true; flipAt = clockNow; hk.zoom = 0.68; },
-    hide() { if (!shown) return; shown = false; hk.zoom = null; flipAt = clockNow; path = null; active = null; goalRing.visible = false; },
+    show() { if (shown) return; measure(); shown = true; flipAt = clockNow; },
+    hide() { if (!shown) return; shown = false; flipAt = clockNow; path = null; active = null; goalRing.visible = false; },
     shown: () => shown,
     go, places: L.places, onPick: null,
   };
@@ -2602,6 +2651,7 @@ window.QRW_MAP = (api, V) => {
   <p class="hint2" id="arHint">Getting the 3D model ready</p>
   <p class="made">Tap the world to see its code again · <a href="/qr">Made with QR Worlds</a></p>
 </section>
+<button class="tomap" id="toMap" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span id="toMapTxt">Turn into map</span></button>
 <div class="toast" id="toast" role="status"></div>
 <div class="topbar">
   <button class="chip" id="view" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span id="viewTxt">Café world</span></button>
@@ -2669,19 +2719,26 @@ window.QRW_MAP = (api, V) => {
     const el = $("route");
     if (!r) { el.hidden = false; el.textContent = "Ask at the bar and we'll point you there."; return; }
     el.hidden = false; el.innerHTML = `<b>${esc(r.label)}</b> · ${r.metres} m, about ${r.steps} steps. ${esc(r.how)}`;
-    const f = $("find"); $("sheet").style.setProperty("--peek", f.offsetTop + f.offsetHeight + 14 + "px");
+    peekTo($("find"));
   };
+  // the sheet sits low so the world keeps the screen; the big button floats just above it
+  const peekTo = (el) => {
+    const sh = $("sheet"), h = el.offsetTop + el.offsetHeight + 14;
+    sh.style.setProperty("--peek", h + "px"); document.documentElement.style.setProperty("--peek", h + "px");
+    sh.classList.add("peek"); sh.classList.remove("up");
+  };
+  let busy = 0;
   function setView(mapOn) {
     if (!map) return;
     mapOn ? map.show() : map.hide();
-    // with the map up, the sheet drops to just the wayfinding so the plan has the screen; the handle pulls up the rest
-    const sh = $("sheet"), f = $("find");
-    if (mapOn) { sh.style.setProperty("--peek", f.offsetTop + f.offsetHeight + 14 + "px"); sh.classList.add("peek"); sh.classList.remove("up"); }
-    else { sh.classList.remove("peek"); sh.classList.add("up"); }
-    $("viewTxt").textContent = mapOn ? "Café world" : "Map";
-    if (!mapOn) { document.querySelectorAll("#places button").forEach((b) => b.setAttribute("aria-pressed", "false")); $("route").hidden = true; }
+    // with the map up, the sheet shows the wayfinding; in the café it shows just the order button. The handle pulls up the rest.
+    peekTo(mapOn ? $("find") : $("vOrder"));
+    const b = $("toMap");
+    b.classList.toggle("back", mapOn); $("toMapTxt").textContent = mapOn ? "Back to the café" : "Turn into map";
+    b.disabled = true; clearTimeout(busy); busy = setTimeout(() => (b.disabled = false), 2200);
+    if (!mapOn) { document.querySelectorAll("#places button").forEach((x) => x.setAttribute("aria-pressed", "false")); $("route").hidden = true; }
   }
-  $("view").addEventListener("click", () => setView(!map.shown()));
+  $("toMap").addEventListener("click", () => setView(!map.shown()));
   function startMap(api) {
     try { map = window.QRW_MAP && window.QRW_MAP(api, V); } catch (e) { map = null; }
     if (!map) return;
@@ -2690,13 +2747,14 @@ window.QRW_MAP = (api, V) => {
     map.onPick = (id) => showRoute(id);
     $("find").hidden = false;
     document.querySelector(".made").firstChild.textContent = "Tap a sign on the map to find it · ";
-    setTimeout(() => { setView(true); $("view").hidden = false; }, 4200);
+    // once the world has stood up, offer the map rather than forcing it
+    setTimeout(() => { $("toMap").hidden = false; requestAnimationFrame(() => $("toMap").classList.add("in")); }, 2600);
   }
 
   function flatOpen(api) {
     $("poster").classList.add("gone");
     setTimeout(() => api.down(), 500);
-    setTimeout(() => $("sheet").classList.add("up"), 1500);
+    setTimeout(() => (map ? peekTo($("vOrder")) : $("sheet").classList.add("up")), 1500);
     sndBtn.hidden = false;
     startMap(api);
     loadAR();
