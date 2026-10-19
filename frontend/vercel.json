@@ -47,6 +47,10 @@
             "destination": "/qr.html"
         },
         {
+            "source": "/w/:id",
+            "destination": "/w.html"
+        },
+        {
             "source": "/",
             "destination": "/index.html"
         }
