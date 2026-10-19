@@ -117,6 +117,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 /* Race HUD */
 .hud { position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0; transition: opacity 0.4s var(--ease); }
 .hud.show { opacity: 1; }
+.err { position: fixed; left: 16px; right: 16px; top: calc(max(14px, env(safe-area-inset-top)) + 64px); z-index: 20; padding: 12px 14px; border-radius: 16px; font-size: 13px; color: #fff; }
 .hud:not(.show) * { pointer-events: none !important; }
 .shade { position: fixed; left: 0; right: 0; top: 0; height: 260px; z-index: 3; pointer-events: none; background: linear-gradient(rgba(0,0,0,.45), transparent); }
 .hud .bar { position: absolute; top: calc(max(14px, env(safe-area-inset-top)) + 58px); left: 50%; transform: translateX(-50%); display: flex; gap: 6px; padding: 6px; border-radius: 999px; pointer-events: auto; }
@@ -712,9 +713,25 @@ addEventListener('pointerdown', function first(e) { removeEventListener('pointer
 
 /* ---------- Loop ---------- */
 const clock = new THREE.Clock();
+// Show any error on screen so a phone-only failure can be screenshotted
+let errShown = false;
+function showError(msg) {
+  if (errShown) return; errShown = true;
+  const el = document.createElement('div');
+  el.className = 'err glass'; el.textContent = 'Something went wrong: ' + msg;
+  document.body.appendChild(el);
+}
+addEventListener('error', (e) => showError(e.message || 'unknown error'));
+addEventListener('unhandledrejection', (e) => showError(String(e.reason)));
+// Never leave someone stuck on the code: open the world after 7 seconds whatever happens
+setTimeout(() => { if (!introDone) { world.visible = true; finishIntro(); } }, 7000);
 function tick() {
-  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-  if (!introDone) updateIntro(dt);
+  requestAnimationFrame(tick);
+  try { frame(); } catch (e) { showError(e.message); }
+}
+function frame() {
+  const raw = clock.getDelta(), dt = Math.min(raw, 0.05), t = clock.elapsedTime;
+  if (!introDone) updateIntro(Math.min(raw, 0.25));
   if (mode === 'race') updateRace(dt);
   // hero rocks like a kiddie ride
   hero.rotation.z = Math.sin(t * 2.2) * 0.05; hero.rotation.x = Math.sin(t * 1.4) * 0.03; hero.position.y = 0.34 + Math.abs(Math.sin(t * 2.2)) * 0.05;
@@ -733,7 +750,6 @@ function tick() {
   camera.position.set(Math.sin(orbit.yaw) * Math.cos(pitch) * dist, Math.sin(pitch) * dist + 0.6, Math.cos(orbit.yaw) * Math.cos(pitch) * dist);
   camera.lookAt(orbit.target);
   renderer.render(scene, camera);
-  requestAnimationFrame(tick);
 }
 tick();
 })();
