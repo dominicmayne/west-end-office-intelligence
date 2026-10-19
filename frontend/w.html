@@ -10,7 +10,8 @@
   // Each venue's world. The code printed on the table encodes `url`, and this page rebuilds the same code as a world.
   window.QRW_VENUES = {
     demo: {
-      url: "https://www.dominicmayne.com/w/demo",
+      // capitals let the code use alphanumeric mode: fewer, bigger squares
+      url: "HTTPS://WWW.DOMINICMAYNE.COM/W/DEMO",
       name: "Moss & Crumb",
       place: "Garden café · Parsons Green",
       demo: true,
@@ -19,14 +20,18 @@
       menu: [["Flat white", "£3.40"], ["Oat latte", "£3.80"], ["Pumpkin cinnamon bun", "£3.40"], ["Sourdough, avocado, chilli", "£9.50"], ["Mushrooms on toast", "£10.00"], ["Fig and almond cake", "£4.20"]],
       wifi: { network: "MossAndCrumb", password: "fernsandfigs" },
       review: "#review", instagram: "#instagram",
-      model: "/worlds/demo.glb",
+      // their order-and-pay link; {table} is replaced with the table number from the code
+      order: "#order?table={table}", table: "12",
       poster: "/worlds/demo-top.jpg",
       bg: "radial-gradient(70% 55% at 50% 45%, #fff8ee 0%, transparent 70%), linear-gradient(180deg, #f6ecdd 0%, #e6d3bb 100%)",
     },
   };
-  const id = location.pathname.split("/").filter(Boolean).pop();
-  const V = window.QRW_VENUES[id] || window.QRW_VENUES[new URLSearchParams(location.search).get("v")] || window.QRW_VENUES.demo;
-  window.QRW_SCAN = { url: V.url, kind: V.kind, season: V.season, colour: V.colour, sheet: 0.44, ready: (api) => window.QRW_OPEN && window.QRW_OPEN(api) };
+  // /w/<venue> or /w/<venue>/<table>, in either case
+  const parts = location.pathname.split("/").filter(Boolean), wi = parts.findIndex((p) => p.toLowerCase() === "w");
+  const qs = new URLSearchParams(location.search), id = ((wi >= 0 && parts[wi + 1]) || qs.get("v") || "demo").toLowerCase();
+  const V = window.QRW_VENUES[id] || window.QRW_VENUES.demo;
+  V.table = (wi >= 0 && parts[wi + 2]) || qs.get("t") || V.table || "";
+  window.QRW_SCAN = { url: V.url, kind: V.kind, season: V.season, colour: V.colour, name: V.name, special: V.special && V.special.text, sheet: 0.44, ready: (api) => window.QRW_OPEN && window.QRW_OPEN(api) };
   window.QRW_VENUE = V;
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -285,12 +290,41 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .ar svg { width: 20px; height: 20px; }
+.ar[hidden], .hint2[hidden] { display: none; }
 .ar:disabled { opacity: .45; cursor: default; }
 .hint2 { margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
 .made { margin: 12px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
 .made a { color: inherit; }
-.toast { position: fixed; z-index: 9; left: 50%; top: calc(16px + env(safe-area-inset-top)); transform: translate(-50%, -150%); padding: 10px 16px; border-radius: 99px; background: rgba(29, 29, 31, .9); color: #fff; font: 600 13px var(--body); transition: transform .4s cubic-bezier(.2, .9, .3, 1.3); max-width: calc(100% - 32px); }
+.toast { position: fixed; z-index: 9; left: 50%; top: calc(16px + env(safe-area-inset-top)); transform: translate(-50%, -250%); padding: 10px 16px; border-radius: 99px; background: rgba(29, 29, 31, .9); color: #fff; font: 600 13px var(--body); transition: transform .4s cubic-bezier(.2, .9, .3, 1.3); max-width: calc(100% - 32px); }
 .toast.on { transform: translate(-50%, 0); }
+/* camera reveal: the phone's camera fills the screen and the world stands on the printed code */
+.cam { position: fixed; inset: 0; width: 100vw; height: 100dvh; object-fit: cover; z-index: 0; background: #000; }
+body.live .stage { background: transparent !important; }
+.hintpill { position: fixed; z-index: 6; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom)); transform: translateX(-50%); padding: 11px 18px; border-radius: 99px; background: rgba(20, 20, 24, .55); color: #fff; font: 600 14px var(--body); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); white-space: nowrap; transition: opacity .4s ease; }
+.sheet.peek ~ .hintpill { bottom: calc(196px + env(safe-area-inset-bottom)); }
+.hintpill:empty, .hintpill.off { opacity: 0; pointer-events: none; }
+.frame { position: fixed; z-index: 2; left: 50%; top: 44%; width: min(62vw, 300px); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; transition: opacity .4s ease, transform .5s cubic-bezier(.2, .9, .3, 1.2); }
+.frame i { position: absolute; width: 34px; height: 34px; border: 3px solid #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .4)); }
+.frame i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; border-radius: 12px 0 0 0; }
+.frame i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; border-radius: 0 12px 0 0; }
+.frame i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 12px; }
+.frame i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; border-radius: 0 0 12px 0; }
+.frame.off { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+.topbar { position: fixed; z-index: 6; top: calc(14px + env(safe-area-inset-top)); left: 14px; right: 14px; display: flex; justify-content: space-between; pointer-events: none; }
+.chip { pointer-events: auto; display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 99px; background: rgba(255, 255, 255, .72); color: var(--ink); font: 600 13px var(--body); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); box-shadow: 0 2px 10px rgba(0, 0, 0, .12); cursor: pointer; transition: transform .25s cubic-bezier(.2, .9, .3, 1.5), opacity .3s; }
+.chip:active { transform: scale(.94); }
+.chip svg { width: 16px; height: 16px; }
+.chip[hidden] { display: none; }
+#snd { margin-left: auto; }
+.order { box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 12px 0 2px; padding: 16px; border: 0; border-radius: 16px; background: var(--accent); color: #fff; font: 700 16px var(--body); text-decoration: none; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .15); transition: transform .25s cubic-bezier(.2, .9, .3, 1.5); }
+.order:active { transform: scale(.97); }
+.order svg { width: 20px; height: 20px; }
+.order small { font-weight: 600; opacity: .8; }
+.sheet.peek { transform: translateY(calc(100% - 178px - env(safe-area-inset-bottom))); }
+.sheet.peek.up { transform: none; }
+.sheet.peek .grab { cursor: pointer; }
+.veil { position: fixed; inset: 0; z-index: 20; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+.veil.on { opacity: 1; pointer-events: auto; }
 model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .sheet, .poster { transition: none; } }
 </style>
@@ -305,7 +339,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   if (V.bg) $("poster").style.background = V.bg;
   if (V.poster) { $("poster").innerHTML = `<img src="${V.poster}" alt="">`; return; }
   try {
-    const q = qrcode(0, "H"); q.addData(V.url); q.make();
+    const q = qrcode(0, "H"); q.addData(V.url, /^[0-9A-Z $%*+\-./:]+$/.test(V.url) ? "Alphanumeric" : "Byte"); q.make();
     const n = q.getModuleCount(), m = n + 8; let d = "";
     for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c + 4} ${r + 4}h1v1h-1z`;
     $("poster").innerHTML = `<svg viewBox="0 0 ${m} ${m}" shape-rendering="crispEdges"><rect width="${m}" height="${m}" fill="#efe6d8"/><path d="${d}" fill="${V.colour}"/></svg>`;
@@ -562,9 +596,13 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   let target = 0, prog = 0;
   let scanQueued = false, scanAt = 0;
   let recording = false;
+  // camera mode: the scan page tracks the printed code and the world stands on it
+  let ar = null;
 
   function makeQR(text) {
-    try { const q = qrcode(0, "H"); q.addData(text || " "); q.make(); return q; } catch (e) { return null; }
+    // capitals, digits and URL punctuation pack into alphanumeric mode, which gives a smaller code with bigger squares
+    const alnum = /^[0-9A-Z $%*+\-./:]+$/.test(text || "");
+    try { const q = qrcode(0, "H"); q.addData(text || " ", alnum ? "Alphanumeric" : "Byte"); q.make(); return q; } catch (e) { return null; }
   }
   const inFinder = (r, c) => (r < 8 && c < 8) || (r < 8 && c >= N - 8) || (r >= N - 8 && c < 8);
 
@@ -714,137 +752,483 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   // ---------- other worlds: each returns its own update and recolor ----------
   const WORLDS = {
     cafe(cells, r, t0) {
-      // a little café: every dark square is a table, a planter or a stack of coffee sacks; the light squares are the tiled floor people walk
-      const g = { t0, topY: 3, noSlab: true };
-      const light = cells.filter((c) => !c.dark), dark = cells.filter((c) => c.dark);
-      const half = SIZE / 2, EDGE = half + 4.5;
-      const floor = inst(group, G.tile, new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.9 }), light.length, false);
-      light.forEach((c, i) => { _m.makeTranslation(c.x, 0, c.z); floor.setMatrixAt(i, _m); _c.set((c.row + c.col) % 2 ? "#f4eee4" : "#fbf7f0"); floor.setColorAt(i, _c); });
-      const wood = new THREE.MeshStandardMaterial({ color: "#6e5240", roughness: 0.8 });
-      const boards = new THREE.MeshStandardMaterial({ color: "#a58a72", roughness: 0.9 });
-      const island = new THREE.Mesh(new THREE.BoxGeometry(EDGE * 2, 1.2, EDGE * 2), [wood, wood, boards, wood, wood, wood]);
-      island.position.y = -0.82; island.receiveShadow = true; group.add(island);
-      // what stands on each dark square
-      const items = dark.map((c) => { const roll = r(); return { ...c, type: roll < 0.55 ? 0 : roll < 0.8 ? 1 : 2, h: r(), born: t0 + 0.3 + c.d * 0.018 + r() * 0.15, ph: r() * 6.28 }; });
-      const tables = items.filter((o) => o.type === 0), plants = items.filter((o) => o.type === 1), sacks = items.filter((o) => o.type === 2);
-      const tintMat = new THREE.MeshStandardMaterial({ roughness: 0.55 });
-      const topM = inst(group, new THREE.BoxGeometry(0.96, 0.09, 0.96).translate(0, -0.045, 0), tintMat, tables.length);
-      const legM = inst(group, merge([at(new THREE.CylinderGeometry(0.06, 0.06, 1, 6), 0, 0.5, 0), at(new THREE.CylinderGeometry(0.3, 0.34, 0.05, 8), 0, 0.025, 0)]), new THREE.MeshStandardMaterial({ color: "#2b2622", roughness: 0.5, metalness: 0.4 }), tables.length);
-      const mugM = inst(group, merge([at(new THREE.CylinderGeometry(0.11, 0.09, 0.16, 8), 0, 0.08, 0), at(new THREE.BoxGeometry(0.05, 0.08, 0.025), 0.13, 0.09, 0)]), tintMat.clone(), tables.length);
-      const potM = inst(group, new THREE.BoxGeometry(0.9, 1, 0.9).translate(0, 0.5, 0), new THREE.MeshStandardMaterial({ color: "#5b3a2a", roughness: 0.9 }), plants.length);
-      const bushGeo = merge([at(new THREE.BoxGeometry(0.98, 0.7, 0.98), 0, 0.35, 0), at(new THREE.BoxGeometry(0.5, 0.35, 0.5), -0.18, 0.8, 0.12), at(new THREE.BoxGeometry(0.4, 0.3, 0.4), 0.2, 0.75, -0.15)]);
-      const bushM = inst(group, bushGeo, new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1, flatShading: true }), plants.length);
-      const sackGeo = new THREE.SphereGeometry(0.5, 8, 5).scale(0.98, 0.5, 0.98);
-      const sackM = inst(group, sackGeo, new THREE.MeshStandardMaterial({ roughness: 1 }), sacks.length * 3);
-      // the room: two walls, a counter with an espresso machine, a barista, and a striped awning in the café's colour
-      const wallMat = new THREE.MeshStandardMaterial({ color: "#efe3d0", roughness: 1 });
-      const walls = [at(new THREE.BoxGeometry(EDGE * 2, 4, 0.4), 0, 2, -EDGE + 0.2), at(new THREE.BoxGeometry(0.4, 4, EDGE * 2), -EDGE + 0.2, 2, 0)];
-      walls.forEach((w) => { const m = new THREE.Mesh(w, wallMat); m.castShadow = m.receiveShadow = true; group.add(m); });
-      const glass = new THREE.MeshStandardMaterial({ color: "#bcd8e6", roughness: 0.15, metalness: 0.2 });
+      // a living café: every dark square is something solid and dark (a bar, a table, a planter, an armchair);
+      // chairs, people, cups and cakes stand on the light floor and step aside when the camera looks straight down
+      const g = { t0, topY: 4.4, noSlab: true };
+      const half = SIZE / 2, EDGE = half + 3.6, H = 4.2;
+      const dark = cells.filter((c) => c.dark);
+      const isDark = (row, col) => row >= 0 && col >= 0 && row < N && col < N && qr.isDark(row, col);
+      const cx = (col) => col - N / 2 + 0.5, cz = (row) => row - N / 2 + 0.5;
+      const born = (x, z, extra = 0) => t0 + 0.3 + Math.hypot(x, z) * 0.018 + r() * 0.15 + extra;
+      const room = new THREE.Group(); group.add(room);
+      const meshes = [];
+      const im = (geo, mat, n, cast = true, parent = group) => { const m = inst(parent, geo, mat, n, cast); meshes.push(m); return m; };
+      const std = (color, rough = 0.8, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: rough, ...extra });
+      const pick = (a) => a[Math.floor(r() * a.length)];
+      const signName = (SCAN && SCAN.name) || ((/^https?:\/\/(?:www\.)?([^/]+)/i.exec(lastText) || [])[1] || "Café").toLowerCase();
+
+      // ---- floor: one run of pale oak boards, no tiles ----
+      const plank = tex((x, S) => {
+        x.fillStyle = "#f1e6d3"; x.fillRect(0, 0, S, S);
+        const rows = 8, h = S / rows, q = rand(31);
+        for (let i = 0; i < rows; i++) {
+          let px = -q() * S;
+          while (px < S) {
+            const w = S * (0.35 + q() * 0.4), v = 232 + Math.floor(q() * 16);
+            x.fillStyle = `rgb(${v},${v - 11},${v - 30})`; x.fillRect(px, i * h, w, h);
+            x.strokeStyle = "rgba(150,110,70,.10)"; x.lineWidth = 1;
+            for (let k = 0; k < 3; k++) { x.beginPath(); x.moveTo(px, i * h + h * (0.25 + k * 0.25) + (q() - 0.5) * 3); x.bezierCurveTo(px + w * 0.3, i * h + h * q(), px + w * 0.6, i * h + h * q(), px + w, i * h + h * (0.25 + k * 0.25)); x.stroke(); }
+            x.fillStyle = "rgba(120,85,50,.16)"; x.fillRect(px, i * h, 1.5, h);
+            px += w;
+          }
+          x.fillStyle = "rgba(120,85,50,.14)"; x.fillRect(0, i * h, S, 1.5);
+        }
+      }, 512);
+      plank.wrapS = plank.wrapT = THREE.RepeatWrapping; plank.repeat.set((EDGE * 2) / 4.6, (EDGE * 2) / 4.6);
+      const floorMat = new THREE.MeshStandardMaterial({ map: plank, roughness: 0.75 });
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(EDGE * 2, EDGE * 2).rotateX(-Math.PI / 2), floorMat);
+      floor.receiveShadow = true; group.add(floor);
+      const woodDark = std("#5a3f2e", 0.85);
+      const base = new THREE.Mesh(new THREE.BoxGeometry(EDGE * 2 + 0.3, 0.5, EDGE * 2 + 0.3).translate(0, -0.26, 0), woodDark);
+      base.receiveShadow = true; group.add(base);
+      g.floorMat = floorMat; g.base = base;
+
+      // ---- materials ----
+      const tintMat = std("#ffffff", 0.8), accent = std("#8a3b22", 0.6), cream = std("#fbf5ea", 0.7);
+      const metalDark = std("#2b2622", 0.45, { metalness: 0.5 }), steel = std("#cfd3d8", 0.25, { metalness: 0.85 });
+      const leaf = std("#ffffff", 0.95, { flatShading: true }), pot = std("#ffffff", 0.7);
+      const china = std("#ffffff", 0.35), skin = std("#ffffff", 0.75), cloth = std("#ffffff", 0.85);
+      const glow = new THREE.MeshBasicMaterial({ color: "#ffd9a0" });
+
+      // ---- what stands on the dark squares ----
+      const finders = [[0, 0], [0, N - 7], [N - 7, 0]];
+      const inF = (row, col) => finders.some(([a, b]) => row >= a && row < a + 7 && col >= b && col < b + 7);
+      const used = new Set(), K = (row, col) => row * 1000 + col;
+      const longs = [], singles = [];
+      for (let row = 0; row < N; row++) {
+        let col = 0;
+        while (col < N) {
+          if (!isDark(row, col) || inF(row, col)) { col++; continue; }
+          let e = col; while (e + 1 < N && isDark(row, e + 1) && !inF(row, e + 1)) e++;
+          let len = e - col + 1;
+          if (len >= 2) {
+            let s = col;
+            while (len > 0) { const take = len > 4 ? (len === 5 ? 3 : 4) : len; if (take >= 2) { longs.push({ row, col: s, len: take, dir: 0 }); for (let k = 0; k < take; k++) used.add(K(row, s + k)); } s += take; len -= take; }
+          }
+          col = e + 1;
+        }
+      }
+      for (let col = 0; col < N; col++) {
+        let row = 0;
+        while (row < N) {
+          if (!isDark(row, col) || inF(row, col) || used.has(K(row, col))) { row++; continue; }
+          let e = row; while (e + 1 < N && isDark(e + 1, col) && !inF(e + 1, col) && !used.has(K(e + 1, col))) e++;
+          let len = e - row + 1;
+          if (len >= 2) {
+            let s = row;
+            while (len > 0) { const take = len > 4 ? (len === 5 ? 3 : 4) : len; if (take >= 2) { longs.push({ row: s, col, len: take, dir: 1 }); for (let k = 0; k < take; k++) used.add(K(s + k, col)); } s += take; len -= take; }
+          }
+          row = e + 1;
+        }
+      }
+      for (let row = 0; row < N; row++) for (let col = 0; col < N; col++) if (isDark(row, col) && !inF(row, col) && !used.has(K(row, col))) {
+        const roll = r();
+        singles.push({ row, col, x: cx(col), z: cz(row), type: roll < 0.5 ? "table" : roll < 0.72 ? "plant" : roll < 0.88 ? "chair" : "sacks", v: r(), ph: r() * 6.28 });
+      }
+      longs.forEach((o) => {
+        const a = o.dir ? [cx(o.col), cz(o.row)] : [cx(o.col), cz(o.row)];
+        o.x0 = a[0]; o.z0 = a[1];
+        o.x1 = o.dir ? o.x0 : o.x0 + o.len - 1; o.z1 = o.dir ? o.z0 + o.len - 1 : o.z0;
+        o.x = (o.x0 + o.x1) / 2; o.z = (o.z0 + o.z1) / 2; o.v = r(); o.born = born(o.x, o.z);
+      });
+      singles.forEach((o) => (o.born = born(o.x, o.z)));
+      const tables = singles.filter((o) => o.type === "table"), plants = singles.filter((o) => o.type === "plant");
+      const armchairs = singles.filter((o) => o.type === "chair"), sacks = singles.filter((o) => o.type === "sacks");
+
+      // light cells that furniture can use, kept off the walkways
+      const taken = new Set();
+      const lightFree = (row, col) => row >= -QUIET && col >= -QUIET && row < N + QUIET && col < N + QUIET && !isDark(row, col) && !taken.has(K(row + 50, col + 50));
+      const take = (row, col) => taken.add(K(row + 50, col + 50));
+
+      // round café tables
+      const TOP_H = 0.74;
+      const rTop = im(new THREE.CylinderGeometry(0.44, 0.44, 0.07, 28).translate(0, -0.035, 0), tintMat, tables.length);
+      const rLeg = im(merge([at(new THREE.CylinderGeometry(0.045, 0.06, 1, 8), 0, 0.5, 0), at(new THREE.CylinderGeometry(0.26, 0.3, 0.04, 16), 0, 0.02, 0)]), metalDark, tables.length);
+      // long tables: a capsule top on trestle legs
+      const lMid = im(new THREE.BoxGeometry(1, 0.07, 0.84).translate(0, -0.035, 0), tintMat.clone(), longs.length);
+      const lCap = im(new THREE.CylinderGeometry(0.42, 0.42, 0.07, 24).translate(0, -0.035, 0), lMid.material, longs.length * 2);
+      const lLeg = im(merge([at(new THREE.BoxGeometry(0.08, 1, 0.08), 0, 0.5, -0.25), at(new THREE.BoxGeometry(0.08, 1, 0.08), 0, 0.5, 0.25), at(new THREE.BoxGeometry(0.08, 0.06, 0.62), 0, 0.12, 0)]), woodDark, longs.length * 2);
+      // planters: dark glazed pots with a full rounded bush
+      const potGeo = new THREE.LatheGeometry([[0, 0], [0.3, 0], [0.38, 0.08], [0.42, 0.42], [0.44, 0.46], [0.4, 0.48], [0, 0.48]].map(([a, b]) => new THREE.Vector2(a, b)), 16);
+      const pPot = im(potGeo, pot, plants.length);
+      const bushGeo = merge([[0, 0.25, 0, 0.42], [-0.2, 0.45, 0.12, 0.3], [0.22, 0.5, -0.1, 0.32], [0.05, 0.7, 0.05, 0.26], [-0.1, 0.35, -0.22, 0.26]].map(([x, y, z, s]) => at(new THREE.IcosahedronGeometry(1, 1), x, y, z, s, s * 0.95, s)));
+      const pBush = im(bushGeo, leaf, plants.length);
+      const tallGeo = merge([at(new THREE.CylinderGeometry(0.03, 0.04, 1.1, 5), 0, 0.55, 0), ...Array.from({ length: 7 }, (_, i) => { const a = i * 2.4, y = 0.55 + i * 0.13; return at(new THREE.SphereGeometry(1, 7, 5), Math.cos(a) * 0.2, y, Math.sin(a) * 0.2, 0.2, 0.06, 0.13, -a); })]);
+      const pTall = im(tallGeo, leaf, plants.length);
+      // leather armchairs
+      const armGeo = merge([at(new THREE.BoxGeometry(0.78, 0.26, 0.74), 0, 0.27, 0.02), at(new THREE.BoxGeometry(0.8, 0.62, 0.2), 0, 0.5, -0.3), at(new THREE.CylinderGeometry(0.11, 0.11, 0.74, 10).rotateX(Math.PI / 2), -0.36, 0.48, 0.02), at(new THREE.CylinderGeometry(0.11, 0.11, 0.74, 10).rotateX(Math.PI / 2), 0.36, 0.48, 0.02), at(new THREE.BoxGeometry(0.1, 0.38, 0.7), -0.36, 0.25, 0.02), at(new THREE.BoxGeometry(0.1, 0.38, 0.7), 0.36, 0.25, 0.02), at(new THREE.SphereGeometry(0.2, 10, 6), 0, 0.82, -0.32, 2, 0.5, 0.6)]);
+      const aChair = im(armGeo, std("#ffffff", 0.55), armchairs.length);
+      const cushion = im(new THREE.BoxGeometry(0.34, 0.26, 0.1).translate(0, 0.55, -0.15), accent, armchairs.length);
+      const sackM = im(new THREE.SphereGeometry(0.5, 10, 6).scale(0.96, 0.46, 0.92), std("#ffffff", 1), sacks.length * 3);
+
+      // ---- three finder corners become island bars with a barista inside and an olive tree in the middle ----
+      const islands = finders.map(([a, b]) => ({ x: cx(b + 3), z: cz(a + 3), born: born(cx(b + 3), cz(a + 3)) }));
+      const ringGeo = merge([at(new THREE.BoxGeometry(7, 1, 1), 0, 0.5, -3), at(new THREE.BoxGeometry(7, 1, 1), 0, 0.5, 3), at(new THREE.BoxGeometry(1, 1, 5), -3, 0.5, 0), at(new THREE.BoxGeometry(1, 1, 5), 3, 0.5, 0)]);
+      const ringTopGeo = merge([at(new THREE.BoxGeometry(7.1, 0.08, 1.05), 0, 1.04, -3), at(new THREE.BoxGeometry(7.1, 0.08, 1.05), 0, 1.04, 3), at(new THREE.BoxGeometry(1.05, 0.08, 5), -3, 1.04, 0), at(new THREE.BoxGeometry(1.05, 0.08, 5), 3, 1.04, 0)]);
+      const iBody = im(ringGeo, accent, 3), iTop = im(ringTopGeo, std("#221d1b", 0.9), 3);
+      const iPlanter = im(merge([at(new THREE.BoxGeometry(2.92, 0.62, 2.92), 0, 0.31, 0), at(new THREE.BoxGeometry(3.0, 0.08, 3.0), 0, 0.64, 0)]), std("#2c2724", 0.7), 3);
+      const oliveGeo = merge([at(new THREE.CylinderGeometry(0.1, 0.16, 2.2, 7), 0, 1.4, 0), ...[[0, 2.9, 0, 1.0], [-0.6, 2.6, 0.4, 0.75], [0.6, 2.7, -0.3, 0.8], [0.3, 3.3, 0.5, 0.65], [-0.4, 3.2, -0.5, 0.7], [0.7, 2.4, 0.6, 0.55], [-0.7, 2.3, -0.6, 0.55]].map(([x, y, z, s]) => at(new THREE.IcosahedronGeometry(1, 1), x, y, z, s, s * 0.8, s))]);
+      const iTree = im(oliveGeo, leaf, 3);
+      const machineGeo = merge([at(new THREE.BoxGeometry(0.9, 0.5, 0.5), 0, 0.25, 0), at(new THREE.BoxGeometry(0.95, 0.06, 0.55), 0, 0.53, 0), at(new THREE.CylinderGeometry(0.04, 0.04, 0.16, 6), -0.22, 0.04, 0.3), at(new THREE.CylinderGeometry(0.04, 0.04, 0.16, 6), 0.22, 0.04, 0.3), at(new THREE.CylinderGeometry(0.06, 0.06, 0.1, 10), 0.32, 0.62, 0)]);
+      const machineMat = std("#ffffff", 0.3, { metalness: 0.55 });
+      const iMachine = im(machineGeo, machineMat, 4);
+      const grinder = im(merge([at(new THREE.BoxGeometry(0.22, 0.34, 0.26), 0, 0.17, 0), at(new THREE.CylinderGeometry(0.1, 0.05, 0.22, 10), 0, 0.45, 0)]), metalDark, 4);
+
+      // ---- the room behind the code: a long counter, a cake case, shelves, a sign with the café's name ----
+      const CZ = -half - 1.5, CX = -half * 0.15, CL = Math.min(SIZE * 0.62, 20);
+      const wallMat = std("#f1e4cf", 1);
+      const walls = [at(new THREE.BoxGeometry(EDGE * 2, H, 0.4), 0, H / 2, -EDGE + 0.2), at(new THREE.BoxGeometry(0.4, H, EDGE * 2), -EDGE + 0.2, H / 2, 0)];
+      walls.forEach((w) => { const m = new THREE.Mesh(w, wallMat); m.castShadow = m.receiveShadow = true; room.add(m); });
+      const wains = [at(new THREE.BoxGeometry(EDGE * 2, 1.2, 0.1), 0, 0.6, -EDGE + 0.45), at(new THREE.BoxGeometry(0.1, 1.2, EDGE * 2), -EDGE + 0.45, 0.6, 0)];
+      const wainMat = std("#ffffff", 0.7); wains.forEach((w) => room.add(new THREE.Mesh(w, wainMat)));
+      const glass = std("#cfe6f0", 0.1, { metalness: 0.1, transparent: true, opacity: 0.75 });
+      const frame = std("#2f2a26", 0.6);
       for (let k = -2; k <= 2; k++) {
-        const wx = new THREE.Mesh(new THREE.BoxGeometry(3, 1.8, 0.1), glass); wx.position.set(k * 7, 2.3, -EDGE + 0.45); group.add(wx);
-        const wz = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.8, 3), glass); wz.position.set(-EDGE + 0.45, 2.3, k * 7); group.add(wz);
+        const z = k * 6.5; if (Math.abs(z) > EDGE - 2) continue;
+        const wz = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.1, 3.2), glass); wz.position.set(-EDGE + 0.46, 2.35, z); room.add(wz);
+        [-1.6, 0, 1.6].forEach((o) => { const f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.2, 0.08), frame); f.position.set(-EDGE + 0.48, 2.35, z + o); room.add(f); });
+        [1.25, 3.45].forEach((y) => { const f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 3.3), frame); f.position.set(-EDGE + 0.48, y, z); room.add(f); });
       }
-      const accent = new THREE.MeshStandardMaterial({ roughness: 0.6 }), cream = new THREE.MeshStandardMaterial({ color: "#fbf5ea", roughness: 0.7 });
-      const stripes = [];
-      for (let i = 0; i < Math.ceil(EDGE * 2); i++) {
-        const mat = i % 2 ? cream : accent;
-        const a = new THREE.Mesh(new THREE.BoxGeometry(1, 0.12, 1.3), mat); a.position.set(-EDGE + 0.5 + i, 3.9, -EDGE + 0.9); a.rotation.x = 0.35; group.add(a); stripes.push(a);
-        const b = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.12, 1), mat); b.position.set(-EDGE + 0.9, 3.9, -EDGE + 0.5 + i); b.rotation.z = -0.35; group.add(b); stripes.push(b);
+      const counter = new THREE.Mesh(new THREE.BoxGeometry(CL, 1.05, 1.0), accent); counter.position.set(CX, 0.525, CZ); counter.castShadow = counter.receiveShadow = true; room.add(counter);
+      for (let i = 0; i < Math.floor(CL / 0.5); i++) { const s = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.9, 0.04), frame); s.position.set(CX - CL / 2 + 0.25 + i * 0.5, 0.5, CZ + 0.51); room.add(s); }
+      const ctop = new THREE.Mesh(new THREE.BoxGeometry(CL + 0.2, 0.08, 1.2), std("#ece7df", 0.3)); ctop.position.set(CX, 1.09, CZ); ctop.castShadow = true; room.add(ctop);
+      // cake case on the counter
+      const caseX = CX + CL * 0.22;
+      const caseGlass = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 0.9), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.05, transparent: true, opacity: 0.22 })); caseGlass.position.set(caseX, 1.58, CZ); room.add(caseGlass);
+      const shelf = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.04, 0.8), steel); shelf.position.set(caseX, 1.6, CZ); room.add(shelf);
+      const cakeCols = ["#5a3221", "#b8414b", "#d9a560", "#a6c178", "#f2d6a2", "#7b4a8a"];
+      const cakes = [];
+      for (let i = 0; i < 5; i++) cakes.push({ x: caseX - 0.92 + i * 0.46, y: 1.14, z: CZ, c: cakeCols[i % cakeCols.length], s: 1 });
+      for (let i = 0; i < 4; i++) cakes.push({ x: caseX - 0.7 + i * 0.46, y: 1.62, z: CZ, c: cakeCols[(i + 3) % cakeCols.length], s: 0.85 });
+      const cakeGeo = merge([at(new THREE.CylinderGeometry(0.19, 0.19, 0.2, 18), 0, 0.1, 0)]), creamGeo = merge([at(new THREE.CylinderGeometry(0.2, 0.19, 0.05, 18), 0, 0.22, 0), ...Array.from({ length: 6 }, (_, i) => at(new THREE.SphereGeometry(0.035, 6, 4), Math.cos(i) * 0.14, 0.26, Math.sin(i) * 0.14))]);
+      const cakeM = im(cakeGeo, std("#ffffff", 0.8), cakes.length, true, room), creamM = im(creamGeo, cream, cakes.length, true, room);
+      cakes.forEach((c, i) => { _m.makeScale(c.s, c.s, c.s).setPosition(c.x, c.y, c.z); cakeM.setMatrixAt(i, _m); creamM.setMatrixAt(i, _m); _c.set(c.c); cakeM.setColorAt(i, _c); });
+      // a croissant tray and the till
+      const crois = im(new THREE.TorusGeometry(0.08, 0.045, 6, 10, Math.PI * 1.25).rotateX(Math.PI / 2), std("#d99a45", 0.7), 6, true, room);
+      for (let i = 0; i < 6; i++) { _e.set(0, r() * 6, 0); _q.setFromEuler(_e); _p.set(CX + CL * 0.38 + (i % 3) * 0.24 - 0.24, 1.2, CZ + (i < 3 ? -0.13 : 0.13)); _s.setScalar(1); _m.compose(_p, _q, _s); crois.setMatrixAt(i, _m); }
+      const till = new THREE.Mesh(merge([at(new THREE.BoxGeometry(0.4, 0.12, 0.35), 0, 0.06, 0), at(new THREE.BoxGeometry(0.34, 0.26, 0.03), 0, 0.28, -0.08, 1, 1, 1)]), metalDark); till.position.set(CX - CL * 0.36, 1.13, CZ + 0.1); room.add(till);
+      // back counter with the main espresso machine
+      const backCounter = new THREE.Mesh(new THREE.BoxGeometry(CL, 1.0, 0.7), std("#e9dfd0", 0.8)); backCounter.position.set(CX, 0.5, -EDGE + 0.8); room.add(backCounter);
+      const bigMachine = new THREE.Mesh(merge([at(new THREE.BoxGeometry(1.6, 0.7, 0.6), 0, 0.35, 0), at(new THREE.BoxGeometry(1.7, 0.06, 0.65), 0, 0.73, 0), ...[-0.5, 0, 0.5].map((x) => at(new THREE.CylinderGeometry(0.05, 0.05, 0.18, 6), x, 0.05, 0.36))]), machineMat); bigMachine.position.set(CX - 2, 1.0, -EDGE + 0.85); bigMachine.castShadow = true; room.add(bigMachine);
+      // open shelves with jars and cups, and the café's sign
+      for (let k = 0; k < 2; k++) {
+        const sh = new THREE.Mesh(new THREE.BoxGeometry(CL * 0.8, 0.06, 0.4), woodDark); sh.position.set(CX, 2.0 + k * 0.6, -EDGE + 0.6); room.add(sh);
       }
-      const cz = -half - 2.2, counter = new THREE.Mesh(new THREE.BoxGeometry(SIZE * 0.55, 1.1, 1.1), accent); counter.position.set(-half * 0.2, 0.55, cz); counter.castShadow = counter.receiveShadow = true; group.add(counter);
-      const ctop = new THREE.Mesh(new THREE.BoxGeometry(SIZE * 0.55 + 0.2, 0.1, 1.3), new THREE.MeshStandardMaterial({ color: "#3a332d", roughness: 0.4 })); ctop.position.set(-half * 0.2, 1.15, cz); group.add(ctop);
-      const steel = new THREE.MeshStandardMaterial({ color: "#c9ccd1", roughness: 0.25, metalness: 0.8 });
-      const machine = new THREE.Mesh(merge([at(new THREE.BoxGeometry(1.4, 0.8, 0.7), 0, 0.4, 0), at(new THREE.CylinderGeometry(0.06, 0.06, 0.3, 6), -0.35, 0.05, 0.4), at(new THREE.CylinderGeometry(0.06, 0.06, 0.3, 6), 0.35, 0.05, 0.4)]), steel);
-      machine.position.set(-half * 0.2 - 3, 1.2, cz - 0.1); machine.castShadow = true; group.add(machine);
-      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.45, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.05, transparent: true, opacity: 0.45 }));
-      dome.position.set(-half * 0.2 + 2.5, 1.2, cz); group.add(dome);
-      const cake = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.25, 14), new THREE.MeshStandardMaterial({ color: "#e9b48a", roughness: 0.8 })); cake.position.set(-half * 0.2 + 2.5, 1.33, cz); group.add(cake);
-      const board = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.2, 3.4), new THREE.MeshStandardMaterial({ color: "#26302b", roughness: 0.9 })); board.position.set(-EDGE + 0.5, 2.1, -half * 0.35); group.add(board);
-      // potted trees by the open sides
+      const jarCols = ["#7a4a2a", "#3a2a20", "#b07a3a", "#ffffff", "#c9b28a"];
+      const jars = im(new THREE.CylinderGeometry(0.11, 0.11, 0.3, 10).translate(0, 0.15, 0), std("#ffffff", 0.4), 24, true, room);
+      for (let i = 0; i < 24; i++) { const k = i % 2, j = Math.floor(i / 2); _m.makeTranslation(CX - CL * 0.38 + j * (CL * 0.76 / 12) + (k ? 0.15 : 0), 2.03 + k * 0.6, -EDGE + 0.6); jars.setMatrixAt(i, _m); _c.set(jarCols[(i * 7) % jarCols.length]); jars.setColorAt(i, _c); }
+      const signC = document.createElement("canvas"); signC.width = 1024; signC.height = 256;
+      const drawSign = () => {
+        const x = signC.getContext("2d");
+        x.fillStyle = "#1f2f27"; x.fillRect(0, 0, 1024, 256);
+        x.strokeStyle = "#c9a45c"; x.lineWidth = 6; x.strokeRect(14, 14, 996, 228);
+        x.fillStyle = "#e9cf8f"; x.textAlign = "center"; x.textBaseline = "middle";
+        let fs = 120; x.font = `italic 600 ${fs}px Georgia, 'Times New Roman', serif`;
+        while (x.measureText(signName).width > 900 && fs > 40) { fs -= 6; x.font = `italic 600 ${fs}px Georgia, 'Times New Roman', serif`; }
+        x.fillText(signName, 512, 112);
+        x.font = "600 30px Georgia, serif"; x.fillStyle = "#c9a45c"; x.fillText("C O F F E E   ·   K I T C H E N", 512, 205);
+      };
+      drawSign();
+      const signTex = new THREE.CanvasTexture(signC); signTex.anisotropy = 4;
+      const signW = Math.min(CL * 0.7, 10), sign = new THREE.Mesh(new THREE.BoxGeometry(signW, signW / 4, 0.08), [frame, frame, frame, frame, new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.6 }), frame]);
+      sign.position.set(CX, 3.55, -EDGE + 0.46); room.add(sign);
+      // chalkboard with today's special
+      const chalkC = document.createElement("canvas"); chalkC.width = 512; chalkC.height = 640;
+      {
+        const x = chalkC.getContext("2d");
+        x.fillStyle = "#26302b"; x.fillRect(0, 0, 512, 640);
+        x.fillStyle = "rgba(255,255,255,.04)"; for (let i = 0; i < 300; i++) x.fillRect(Math.random() * 512, Math.random() * 640, 3, 1);
+        x.fillStyle = "#f4efe4"; x.textAlign = "center"; x.font = "italic 64px Georgia, serif"; x.fillText("Today", 256, 100);
+        x.font = "34px Georgia, serif";
+        const words = String((SCAN && SCAN.special) || "Flat white and a cinnamon bun").split(" "); let line = "", y = 190;
+        words.forEach((w) => { if (x.measureText(line + w).width > 420) { x.fillText(line, 256, y); line = ""; y += 48; } line += w + " "; }); x.fillText(line, 256, y);
+        x.strokeStyle = "#f4efe4"; x.lineWidth = 4; x.beginPath(); x.moveTo(206, 520); x.lineTo(306, 520); x.lineTo(296, 590); x.lineTo(216, 590); x.closePath(); x.stroke();
+        x.beginPath(); x.arc(316, 548, 18, -1.2, 1.2); x.stroke();
+        [226, 256, 286].forEach((sx) => { x.beginPath(); x.moveTo(sx, 500); x.bezierCurveTo(sx - 12, 480, sx + 12, 470, sx, 450); x.stroke(); });
+      }
+      const chalkTex = new THREE.CanvasTexture(chalkC);
+      const chalk = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.6, 2.08), [new THREE.MeshStandardMaterial({ map: chalkTex, roughness: 0.95 }), woodDark, woodDark, woodDark, woodDark, woodDark]);
+      chalk.position.set(-EDGE + 0.5, 2.2, -half + 1.5); room.add(chalk);
+      // a sofa nook on the window side
+      const sofaGeo = merge([at(new THREE.BoxGeometry(0.9, 0.4, 3.4), 0, 0.3, 0), at(new THREE.BoxGeometry(0.28, 0.8, 3.4), -0.36, 0.6, 0), at(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 10).rotateZ(Math.PI / 2), 0, 0.55, -1.7), at(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 10).rotateZ(Math.PI / 2), 0, 0.55, 1.7)]);
+      const sofa = new THREE.Mesh(sofaGeo, std("#3f5a4a", 0.8)); sofa.position.set(-EDGE + 1.2, 0, half * 0.35); sofa.castShadow = true; room.add(sofa);
+      const pillows = im(new THREE.BoxGeometry(0.16, 0.42, 0.5).translate(0, 0.66, 0), accent, 3, true, room);
+      [-1, 0, 1].forEach((k, i) => { _e.set(0, 0, 0.2); _q.setFromEuler(_e); _p.set(-EDGE + 1.0, 0, half * 0.35 + k * 1.05); _s.setScalar(1); _m.compose(_p, _q, _s); pillows.setMatrixAt(i, _m); });
+      const lamp = new THREE.Mesh(merge([at(new THREE.CylinderGeometry(0.2, 0.22, 0.04, 12), 0, 0.02, 0), at(new THREE.CylinderGeometry(0.02, 0.02, 2.2, 6), 0, 1.1, 0), at(new THREE.CylinderGeometry(0.22, 0.36, 0.4, 14, 1, true), 0, 2.25, 0)]), std("#2b2622", 0.5)); lamp.position.set(-EDGE + 1.2, 0, half * 0.35 + 2.3); room.add(lamp);
+      const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), glow); lampBulb.position.set(-EDGE + 1.2, 2.18, half * 0.35 + 2.3); room.add(lampBulb);
+      // potted trees and a bench along the open sides
       const treeSpots = [];
-      for (let i = 0; i < 10; i++) { const along = -EDGE + 3 + (i % 5) * ((EDGE * 2 - 6) / 4); treeSpots.push(i < 5 ? { x: along, z: EDGE - 1.6 } : { x: EDGE - 1.6, z: along }); }
-      const tPot = inst(group, new THREE.CylinderGeometry(0.55, 0.42, 0.9, 10).translate(0, 0.45, 0), new THREE.MeshStandardMaterial({ color: "#b8703f", roughness: 0.9 }), treeSpots.length);
-      const tTop = inst(group, new THREE.IcosahedronGeometry(1, 1).translate(0, 2.2, 0), new THREE.MeshStandardMaterial({ color: "#3d6b35", roughness: 1, flatShading: true }), treeSpots.length);
-      // people wander the floor between the tables, some carrying a cup
-      const byKey = new Map(light.map((c) => [c.row + "," + c.col, c]));
-      const walk = light.filter((c) => c.row >= -2 && c.col >= -2 && c.row < N + 2 && c.col < N + 2);
-      const people = Array.from({ length: 16 }, () => { const a = walk[Math.floor(r() * walk.length)]; return { a, b: a, dr: 0, dc: 1, start: t0 + 1 + r() * 2, dur: 0.01, pause: 0, yaw: 0, top: ["#2f5d8a", "#c2553a", "#3f7a52", "#7b5aa6", "#e0a33a", "#2b2b2b"][Math.floor(r() * 6)], legs: r() < 0.5 ? "#2c3440" : "#5b4636", cup: r() < 0.5 }; });
-      people.push({ barista: true, x: -half * 0.2 - 1.6, z: cz - 1.1, top: "#2b2b2b", legs: "#2c3440", ph: r() * 6 });
-      const bodyGeo = merge([at(new THREE.CylinderGeometry(0.16, 0.19, 0.42, 8), 0, 0.55, 0), at(new THREE.SphereGeometry(0.16, 8, 6), 0, 0.76, 0)]);
-      const legGeo = merge([at(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 6), -0.08, 0.18, 0), at(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 6), 0.08, 0.18, 0)]);
-      const headGeo = at(new THREE.SphereGeometry(0.13, 10, 8), 0, 1.0, 0);
-      const pBody = inst(group, bodyGeo, new THREE.MeshStandardMaterial({ roughness: 0.8 }), people.length), pLegs = inst(group, legGeo, new THREE.MeshStandardMaterial({ roughness: 0.8 }), people.length);
-      const pHead = inst(group, headGeo, new THREE.MeshStandardMaterial({ color: "#e8bf98", roughness: 0.8 }), people.length);
-      const pCup = inst(group, at(new THREE.CylinderGeometry(0.06, 0.05, 0.12, 8), 0.18, 0.62, 0.12), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.6 }), people.length);
-      people.forEach((p, i) => { _c.set(p.top); pBody.setColorAt(i, _c); _c.set(p.legs); pLegs.setColorAt(i, _c); });
+      for (let i = 0; i < 8; i++) { const along = -EDGE + 3 + (i % 4) * ((EDGE * 2 - 6) / 3); treeSpots.push(i < 4 ? { x: along, z: EDGE - 1.4 } : { x: EDGE - 1.4, z: along }); }
+      const tPot = im(new THREE.LatheGeometry([[0, 0], [0.42, 0], [0.55, 0.85], [0.6, 0.9], [0, 0.9]].map(([a, b]) => new THREE.Vector2(a, b)), 14), std("#c27b4a", 0.85), treeSpots.length, true, room);
+      const tTop = im(merge([at(new THREE.CylinderGeometry(0.07, 0.1, 1.6, 6), 0, 1.5, 0), ...[[0, 2.6, 0, 0.9], [0.45, 2.3, 0.2, 0.6], [-0.4, 2.4, -0.25, 0.65], [0.1, 3.1, 0.1, 0.6]].map(([x, y, z, s]) => at(new THREE.IcosahedronGeometry(1, 1), x, y, z, s, s * 0.9, s))]), std("#4f7f3e", 1, { flatShading: true }), treeSpots.length, true, room);
+      treeSpots.forEach((o, i) => { _e.set(0, r() * 6, 0); _q.setFromEuler(_e); _p.set(o.x, 0, o.z); _s.setScalar(0.9 + r() * 0.25); _m.compose(_p, _q, _s); tPot.setMatrixAt(i, _m); tTop.setMatrixAt(i, _m); });
+      // pendant lamps over the counter
+      const pendants = [-0.33, 0, 0.33].map((f) => ({ x: CX + f * CL, z: CZ, ph: r() * 6 }));
+      const pShade = im(merge([at(new THREE.CylinderGeometry(0.008, 0.008, 1.6, 4), 0, 0.8, 0), at(new THREE.ConeGeometry(0.32, 0.34, 16, 1, true), 0, -0.02, 0)]), std("#c79a4a", 0.35, { metalness: 0.6, side: THREE.DoubleSide }), 3, false, room);
+      const pBulb = im(new THREE.SphereGeometry(0.09, 10, 8).translate(0, -0.16, 0), glow, 3, false, room);
+
+      // ---- chairs round the café tables, on the light squares next to them ----
+      const chairs = [];
+      const chairSide = (row, col, ox, oz, cxw, czw, owner) => {
+        if (!lightFree(row + oz, col + ox)) return;
+        take(row + oz, col + ox);
+        chairs.push({ x: cxw + ox * 0.72, z: czw + oz * 0.72, yaw: Math.atan2(-ox, -oz), born: owner.born + 0.15, owner });
+      };
+      tables.forEach((o) => [[1, 0], [-1, 0], [0, 1], [0, -1]].sort(() => r() - 0.5).slice(0, 2 + Math.round(r())).forEach(([ox, oz]) => chairSide(o.row, o.col, ox, oz, o.x, o.z, o)));
+      longs.forEach((o) => {
+        for (let k = 0; k < o.len; k++) {
+          const row = o.row + (o.dir ? k : 0), col = o.col + (o.dir ? 0 : k), x = cx(col), z = cz(row);
+          const sides = o.dir ? [[1, 0], [-1, 0]] : [[0, 1], [0, -1]];
+          sides.forEach(([ox, oz]) => { if (r() < 0.75) chairSide(row, col, ox, oz, x, z, o); });
+        }
+      });
+      const chairGeo = merge([at(new THREE.CylinderGeometry(0.2, 0.2, 0.04, 14), 0, 0.46, 0), ...[[-0.14, -0.14], [0.14, -0.14], [-0.14, 0.14], [0.14, 0.14]].map(([x, z]) => at(new THREE.CylinderGeometry(0.018, 0.022, 0.46, 5), x, 0.23, z)), at(new THREE.TorusGeometry(0.18, 0.022, 5, 14, Math.PI), 0, 0.78, -0.18), at(new THREE.CylinderGeometry(0.018, 0.018, 0.36, 5), -0.18, 0.62, -0.18), at(new THREE.CylinderGeometry(0.018, 0.018, 0.36, 5), 0.18, 0.62, -0.18)]);
+      const chairM = im(chairGeo, std("#ffffff", 0.6), chairs.length);
+      const chairCols = ["#c69a6c", "#2b2622", "#d7c2a2"];
+      chairs.forEach((c, i) => { _c.set(pick(chairCols)); chairM.setColorAt(i, _c); });
+
+      // ---- cups, saucers, cake slices, vases ----
+      const cupSpots = [];
+      tables.forEach((o) => { const n = 1 + Math.round(r()); for (let k = 0; k < n; k++) { const a = o.ph + k * 2.4; cupSpots.push({ x: o.x + Math.cos(a) * 0.22, z: o.z + Math.sin(a) * 0.22, y: TOP_H, born: o.born + 0.35 + k * 0.1, steam: r() < 0.55, ph: r() * 6 }); } });
+      longs.forEach((o) => { for (let k = 0; k < o.len; k++) { if (r() < 0.3) continue; const t = (k + 0.5) / o.len - 0.5, side = r() < 0.5 ? -0.22 : 0.22; cupSpots.push({ x: o.x + (o.dir ? side : t * (o.len - 1) * 1.6 * 0.6), z: o.z + (o.dir ? t * (o.len - 1) * 1.6 * 0.6 : side), y: TOP_H, born: o.born + 0.35, steam: r() < 0.4, ph: r() * 6 }); } });
+      islands.forEach((o) => [[-2, -3], [1.5, -3], [3, 1], [-3, 2]].forEach(([dx, dz]) => cupSpots.push({ x: o.x + dx, z: o.z + dz, y: 1.08, born: o.born + 0.5, steam: true, ph: r() * 6 })));
+      const cupGeo = merge([at(new THREE.LatheGeometry([[0, 0], [0.06, 0], [0.085, 0.03], [0.095, 0.13], [0.085, 0.13], [0.075, 0.035], [0, 0.035]].map(([a, b]) => new THREE.Vector2(a, b)), 14), 0, 0.016, 0), at(new THREE.TorusGeometry(0.035, 0.012, 5, 8), 0.1, 0.085, 0), at(new THREE.CylinderGeometry(0.14, 0.12, 0.016, 16), 0, 0.008, 0)]);
+      const cupM = im(cupGeo, china, cupSpots.length);
+      const coffeeM = im(new THREE.CylinderGeometry(0.08, 0.08, 0.01, 12).translate(0, 0.13, 0), std("#7a4a2a", 0.4), cupSpots.length, false);
+      const cupCols = ["#ffffff", "#ffffff", "#e9e2d6", "#9fb8a0", "#d9b8a0"];
+      cupSpots.forEach((c, i) => { _c.set(pick(cupCols)); cupM.setColorAt(i, _c); _c.set(r() < 0.6 ? "#c0895a" : "#3d2416"); coffeeM.setColorAt(i, _c); });
+      const slices = [];
+      tables.forEach((o) => { if (r() < 0.55) slices.push({ x: o.x + Math.cos(o.ph + 3.4) * 0.2, z: o.z + Math.sin(o.ph + 3.4) * 0.2, y: TOP_H, born: o.born + 0.5, rot: r() * 6, c: pick(cakeCols) }); });
+      const plateM = im(new THREE.CylinderGeometry(0.17, 0.15, 0.018, 18).translate(0, 0.009, 0), china.clone(), slices.length);
+      const sliceM = im(merge([at(new THREE.CylinderGeometry(0.14, 0.14, 0.11, 10, 1, false, 0, Math.PI / 3.2), 0, 0.075, 0)]), std("#ffffff", 0.8), slices.length);
+      const sliceTopM = im(merge([at(new THREE.CylinderGeometry(0.145, 0.145, 0.03, 10, 1, false, 0, Math.PI / 3.2), 0, 0.145, 0), at(new THREE.SphereGeometry(0.03, 6, 4), 0.07, 0.17, 0.04)]), cream, slices.length);
+      slices.forEach((s, i) => { _c.set(s.c); sliceM.setColorAt(i, _c); });
+      const vases = tables.filter(() => r() < 0.3).map((o) => ({ x: o.x + Math.cos(o.ph + 1.2) * 0.12, z: o.z + Math.sin(o.ph + 1.2) * 0.12, born: o.born + 0.6, c: pick(["#f6a6c3", "#ffe27a", "#ffffff", "#ff9f6b"]) }));
+      const vaseM = im(merge([at(new THREE.CylinderGeometry(0.04, 0.05, 0.14, 8), 0, 0.07, 0), at(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 4), 0, 0.2, 0)]), std("#cfe6f0", 0.1, { transparent: true, opacity: 0.8 }), vases.length, false);
+      const flowerM = im(new THREE.IcosahedronGeometry(0.05, 0).translate(0, 0.3, 0), std("#ffffff", 0.7), vases.length, false);
+      vases.forEach((v, i) => { _c.set(v.c); flowerM.setColorAt(i, _c); });
+
+      // ---- people: walkers on the floor, guests at the tables, baristas behind the bars ----
+      const SKIN = ["#f1c9a5", "#e0ac83", "#c68863", "#8d5a3b", "#5c3a24"], HAIR = ["#2b1d14", "#6b4a2b", "#c9a25b", "#1a1a1a", "#8a3b22", "#9a9a9a"];
+      const TOPS = ["#2f5d8a", "#c2553a", "#3f7a52", "#7b5aa6", "#e0a33a", "#2b2b2b", "#e8e2d6", "#b9475e"], LEGS = ["#2c3440", "#5b4636", "#3b3f46", "#c8b89a"];
+      const people = [];
+      const lightKey = new Map();
+      for (let row = -QUIET; row < N + QUIET; row++) for (let col = -QUIET; col < N + QUIET; col++) if (!isDark(row, col) && !taken.has(K(row + 50, col + 50)) && !(row < 0 && row >= -QUIET && col >= -QUIET && col < N + QUIET && false)) lightKey.set(row + "," + col, { row, col, x: cx(col), z: cz(row) });
+      const walk = [...lightKey.values()];
+      const newPerson = (extra) => ({ skin: pick(SKIN), hair: pick(HAIR), top: pick(TOPS), legs: pick(LEGS), ph: r() * 6.28, ...extra });
+      for (let i = 0; i < 12; i++) { const a = walk[Math.floor(r() * walk.length)]; people.push(newPerson({ mode: "walk", a, b: a, dr: 0, dc: 1, start: t0 + 1 + r() * 2, dur: 0.01, pause: 0, yaw: 0, cup: r() < 0.4 })); }
+      chairs.forEach((c) => { if (r() < 0.45) people.push(newPerson({ mode: "sit", x: c.x, z: c.z, yaw: c.yaw, born: c.born + 0.4 })); });
+      people.push(newPerson({ mode: "barista", top: "#2b2b2b", x0: CX - CL * 0.4, x1: CX + CL * 0.1, z: CZ - 0.8, yaw: Math.PI }));
+      people.push(newPerson({ mode: "barista", top: "#2b2b2b", x0: CX - CL * 0.1, x1: CX + CL * 0.35, z: CZ - 0.8, yaw: Math.PI }));
+      islands.forEach((o) => people.push(newPerson({ mode: "island", top: "#2b2b2b", o })));
+      const nP = people.length;
+      const torsoGeo = merge([at(new THREE.CylinderGeometry(0.17, 0.2, 0.44, 12), 0, 0.72, 0), at(new THREE.SphereGeometry(0.17, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), 0, 0.94, 0, 1, 0.55, 1)]);
+      const headGeo = at(new THREE.SphereGeometry(0.135, 14, 10), 0, 1.13, 0);
+      const hairGeo = at(new THREE.SphereGeometry(0.145, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.55), 0, 1.14, -0.015);
+      const legGeo = merge([at(new THREE.CylinderGeometry(0.068, 0.06, 0.46, 8), 0, -0.23, 0), at(new THREE.BoxGeometry(0.1, 0.07, 0.18), 0, -0.47, 0.035)]);
+      const thighGeo = at(new THREE.CylinderGeometry(0.072, 0.068, 0.42, 8), 0, -0.21, 0);
+      const armGeo2 = merge([at(new THREE.CylinderGeometry(0.048, 0.042, 0.36, 7), 0, -0.18, 0), at(new THREE.SphereGeometry(0.05, 7, 5), 0, -0.37, 0)]);
+      const apronGeo = at(new THREE.BoxGeometry(0.3, 0.42, 0.02), 0, 0.66, 0.2);
+      const torsoM = im(torsoGeo, cloth, nP), headM = im(headGeo, skin, nP), hairM = im(hairGeo, std("#ffffff", 0.9), nP);
+      const legM = im(legGeo, cloth.clone(), nP * 2), thighM = im(thighGeo, legM.material, nP * 2), armM = im(armGeo2, cloth.clone(), nP * 2);
+      const apronM = im(apronGeo, accent, nP), handCup = im(at(new THREE.CylinderGeometry(0.055, 0.045, 0.12, 10), 0, 0, 0), std("#ffffff", 0.5), nP, false);
+      people.forEach((p, i) => {
+        _c.set(p.top); torsoM.setColorAt(i, _c); _c.set(p.skin); headM.setColorAt(i, _c); _c.set(p.hair); hairM.setColorAt(i, _c);
+        for (let k = 0; k < 2; k++) { _c.set(p.legs); legM.setColorAt(i * 2 + k, _c); thighM.setColorAt(i * 2 + k, _c); _c.set(p.top); armM.setColorAt(i * 2 + k, _c); }
+      });
       const step = (n) => {
         n.a = n.b;
         const dirs = [[n.dr, n.dc], [n.dc, -n.dr], [-n.dc, n.dr], [-n.dr, -n.dc]];
-        const opts = dirs.map(([dr, dc]) => ({ dr, dc, c: byKey.get((n.a.row + dr) + "," + (n.a.col + dc)) })).filter((o) => o.c);
-        const pick = opts[0] && opts[0].dr === n.dr && opts[0].dc === n.dc && r() < 0.7 ? opts[0] : opts.filter((o) => !(o.dr === -n.dr && o.dc === -n.dc))[Math.floor(r() * Math.max(1, opts.length - 1))] || opts[0];
-        if (!pick) { n.b = n.a; n.dur = 1; return; }
-        n.dr = pick.dr; n.dc = pick.dc; n.b = pick.c; n.dur = 0.8 + r() * 0.3; n.pause = r() < 0.15 ? 1 + r() * 2.5 : 0;
+        const opts = dirs.map(([dr, dc]) => ({ dr, dc, c: lightKey.get((n.a.row + dr) + "," + (n.a.col + dc)) })).filter((o) => o.c);
+        const fwd = opts[0] && opts[0].dr === n.dr && opts[0].dc === n.dc && r() < 0.7 ? opts[0] : opts.filter((o) => !(o.dr === -n.dr && o.dc === -n.dc))[Math.floor(r() * Math.max(1, opts.length - 1))] || opts[0];
+        if (!fwd) { n.b = n.a; n.dur = 1; return; }
+        n.dr = fwd.dr; n.dc = fwd.dc; n.b = fwd.c; n.dur = 0.75 + r() * 0.3; n.pause = r() < 0.12 ? 1 + r() * 2.5 : 0;
         n.yaw = Math.atan2(n.b.x - n.a.x, n.b.z - n.a.z);
       };
-      // steam curls up from the cups on the tables
-      const steamFrom = tables.filter(() => r() < 0.35);
-      const puffs = steamFrom.flatMap((o) => [0, 1, 2].map((k) => ({ o, k })));
-      const steamM = inst(group, new THREE.SphereGeometry(0.07, 6, 4), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.7 }), puffs.length, false);
-      g.readyAt = Math.max(t0, ...items.map((c) => c.born)) + 0.9;
+      // dogs flopped beside a few tables, tails going
+      const dogs = tables.filter(() => r() < 0.12).slice(0, 3).map((o) => { const a = r() * 6.28; return { x: o.x + Math.cos(a) * 0.62, z: o.z + Math.sin(a) * 0.62, yaw: a + Math.PI / 2, born: o.born + 0.7, ph: r() * 6, c: pick(["#c99a5b", "#2b2622", "#e8dcc6", "#8a5a3a"]) }; });
+      const dogBody = im(merge([at(new THREE.SphereGeometry(0.16, 10, 8), 0, 0.17, 0, 1, 0.8, 1.6), at(new THREE.SphereGeometry(0.11, 10, 8), 0, 0.32, 0.25), at(new THREE.SphereGeometry(0.05, 6, 5), 0, 0.3, 0.36, 1, 0.8, 1.3), at(new THREE.SphereGeometry(0.05, 6, 5), -0.08, 0.38, 0.22, 0.6, 1.3, 0.5), at(new THREE.SphereGeometry(0.05, 6, 5), 0.08, 0.38, 0.22, 0.6, 1.3, 0.5)]), std("#ffffff", 0.9), dogs.length);
+      const dogTail = im(at(new THREE.CylinderGeometry(0.025, 0.015, 0.2, 5), 0, 0.1, 0), dogBody.material, dogs.length);
+      dogs.forEach((d, i) => { _c.set(d.c); dogBody.setColorAt(i, _c); dogTail.setColorAt(i, _c); });
+
+      // ---- festoon lights strung across the room ----
+      const strings = [];
+      for (let k = 0; k < 4; k++) {
+        const x = -EDGE + 2 + k * ((EDGE * 2 - 3.5) / 3);
+        strings.push({ a: new THREE.Vector3(x - 1.5, 3.9, -EDGE + 0.4), b: new THREE.Vector3(x + 1.5, 3.4, EDGE - 0.5), sag: 0.7, ph: r() * 6 });
+      }
+      const poleM = im(new THREE.CylinderGeometry(0.04, 0.05, 3.45, 6).translate(0, 1.72, 0), metalDark, strings.length, true, room);
+      strings.forEach((s, i) => { _m.makeTranslation(s.b.x, 0, s.b.z); poleM.setMatrixAt(i, _m); });
+      const BULBS = 22, bulbM = im(new THREE.SphereGeometry(0.1, 8, 6), glow, strings.length * BULBS, false, room);
+      const wireMat = new THREE.LineBasicMaterial({ color: "#3a332d" });
+      strings.forEach((s) => { s.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 24 }, () => new THREE.Vector3())), wireMat); room.add(s.line); });
+      const strPoint = (s, u, time, out) => {
+        out.lerpVectors(s.a, s.b, u); out.y -= Math.sin(u * Math.PI) * s.sag;
+        out.x += Math.sin(time * 0.7 + s.ph) * 0.06 * Math.sin(u * Math.PI);
+        return out;
+      };
+
+      // ---- steam ----
+      const steamCups = cupSpots.filter((c) => c.steam);
+      const puffs = steamCups.flatMap((o) => [0, 1, 2].map((k) => ({ o, k })));
+      const machines = [{ x: CX - 2 - 0.5, y: 1.75, z: -EDGE + 1.2, big: true }, { x: CX - 2 + 0.5, y: 1.75, z: -EDGE + 1.2, big: true }];
+      islands.forEach((o, i) => machines.push({ x: o.x - 1.2, y: 1.7, z: o.z - 3 + 0.1, island: i }));
+      const machPuffs = machines.flatMap((o, j) => [0, 1, 2, 3, 4].map((k) => ({ o, k, j })));
+      const steamM = im(new THREE.SphereGeometry(0.07, 7, 5), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.55, depthWrite: false }), puffs.length + machPuffs.length, false);
+
+      g.readyAt = Math.max(t0, ...singles.map((c) => c.born), ...longs.map((c) => c.born)) + 1.0;
+      g.room = room;
+      const _B = new THREE.Matrix4(), _L = new THREE.Matrix4(), _v = new THREE.Vector3();
+      const limb = (mesh, idx, B, px, py, pz, rx, rz = 0, k = 1) => { _e.set(rx, 0, rz); _q.setFromEuler(_e); _p.set(px, py, pz); _s.setScalar(k > 1e-3 ? 1 : 1e-4); _L.compose(_p, _q, _s); _m.multiplyMatrices(B, _L); mesh.setMatrixAt(idx, _m); };
+      const hide = (mesh, idx) => { _m.makeScale(1e-4, 1e-4, 1e-4); mesh.setMatrixAt(idx, _m); };
+      const P = (x, y, z, yaw, k) => { _e.set(0, yaw, 0); _q.setFromEuler(_e); _p.set(x, y, z); _s.setScalar(Math.max(k, 1e-4)); return _m.compose(_p, _q, _s); };
+
       g.update = (time, t, sway) => {
+        const gone = 1 - smooth(t, 0.02, 0.35), rise = Math.max(pop((time - t0 - 0.55) / 0.9), 1e-4);
+        room.scale.set(1, rise, 1);
+        // the floor unfolds from the code out to the walls
+        const unfold = lerp(SIZE / (EDGE * 2), 1, smooth(time - t0, 0.15, 0.85));
+        floor.scale.set(unfold, 1, unfold); base.scale.set(unfold, 1, unfold);
+        const grow = (b, d = 0.55) => Math.max(pop((time - b) / d), 1e-4);
+        // dark furniture: stays put from every angle
         tables.forEach((o, i) => {
-          const k = Math.max(pop((time - o.born) / 0.55), 1e-4), y = (0.72 + o.h * 0.12) * k;
-          _q.identity(); _p.set(o.x, 0, o.z); _s.set(k, y, k); _m.compose(_p, _q, _s); legM.setMatrixAt(i, _m);
-          _p.set(o.x, y + 0.045, o.z); _s.set(k, k, k); _m.compose(_p, _q, _s); topM.setMatrixAt(i, _m);
-          _e.set(0, o.ph, 0); _q.setFromEuler(_e); _p.set(o.x + Math.cos(o.ph) * 0.18, y + 0.045, o.z + Math.sin(o.ph) * 0.18); _s.setScalar(Math.max(pop((time - o.born - 0.3) / 0.4), 1e-4)); _m.compose(_p, _q, _s); mugM.setMatrixAt(i, _m);
+          const k = grow(o.born);
+          _q.identity(); _p.set(o.x, 0, o.z); _s.set(k, TOP_H * k, k); _m.compose(_p, _q, _s); rLeg.setMatrixAt(i, _m);
+          _p.set(o.x, TOP_H * k, o.z); _s.set(k, k, k); _m.compose(_p, _q, _s); rTop.setMatrixAt(i, _m);
+        });
+        longs.forEach((o, i) => {
+          const k = grow(o.born), L = o.len - 1;
+          _e.set(0, o.dir ? Math.PI / 2 : 0, 0); _q.setFromEuler(_e);
+          _p.set(o.x, TOP_H * k, o.z); _s.set(L * k, k, k); _m.compose(_p, _q, _s); lMid.setMatrixAt(i, _m);
+          [[o.x0, o.z0], [o.x1, o.z1]].forEach(([x, z], e) => {
+            _p.set(x, TOP_H * k, z); _s.set(k, k, k); _m.compose(_p, _q, _s); lCap.setMatrixAt(i * 2 + e, _m);
+            _p.set(lerp(x, o.x, 0.15), 0, lerp(z, o.z, 0.15)); _s.set(k, TOP_H * k, k); _m.compose(_p, _q, _s); lLeg.setMatrixAt(i * 2 + e, _m);
+          });
         });
         plants.forEach((o, i) => {
-          const k = Math.max(pop((time - o.born) / 0.55), 1e-4), ph = 0.35 + o.h * 0.35, bh = 0.6 + o.h * 1.4;
-          _q.identity(); _p.set(o.x, 0, o.z); _s.set(k, ph * k, k); _m.compose(_p, _q, _s); potM.setMatrixAt(i, _m);
-          const kk = Math.max(pop((time - o.born - 0.2) / 0.6), 1e-4);
-          _e.set(Math.sin(time * 0.9 + o.ph) * 0.03 * sway, 0, Math.cos(time * 0.8 + o.ph) * 0.03 * sway); _q.setFromEuler(_e);
-          _p.set(o.x, ph * k, o.z); _s.set(kk, (bh / 0.7) * 0.7 * kk, kk); _m.compose(_p, _q, _s); bushM.setMatrixAt(i, _m);
+          const k = grow(o.born), kk = grow(o.born + 0.2, 0.6), tall = o.v > 0.6;
+          _q.identity(); _p.set(o.x, 0, o.z); _s.set(k, k, k); _m.compose(_p, _q, _s); pPot.setMatrixAt(i, _m);
+          _e.set(Math.sin(time * 0.9 + o.ph) * 0.04 * sway, o.ph, Math.cos(time * 0.8 + o.ph) * 0.04 * sway); _q.setFromEuler(_e);
+          _p.set(o.x, 0.46 * k, o.z); _s.set(kk, kk * (0.9 + o.v * 0.5), kk); _m.compose(_p, _q, _s);
+          if (tall) { pTall.setMatrixAt(i, _m); hide(pBush, i); } else { pBush.setMatrixAt(i, _m); hide(pTall, i); }
+        });
+        armchairs.forEach((o, i) => {
+          const k = grow(o.born);
+          P(o.x, 0, o.z, Math.round(o.ph / 1.57) * 1.57, k); aChair.setMatrixAt(i, _m);
+          P(o.x, 0, o.z, Math.round(o.ph / 1.57) * 1.57, k * gone); cushion.setMatrixAt(i, _m);
         });
         sacks.forEach((o, i) => {
           for (let s = 0; s < 3; s++) {
-            const k = Math.max(pop((time - o.born - s * 0.12) / 0.5), 1e-4), on = s < 1 + Math.round(o.h * 2);
-            _e.set(0, o.ph + s * 0.7, 0); _q.setFromEuler(_e); _p.set(o.x, (0.25 + s * 0.42) * k, o.z); _s.setScalar(on ? k * (1 - s * 0.08) : 1e-4); _m.compose(_p, _q, _s); sackM.setMatrixAt(i * 3 + s, _m);
+            const k = grow(o.born + s * 0.12, 0.5), on = s < 1 + Math.round(o.v * 2);
+            _e.set(0, o.ph + s * 0.7, 0); _q.setFromEuler(_e); _p.set(o.x, (0.23 + s * 0.4) * k, o.z); _s.setScalar(on ? k * (1 - s * 0.08) : 1e-4); _m.compose(_p, _q, _s); sackM.setMatrixAt(i * 3 + s, _m);
           }
         });
-        treeSpots.forEach((o, i) => { const k = Math.max(pop((time - t0 - 0.4) / 0.7), 1e-4); _q.identity(); _p.set(o.x, -0.2, o.z); _s.setScalar(k); _m.compose(_p, _q, _s); tPot.setMatrixAt(i, _m); tTop.setMatrixAt(i, _m); });
-        const gone = 1 - smooth(t, 0.02, 0.35);
+        islands.forEach((o, i) => {
+          const k = grow(o.born, 0.7);
+          _q.identity(); _p.set(o.x, 0, o.z); _s.set(1, k, 1); _m.compose(_p, _q, _s); iBody.setMatrixAt(i, _m); iTop.setMatrixAt(i, _m); iPlanter.setMatrixAt(i, _m);
+          const kt = grow(o.born + 0.3, 0.8);
+          _e.set(Math.sin(time * 0.5 + i) * 0.02 * sway, i, 0); _q.setFromEuler(_e); _p.set(o.x, 0.5 * k, o.z); _s.setScalar(kt); _m.compose(_p, _q, _s); iTree.setMatrixAt(i, _m);
+          P(o.x - 1.2, 1.08 * k, o.z - 3, 0, grow(o.born + 0.5) * gone); iMachine.setMatrixAt(i, _m);
+          P(o.x - 2.2, 1.08 * k, o.z - 3, 0, grow(o.born + 0.5) * gone); grinder.setMatrixAt(i, _m);
+        });
+        P(CX - CL * 0.45, 1.13, CZ, 0, rise); iMachine.setMatrixAt(3, _m); grinder.setMatrixAt(3, _m);
+        // light-floor furniture and table things fade away as the camera looks straight down
+        chairs.forEach((c, i) => { P(c.x, 0, c.z, c.yaw, grow(c.born, 0.5) * gone); chairM.setMatrixAt(i, _m); });
+        cupSpots.forEach((c, i) => { P(c.x, c.y, c.z, c.ph, grow(c.born, 0.4) * gone); cupM.setMatrixAt(i, _m); coffeeM.setMatrixAt(i, _m); });
+        slices.forEach((s, i) => { P(s.x, s.y, s.z, s.rot, grow(s.born, 0.4) * gone); plateM.setMatrixAt(i, _m); sliceM.setMatrixAt(i, _m); sliceTopM.setMatrixAt(i, _m); });
+        vases.forEach((v, i) => { P(v.x, TOP_H, v.z, 0, grow(v.born, 0.4) * gone); vaseM.setMatrixAt(i, _m); flowerM.setMatrixAt(i, _m); });
+        dogs.forEach((d, i) => {
+          const k = grow(d.born, 0.5) * gone;
+          P(d.x, 0, d.z, d.yaw, k); dogBody.setMatrixAt(i, _m); _B.copy(_m);
+          limb(dogTail, i, _B, 0, 0.22, -0.24, -0.9, Math.sin(time * 9 + d.ph) * 0.6, k);
+        });
+        // people
         people.forEach((n, i) => {
-          let x, z, bob = 0, yaw = n.yaw || 0, swing = 0;
-          if (n.barista) { x = n.x + Math.sin(time * 0.6 + n.ph) * 1.4; z = n.z; yaw = Math.PI * 0 + Math.sin(time * 0.6 + n.ph) * 0.4; }
-          else {
+          let x, z, y = 0, yaw = n.yaw || 0, swing = 0, sitting = false, armR = 0, armL = 0, k = gone * Math.min(1, Math.max(0, (time - t0 - 1.2) * 2)) + 1e-4;
+          if (n.mode === "walk") {
             if (time > n.start + n.dur + n.pause) { n.start = time; step(n); }
             const f = clamp((time - n.start) / n.dur, 0, 1), walking = f < 1 && n.a !== n.b;
             x = lerp(n.a.x, n.b.x, f); z = lerp(n.a.z, n.b.z, f);
-            bob = walking ? Math.abs(Math.sin(f * Math.PI * 2)) * 0.05 : 0; swing = walking ? Math.sin(f * Math.PI * 2) * 0.06 : 0;
+            swing = walking ? Math.sin(f * Math.PI * 2) * 0.55 : 0; y = walking ? Math.abs(Math.cos(f * Math.PI * 2)) * 0.03 : 0;
+            armR = n.cup ? -1.1 : -swing * 0.8; armL = swing * 0.8;
+          } else if (n.mode === "sit") {
+            x = n.x; z = n.z; sitting = true; k = gone * grow(n.born, 0.5);
+            const sip = Math.max(0, Math.sin(time * 0.6 + n.ph * 3)) ** 6;
+            armR = lerp(-0.5, -2.3, sip); armL = -0.7;
+          } else if (n.mode === "barista") {
+            const u = (Math.sin(time * 0.35 + n.ph) + 1) / 2; x = lerp(n.x0, n.x1, u); z = n.z; yaw = Math.PI + Math.sin(time * 0.35 + n.ph) * 0.3;
+            armR = -0.9 + Math.sin(time * 3 + n.ph) * 0.4; armL = -0.8 + Math.cos(time * 2.5 + n.ph) * 0.3; k *= rise;
+          } else {
+            // the island bartender walks the ring between bar and tree
+            const u = ((time * 0.06 + n.ph) % 1) * 16, side = Math.floor(u / 4), f = u % 4 / 4, o = n.o;
+            const pts = [[-2, -2], [2, -2], [2, 2], [-2, 2]], a = pts[side], b = pts[(side + 1) % 4];
+            x = o.x + lerp(a[0], b[0], f); z = o.z + lerp(a[1], b[1], f); yaw = Math.atan2(b[0] - a[0], b[1] - a[1]);
+            swing = Math.sin(f * Math.PI * 8) * 0.45; armR = -swing * 0.7; armL = swing * 0.7;
           }
-          const k = gone * Math.min(1, Math.max(0, (time - t0 - 1.1) * 2)) * 1.1 + 1e-4;
-          _e.set(0, yaw, swing); _q.setFromEuler(_e); _p.set(x, 0.01 + bob, z); _s.setScalar(k); _m.compose(_p, _q, _s);
-          pBody.setMatrixAt(i, _m); pLegs.setMatrixAt(i, _m); pHead.setMatrixAt(i, _m);
-          if (!n.cup && !n.barista) _m.makeScale(1e-4, 1e-4, 1e-4); pCup.setMatrixAt(i, _m);
+          P(x, (sitting ? -0.02 : y), z, yaw, k); _B.copy(_m);
+          torsoM.setMatrixAt(i, _B); headM.setMatrixAt(i, _B); hairM.setMatrixAt(i, _B);
+          if (n.mode === "barista" || n.mode === "island") apronM.setMatrixAt(i, _B); else hide(apronM, i);
+          if (sitting) {
+            for (let s = 0; s < 2; s++) { limb(thighM, i * 2 + s, _B, s ? 0.08 : -0.08, 0.5, 0, -Math.PI / 2, 0, k); limb(legM, i * 2 + s, _B, s ? 0.08 : -0.08, 0.5, 0.4, 0, 0, k); }
+          } else {
+            for (let s = 0; s < 2; s++) { limb(legM, i * 2 + s, _B, s ? 0.08 : -0.08, 0.5, 0, s ? swing : -swing, 0, k); hide(thighM, i * 2 + s); }
+          }
+          limb(armM, i * 2, _B, -0.22, 0.9, 0, armL, -0.08, k);
+          limb(armM, i * 2 + 1, _B, 0.22, 0.9, 0, armR, 0.08, k);
+          if ((n.mode === "walk" && n.cup) || (n.mode === "sit" && armR < -1.2)) {
+            _e.set(armR, 0, 0.08); _q.setFromEuler(_e); _v.set(0, -0.4, 0).applyQuaternion(_q).add(_p.set(0.22, 0.9, 0)).applyMatrix4(_B);
+            _m.makeRotationY(yaw).scale(_s.setScalar(k)).setPosition(_v.x, _v.y + 0.02, _v.z); handCup.setMatrixAt(i, _m);
+          } else hide(handCup, i);
         });
+        // lamps sway, bulbs glow
+        pendants.forEach((p, i) => { _e.set(Math.sin(time * 0.8 + p.ph) * 0.04, 0, Math.cos(time * 0.7 + p.ph) * 0.04); _q.setFromEuler(_e); _p.set(p.x, 2.6, p.z); _s.setScalar(1); _m.compose(_p, _q, _s); pShade.setMatrixAt(i, _m); pBulb.setMatrixAt(i, _m); });
+        strings.forEach((s, j) => {
+          const fade = gone > 0.01 ? 1 : 1e-4;
+          for (let b = 0; b < BULBS; b++) { strPoint(s, (b + 0.5) / BULBS, time, _v); _m.makeScale(fade, fade, fade).setPosition(_v); bulbM.setMatrixAt(j * BULBS + b, _m); }
+          const pa = s.line.geometry.attributes.position;
+          for (let q = 0; q < 24; q++) { strPoint(s, q / 23, time, _v); pa.setXYZ(q, _v.x, _v.y, _v.z); }
+          pa.needsUpdate = true; s.line.visible = gone > 0.01;
+        });
+        // steam from cups and machines
         puffs.forEach((p, i) => {
-          const o = p.o, u = ((time * 0.45 + p.k / 3 + o.ph) % 1), top = 0.72 + o.h * 0.12;
-          const k = gone * Math.sin(u * Math.PI) * (time > o.born + 1 ? 1 : 0) + 1e-4;
-          _q.identity(); _p.set(o.x + Math.cos(o.ph) * 0.18 + Math.sin(u * 6 + o.ph) * 0.06, top + 0.25 + u * 1.1, o.z + Math.sin(o.ph) * 0.18); _s.setScalar(k * (0.6 + u)); _m.compose(_p, _q, _s); steamM.setMatrixAt(i, _m);
+          const o = p.o, u = ((time * 0.45 + p.k / 3 + o.ph) % 1);
+          const k = gone * Math.sin(u * Math.PI) * (time > o.born + 0.6 ? 1 : 0) + 1e-4;
+          _q.identity(); _p.set(o.x + Math.sin(u * 6 + o.ph) * 0.05, o.y + 0.2 + u * 0.9, o.z); _s.setScalar(k * (0.5 + u * 0.9)); _m.compose(_p, _q, _s); steamM.setMatrixAt(i, _m);
         });
-        [topM, legM, mugM, potM, bushM, sackM, tPot, tTop, pBody, pLegs, pHead, pCup, steamM].forEach((m) => (m.instanceMatrix.needsUpdate = true));
+        machPuffs.forEach((p, i) => {
+          const o = p.o, cyc = (time * 0.18 + p.j * 0.37) % 1, burst = cyc < 0.35 ? 1 : 0, u = ((time * 0.9 + p.k / 5) % 1);
+          const k = (o.big ? rise : gone) * burst * Math.sin(u * Math.PI) + 1e-4;
+          _q.identity(); _p.set(o.x + Math.sin(u * 5 + p.k) * 0.12, o.y + u * 1.4, o.z); _s.setScalar(k * (0.9 + u * 2)); _m.compose(_p, _q, _s); steamM.setMatrixAt(puffs.length + i, _m);
+        });
+        meshes.forEach((m) => (m.instanceMatrix.needsUpdate = true));
       };
       g.recolor = () => {
         const hsl = {}; new THREE.Color(crownColor).getHSL(hsl);
-        const tint = (v, l = 1) => { _c.setHSL(hsl.h, hsl.s, clamp(hsl.l * l * (0.88 + v * 0.2), 0, 1)); const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.24) _c.multiplyScalar(0.24 / lum); return _c; };
-        tables.forEach((o, i) => { topM.setColorAt(i, tint(o.v)); mugM.setColorAt(i, tint(o.v, 0.7)); });
-        plants.forEach((o, i) => { _c.set("#24401f").multiplyScalar(0.85 + o.v * 0.3); bushM.setColorAt(i, _c); });
+        const tint = (v, l = 1) => { _c.setHSL(hsl.h, Math.min(1, hsl.s * 0.9), clamp(hsl.l * l * (0.85 + v * 0.25), 0, 1)); const lum = _c.r * 0.299 + _c.g * 0.587 + _c.b * 0.114; if (lum > 0.16) _c.multiplyScalar(0.16 / lum); return _c; };
+        const walnut = (v) => _c.set("#2e2018").multiplyScalar(0.85 + v * 0.3);
+        tables.forEach((o, i) => rTop.setColorAt(i, o.v < 0.55 ? tint(o.v) : walnut(o.v)));
+        longs.forEach((o, i) => { const c = (o.v < 0.4 ? tint(o.v) : walnut(o.v)).clone(); lMid.setColorAt(i, c); lCap.setColorAt(i * 2, c); lCap.setColorAt(i * 2 + 1, c); });
+        plants.forEach((o, i) => { _c.set("#23401f").multiplyScalar(0.8 + o.v * 0.35); pBush.setColorAt(i, _c); pTall.setColorAt(i, _c); _c.set(["#2c2724", "#3a2a22", "#1f2a26"][i % 3]); pPot.setColorAt(i, _c); });
+        islands.forEach((o, i) => { _c.set("#2a4524").multiplyScalar(0.9 + i * 0.08); iTree.setColorAt(i, _c); });
+        armchairs.forEach((o, i) => { _c.set(["#4a2e20", "#3a2418", "#2f3a33"][i % 3]); aChair.setColorAt(i, _c); });
         sacks.forEach((o, i) => { for (let s = 0; s < 3; s++) { _c.set("#4a3424").multiplyScalar(0.85 + ((o.v + s * 0.3) % 1) * 0.3); sackM.setColorAt(i * 3 + s, _c); } });
-        accent.color.copy(new THREE.Color(crownColor));
-        [topM, mugM, bushM, sackM].forEach((m) => m.instanceColor && (m.instanceColor.needsUpdate = true));
+        const acc = new THREE.Color(crownColor), al = acc.r * 0.299 + acc.g * 0.587 + acc.b * 0.114;
+        accent.color.copy(acc); if (al > 0.16) accent.color.multiplyScalar(0.16 / al);
+        machineMat.color.copy(new THREE.Color(crownColor)).lerp(new THREE.Color("#ffffff"), 0.15);
+        wainMat.color.copy(new THREE.Color(crownColor)).lerp(new THREE.Color("#efe4d0"), 0.55);
+        [rTop, lMid, lCap, pBush, pTall, pPot, iTree, aChair, sackM].forEach((m) => m.instanceColor && (m.instanceColor.needsUpdate = true));
       };
-      g.count = `${tables.length} tables`;
+      g.count = `${tables.length + longs.length} tables, ${people.length} people`;
       return g;
     },
     mushroom(cells, r, t0) {
@@ -1348,8 +1732,8 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     const topPad = clean ? 0 : SCAN ? 0.05 : lerp(0.2, 0.26, t), botPad = clean ? 0 : SCAN ? lerp(SCAN.sheet || 0.4, 0.05, t) : 0.12;
     let half = Math.max(fitH / 2, fitW / 2 / aspect) * margin;
     if (!clean) half = aspect < 0.9 ? Math.max(fitW / 2 / aspect * 1.0, fitH / 2 / (1 - topPad - botPad) * 0.9) : half / (1 - topPad - botPad) * 0.86;
-    // the scan page shows the whole room round the code, walls and all
-    if (SCAN && !clean) half *= lerp(1.22, 1, t);
+    // the scan page comes in close on the café so the people and tables read on a phone
+    if (SCAN && !clean) half *= lerp(0.82, 1, t);
     camera.left = -half * aspect; camera.right = half * aspect; camera.top = half; camera.bottom = -half;
     // shift down a little so the title and the status pill have room
     const vshift = half * (topPad - botPad);
@@ -1392,14 +1776,18 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     const a = new THREE.Vector3(-e, 0, -e).project(camera), b = new THREE.Vector3(e, 0, e).project(camera);
     const sx = Math.max(0, Math.min(a.x, b.x) * 0.5 + 0.5) * src.width, ex = Math.min(1, Math.max(a.x, b.x) * 0.5 + 0.5) * src.width;
     const sy = Math.max(0, 0.5 - Math.max(a.y, b.y) * 0.5) * src.height, ey = Math.min(1, 0.5 - Math.min(a.y, b.y) * 0.5) * src.height;
-    const cw = Math.max(1, ex - sx), ch = Math.max(1, ey - sy), k = Math.min(1, 900 / Math.max(cw, ch));
-    const w = Math.round(cw * k), h = Math.round(ch * k);
-    scanCanvas.width = w; scanCanvas.height = h;
+    const cw = Math.max(1, ex - sx), ch = Math.max(1, ey - sy);
     const ctx = scanCanvas.getContext("2d", { willReadFrequently: true });
-    ctx.fillStyle = "#f4efe6"; ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(src, sx, sy, cw, ch, 0, 0, w, h);
     let res = null;
-    try { res = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: "dontInvert" }); } catch (e) {}
+    // a phone sees the code at a few sizes, so try a large and a small read
+    for (const cap of [900, 520]) {
+      const k = Math.min(1, cap / Math.max(cw, ch)), w = Math.round(cw * k), h = Math.round(ch * k);
+      scanCanvas.width = w; scanCanvas.height = h;
+      ctx.fillStyle = "#f4efe6"; ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(src, sx, sy, cw, ch, 0, 0, w, h);
+      try { res = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: "dontInvert" }); } catch (e) { res = null; }
+      if (res && res.data === lastText) break;
+    }
     window.__qrScan = res ? res.data : null;
     if (res && res.data === lastText) { pill.className = "pill good"; pill.textContent = "Scans"; setStatus("good", "Scans: " + res.data); }
     else { pill.className = "pill bad"; pill.textContent = "Failed"; setStatus("bad", "Doesn't scan yet. Try a deeper colour"); }
@@ -1739,6 +2127,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
       every(0.8, 2.6, (t) => { const n = 1 + Math.floor(rnd(0, 3)); for (let i = 0; i < n; i++) { const f = rnd(2600, 4200); tone("sine", f, f, t + i * rnd(0.05, 0.14), 0.18, 0.014); } });
       // the steam wand now and then
       every(9, 18, (t) => { for (let i = 0; i < 8; i++) tone("sawtooth", rnd(5000, 7000), rnd(5000, 7000), t + i * 0.12, 0.2, 0.004, 6000); });
+      lofi(A, out, noiseBuf, timers);
     } else if (which === "mushroom") {
       bed("lowpass", 500, 0.6, 0.02, 0.09, 0.012);      // soft evening breeze
       // crickets
@@ -1758,6 +2147,50 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     }
     return { stop() { timers.forEach(clearTimeout); out.gain.linearRampToValueAtTime(0, A.currentTime + 0.3); setTimeout(() => A.close(), 400); } };
   }
+  // a slow lofi loop played live: soft electric piano chords, a round bass, brushed drums and vinyl crackle
+  function lofi(A, out, noiseBuf, timers) {
+    const bus = A.createGain(), warm = A.createBiquadFilter();
+    bus.gain.value = 0.55; warm.type = "lowpass"; warm.frequency.value = 2600; warm.Q.value = 0.4;
+    bus.connect(warm).connect(out);
+    const BEAT = 60 / 72, BAR = BEAT * 4;
+    // Fmaj9, Em7, Dm9, Cmaj9: bass note then the voicing
+    const CHORDS = [[87.31, [220, 261.63, 329.63, 392]], [82.41, [196, 246.94, 293.66, 329.63]], [73.42, [174.61, 220, 261.63, 329.63]], [65.41, [164.81, 196, 246.94, 293.66]]];
+    const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+    const keys = (f, at, dur, vol) => {
+      [[1, vol], [2, vol * 0.18], [3.01, vol * 0.05]].forEach(([m, v]) => {
+        const o = A.createOscillator(), g = A.createGain(); o.type = "sine"; o.frequency.value = f * m; o.detune.value = (Math.random() - 0.5) * 8;
+        g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(v, at + 0.025); g.gain.exponentialRampToValueAtTime(v * 0.35, at + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+        o.connect(g).connect(trem); o.start(at); o.stop(at + dur + 0.05);
+      });
+    };
+    const trem = A.createGain(), tl = A.createOscillator(), tg = A.createGain();
+    trem.gain.value = 0.85; tl.frequency.value = 4.2; tg.gain.value = 0.12; tl.connect(tg).connect(trem.gain); tl.start(); trem.connect(bus);
+    const bass = (f, at, dur) => { const o = A.createOscillator(), g = A.createGain(), lp = A.createBiquadFilter(); o.type = "triangle"; o.frequency.value = f; lp.type = "lowpass"; lp.frequency.value = 260; g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.16, at + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, at + dur); o.connect(lp).connect(g).connect(bus); o.start(at); o.stop(at + dur + 0.05); };
+    const noiseHit = (at, type, freq, q, vol, dur) => { const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain(); s.buffer = noiseBuf; f.type = type; f.frequency.value = freq; f.Q.value = q; g.gain.setValueAtTime(vol, at); g.gain.exponentialRampToValueAtTime(0.0001, at + dur); s.connect(f).connect(g).connect(bus); s.start(at, Math.random()); s.stop(at + dur + 0.02); };
+    const kick = (at) => { const o = A.createOscillator(), g = A.createGain(); o.frequency.setValueAtTime(110, at); o.frequency.exponentialRampToValueAtTime(42, at + 0.22); g.gain.setValueAtTime(0.32, at); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.35); o.connect(g).connect(bus); o.start(at); o.stop(at + 0.4); };
+    const bell = (f, at) => { const o = A.createOscillator(), g = A.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.03, at + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, at + 1.6); o.connect(g).connect(bus); o.start(at); o.stop(at + 1.7); };
+    // vinyl hiss and crackle
+    const hiss = A.createBufferSource(), hf = A.createBiquadFilter(), hg = A.createGain(); hiss.buffer = noiseBuf; hiss.loop = true; hf.type = "bandpass"; hf.frequency.value = 3000; hf.Q.value = 0.5; hg.gain.value = 0.006; hiss.connect(hf).connect(hg).connect(out); hiss.start();
+    let next = A.currentTime + 0.4, bar = 0;
+    const plan = () => {
+      while (next < A.currentTime + 0.6) {
+        const [root, voicing] = CHORDS[bar % 4], at = next;
+        voicing.forEach((f, i) => keys(f, at + i * 0.018 + 0.01, BAR * 0.98, 0.05));
+        if (bar % 2) voicing.slice(1).forEach((f, i) => keys(f * 2, at + BEAT * 2.5 + i * 0.015, BEAT * 1.4, 0.016));
+        bass(root, at, BEAT * 1.7); bass(root * (bar % 2 ? 1.5 : 1), at + BEAT * 2.5, BEAT * 1.3);
+        for (let b = 0; b < 4; b++) {
+          const t = at + b * BEAT;
+          if (b === 0 || (b === 2 && Math.random() < 0.6) || (b === 3 && Math.random() < 0.25)) kick(t + (b === 3 ? BEAT * 0.66 : 0));
+          if (b === 1 || b === 3) noiseHit(t, "bandpass", 1900, 0.8, 0.07, 0.22);
+          noiseHit(t, "highpass", 7500, 0.7, 0.018, 0.05); noiseHit(t + BEAT * 0.62, "highpass", 7500, 0.7, 0.012, 0.04);
+        }
+        if (Math.random() < 0.55) { const n = 1 + Math.floor(Math.random() * 3); for (let k = 0; k < n; k++) bell(SCALE[Math.floor(Math.random() * SCALE.length)], at + BEAT * (1 + k * 0.75 + Math.floor(Math.random() * 2) * 0.5)); }
+        for (let c = 0; c < 6; c++) noiseHit(at + Math.random() * BAR, "highpass", 2500, 0.5, 0.02 + Math.random() * 0.03, 0.006);
+        next += BAR; bar++;
+      }
+    };
+    plan(); timers.push(setInterval(plan, 150));
+  }
   function setSound(on) {
     try {
       if (audio) { audio.stop(); audio = null; }
@@ -1772,6 +2205,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   function frame(now) {
     requestAnimationFrame(frame);
     if (recording) { last = now; return; }
+    if (ar) { arFrame(now); return; }
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     clock += dt;
     prog = clamp(prog + (target ? 1 : -1) * dt / (reduced ? 0.6 : 2.4), 0, 1);
@@ -1787,6 +2221,69 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     }
     if (!scanQueued && prog === 0 && garden && clock > garden.readyAt && $("status").textContent === "Building your world") setStatus("wait", "Tap the world to see the QR code");
   }
+
+  function arFrame(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    clock += dt;
+    if (garden && group.visible) update(clock, 0, reduced ? 0 : 1);
+    placeCamera(0);
+    if (ar.code) {
+      // the flat code glows over the card, then gives way as the world grows out of it
+      const u = clock - ar.revealAt;
+      ar.code.material.opacity = clamp(u / 0.3, 0, 1) * (1 - smooth(u, 0.9, 1.9));
+      ar.code.visible = ar.code.material.opacity > 0.01;
+    }
+    renderer.render(scene, ar.cam);
+  }
+  function codePlane() {
+    const c = document.createElement("canvas"), n = N, px = 8; c.width = c.height = n * px;
+    const x = c.getContext("2d"); x.fillStyle = "#f4ede2"; x.fillRect(0, 0, c.width, c.height);
+    x.fillStyle = new THREE.Color(crownColor).multiplyScalar(0.55).getStyle();
+    for (let row = 0; row < n; row++) for (let col = 0; col < n; col++) if (qr.isDark(row, col)) x.fillRect(col * px, row * px, px, px);
+    const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(SIZE, SIZE).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false }));
+    // pad the texture out to the quiet zone with the paper colour
+    const pad = document.createElement("canvas"); pad.width = pad.height = SIZE * px; const pc = pad.getContext("2d");
+    pc.fillStyle = "#f4ede2"; pc.fillRect(0, 0, pad.width, pad.height); pc.drawImage(c, QUIET * px, QUIET * px);
+    m.material.map = new THREE.CanvasTexture(pad); m.material.map.magFilter = THREE.NearestFilter;
+    m.position.y = 0.04; m.renderOrder = 2;
+    return m;
+  }
+  const live = {
+    start() {
+      ar = { cam: new THREE.PerspectiveCamera(60, 1, 2, 6000), code: null, revealAt: 0 };
+      ar.cam.matrixAutoUpdate = false;
+      stage.style.background = "transparent";
+      renderer.setClearColor(0x000000, 0);
+      if (group) group.visible = false;
+    },
+    // m: the camera's pose relative to the code as 16 numbers (column-major), fov in degrees
+    pose(m, fov, aspect) {
+      if (!ar) return;
+      ar.cam.matrix.fromArray(m); ar.cam.matrixWorldNeedsUpdate = true;
+      if (ar.cam.fov !== fov || ar.cam.aspect !== aspect) { ar.cam.fov = fov; ar.cam.aspect = aspect; ar.cam.updateProjectionMatrix(); }
+    },
+    reveal() {
+      if (!ar) return;
+      build();
+      // the floor sits on the card itself; the wooden base would read as a block on the table
+      if (garden.base) garden.base.visible = false;
+      group.position.y = 0.02;
+      group.visible = true;
+      ar.code = codePlane(); group.add(ar.code);
+      ar.revealAt = clock;
+    },
+    shown: () => !!(ar && group && group.visible),
+    size: () => N,
+    stop() {
+      const ar0 = ar || {}; ar = null;
+      if (group) { group.position.y = 0; group.visible = true; if (garden.base) garden.base.visible = true; if (ar0.code) group.remove(ar0.code); }
+      stage.style.background = KIND[kind].sky;
+      clock = garden.readyAt + 0.1; target = prog = 1;
+    },
+    sound: (on) => setSound(on),
+    soundOn: () => !!audio,
+  };
 
   function applyKind() {
     $("colLbl").textContent = KIND_LABEL[kind];
@@ -1823,6 +2320,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     down: () => { target = 0; },
     up: () => { target = 1; },
     isTop: () => target === 1,
+    live,
   })));
 
   window.__qrGarden = {
@@ -1838,6 +2336,7 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
 <section class="sheet" id="sheet" aria-label="What this code is for">
   <div class="grab"></div>
   <div class="who"><div><h1 id="vName"></h1><p id="vPlace"></p></div><span class="tag" id="vDemo" hidden>Demo café</span></div>
+  <a class="order" id="vOrder" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Order &amp; pay <small id="vTable"></small></a>
   <div class="special" id="vSpecial"><b></b><span></span></div>
   <div class="acts">
     <button class="act" type="button" data-more="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Menu</button>
@@ -1852,6 +2351,13 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
   <p class="made">Tap the world to see its code again · <a href="/qr">Made with QR Worlds</a></p>
 </section>
 <div class="toast" id="toast" role="status"></div>
+<div class="topbar">
+  <button class="chip" id="skip" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>Skip camera</button>
+  <button class="chip" id="snd" type="button" hidden aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span id="sndTxt">Play music</span></button>
+</div>
+<div class="frame off" id="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="hintpill" id="hint" role="status"></div>
+<div class="veil" id="veil"></div>
 <script>
 (() => {
   const V = window.QRW_VENUE, $ = (id) => document.getElementById(id);
@@ -1876,14 +2382,175 @@ model-viewer { position: fixed; left: 0; top: 0; width: 2px; height: 2px; opacit
     if (V.demo) $(el).addEventListener("click", (e) => { e.preventDefault(); toast("On a real café's code this opens " + what); });
   }
 
-  window.QRW_OPEN = (api) => {
+  // Order & pay hands over to the café's own system for this table; their checkout can't sit inside our page
+  const orderUrl = V.order ? V.order.replace("{table}", encodeURIComponent(V.table || "")) : "";
+  $("vOrder").hidden = !orderUrl; $("vOrder").href = orderUrl || "#";
+  $("vOrder").style.background = V.colour;
+  $("vTable").textContent = V.table ? "· Table " + V.table : "";
+  $("veil").style.background = V.colour;
+  $("vOrder").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (V.demo) { toast("On a real café's code this opens their order-and-pay page" + (V.table ? " for table " + V.table : "")); return; }
+    $("veil").classList.add("on");
+    setTimeout(() => (location.href = orderUrl), 380);
+  });
+  addEventListener("pageshow", () => $("veil").classList.remove("on"));
+
+  let API = null;
+  const hint = (t) => { $("hint").textContent = t || ""; };
+  const sndBtn = $("snd");
+  sndBtn.addEventListener("click", () => {
+    const on = !API.live.soundOn(); API.live.sound(on);
+    sndBtn.setAttribute("aria-pressed", String(on)); $("sndTxt").textContent = on ? "Music off" : "Play music";
+  });
+  // the menu sheet peeks up in camera mode so the world stays in view; tap the handle for the rest
+  $("sheet").addEventListener("click", (e) => { if ($("sheet").classList.contains("peek") && (e.target.closest(".grab") || e.target.closest(".who"))) $("sheet").classList.toggle("up"); });
+
+  function flatOpen(api) {
     $("poster").classList.add("gone");
     setTimeout(() => api.down(), 500);
     setTimeout(() => $("sheet").classList.add("up"), 1500);
+    sndBtn.hidden = false;
     loadAR();
+  }
+
+  window.QRW_OPEN = async (api) => {
+    API = api;
+    let ok = false;
+    try { ok = await startLive(api); } catch (e) { ok = false; }
+    if (!ok) flatOpen(api);
   };
 
+  // ---------- camera reveal: find the printed code in the camera, and stand the world on it ----------
+  const JSQR = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+  async function startLive(api) {
+    const coarse = matchMedia("(pointer: coarse)").matches;
+    if (!api.live || !coarse || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || new URLSearchParams(location.search).has("flat")) return false;
+    hint("Allow the camera to bring the café to life");
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } }); }
+    catch (e) { hint(""); return false; }
+    const video = document.createElement("video");
+    video.setAttribute("playsinline", ""); video.setAttribute("muted", ""); video.muted = true; video.autoplay = true; video.className = "cam"; video.srcObject = stream;
+    document.body.prepend(video);
+    try { await video.play(); } catch (e) {}
+    if (!video.videoWidth) await new Promise((res) => { video.addEventListener("loadedmetadata", res, { once: true }); setTimeout(res, 2500); });
+    if (!video.videoWidth) { stream.getTracks().forEach((t) => t.stop()); video.remove(); hint(""); return false; }
+
+    // read frames off the main thread so the world keeps moving smoothly while the code is found
+    let worker = null;
+    try {
+      const src = await (await fetch(JSQR)).text();
+      const code = src + "\n;self.onmessage=function(e){var d=e.data,r=null;try{r=jsQR(new Uint8ClampedArray(d.buf),d.w,d.h,{inversionAttempts:'dontInvert'})}catch(_){}self.postMessage(r?{loc:r.location,w:d.w,h:d.h}:{w:d.w,h:d.h})};";
+      worker = new Worker(URL.createObjectURL(new Blob([code], { type: "text/javascript" })));
+    } catch (e) { worker = null; }
+
+    api.live.start();
+    document.body.classList.add("live");
+    $("poster").classList.add("gone");
+    $("frame").classList.remove("off");
+    $("skip").hidden = false; sndBtn.hidden = false;
+    hint("Point at the code on your table");
+    const startedAt = performance.now();
+
+    const grab = document.createElement("canvas"), gx = grab.getContext("2d", { willReadFrequently: true });
+    let busy = false, tgt = null, cur = null, seen = 0, revealed = false, running = true, lastT = performance.now();
+    const onResult = (d) => {
+      busy = false;
+      if (!running || !d.loc) return;
+      const s = video.videoWidth / d.w, L = d.loc;
+      tgt = [L.topLeftCorner, L.topRightCorner, L.bottomRightCorner, L.bottomLeftCorner].map((p) => [p.x * s, p.y * s]);
+      seen = performance.now();
+      if (!revealed) {
+        revealed = true; cur = null;
+        api.live.reveal();
+        $("frame").classList.add("off"); hint("");
+        setTimeout(() => { $("sheet").classList.add("peek"); }, 3600);
+      }
+    };
+    if (worker) { worker.onmessage = (e) => onResult(e.data); worker.onerror = () => { worker = null; busy = false; }; }
+    const sendFrame = () => {
+      if (busy) return;
+      const vw = video.videoWidth, vh = video.videoHeight; if (!vw) return;
+      const k = Math.min(1, 720 / Math.max(vw, vh)), w = Math.round(vw * k), h = Math.round(vh * k);
+      if (grab.width !== w || grab.height !== h) { grab.width = w; grab.height = h; }
+      gx.drawImage(video, 0, 0, w, h);
+      const img = gx.getImageData(0, 0, w, h);
+      busy = true;
+      if (worker) worker.postMessage({ buf: img.data.buffer, w, h }, [img.data.buffer]);
+      else if (window.jsQR) { let r = null; try { r = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" }); } catch (e) {} onResult(r ? { loc: r.location, w, h } : { w, h }); }
+      else busy = false;
+    };
+
+    const tick = (now) => {
+      if (!running) return;
+      requestAnimationFrame(tick);
+      const dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+      sendFrame();
+      if (!revealed && now - startedAt > 9000) hint("Hold your phone a hand's width above the code");
+      if (revealed) hint(now - seen > 2500 ? "Keep the code in view" : "");
+      if (!tgt) return;
+      // ease towards the latest reading so the world glides instead of jittering; jump on a big move
+      const edge = Math.hypot(tgt[1][0] - tgt[0][0], tgt[1][1] - tgt[0][1]);
+      if (!cur || Math.hypot(cur[0][0] - tgt[0][0], cur[0][1] - tgt[0][1]) > edge * 0.35) cur = tgt.map((p) => p.slice());
+      else { const a = 1 - Math.exp(-dt * 16); cur.forEach((p, i) => { p[0] += (tgt[i][0] - p[0]) * a; p[1] += (tgt[i][1] - p[1]) * a; }); }
+      const vw = video.videoWidth, vh = video.videoHeight, stage = $("stage"), W = stage.clientWidth, H = stage.clientHeight;
+      const f = 0.75 * Math.max(vw, vh), sc = Math.max(W / vw, H / vh);
+      const m = poseFromCorners(cur, api.live.size(), f, vw / 2, vh / 2);
+      if (m) api.live.pose(m, (2 * Math.atan(H / 2 / (f * sc)) * 180) / Math.PI, W / H);
+    };
+    requestAnimationFrame(tick);
+
+    $("skip").addEventListener("click", () => {
+      running = false; stream.getTracks().forEach((t) => t.stop()); video.remove(); if (worker) worker.terminate();
+      document.body.classList.remove("live"); $("frame").classList.add("off"); $("skip").hidden = true; hint("");
+      $("sheet").classList.remove("peek");
+      api.live.stop();
+      setTimeout(() => api.down(), 300);
+      setTimeout(() => $("sheet").classList.add("up"), 1300);
+      loadAR();
+    }, { once: true });
+    return true;
+  }
+
+  // pose of the camera from the four corners of the code: homography, then rotation and position (the code's squares are the units)
+  function poseFromCorners(px, n, f, cx, cy) {
+    const h = n / 2, plane = [[-h, -h], [h, -h], [h, h], [-h, h]];
+    const A = [], b = [];
+    for (let i = 0; i < 4; i++) {
+      const [X, Y] = plane[i], [u, v] = px[i];
+      A.push([X, Y, 1, 0, 0, 0, -u * X, -u * Y]); b.push(u);
+      A.push([0, 0, 0, X, Y, 1, -v * X, -v * Y]); b.push(v);
+    }
+    const H8 = solve(A, b); if (!H8) return null;
+    const Hm = [...H8, 1];
+    const col = (j) => { const x = Hm[j], y = Hm[3 + j], z = Hm[6 + j]; return [(x - cx * z) / f, (y - cy * z) / f, z]; };
+    const h1 = col(0), h2 = col(1), h3 = col(2);
+    const len = (a) => Math.hypot(a[0], a[1], a[2]), mul = (a, k) => a.map((x) => x * k), add = (a, c) => a.map((x, i) => x + c[i]), sub = (a, c) => a.map((x, i) => x - c[i]);
+    const cross = (a, c) => [a[1] * c[2] - a[2] * c[1], a[2] * c[0] - a[0] * c[2], a[0] * c[1] - a[1] * c[0]], norm = (a) => mul(a, 1 / len(a));
+    let lam = 2 / (len(h1) + len(h2)); if (h3[2] * lam < 0) lam = -lam;
+    const r1 = norm(mul(h1, lam)), r2 = norm(mul(h2, lam)), t = mul(h3, lam);
+    // make the two axes exactly square to each other, splitting the error evenly
+    const z = norm(cross(r1, r2)), p = norm(add(r1, r2)), q = norm(cross(z, p));
+    const ax = mul(sub(p, q), Math.SQRT1_2), az = mul(add(p, q), Math.SQRT1_2), ay = cross(az, ax);
+    // camera axes flipped from image (y down, z forward) to 3D (y up, z back)
+    const c0 = [ax[0], -ax[1], -ax[2]], c1 = [ay[0], -ay[1], -ay[2]], c2 = [az[0], -az[1], -az[2]], tt = [t[0], -t[1], -t[2]];
+    const dot = (a, c) => a[0] * c[0] + a[1] * c[1] + a[2] * c[2];
+    return [c0[0], c1[0], c2[0], 0, c0[1], c1[1], c2[1], 0, c0[2], c1[2], c2[2], 0, -dot(c0, tt), -dot(c1, tt), -dot(c2, tt), 1];
+  }
+  function solve(A, b) {
+    const n = b.length, M = A.map((row, i) => [...row, b[i]]);
+    for (let c = 0; c < n; c++) {
+      let piv = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+      if (Math.abs(M[piv][c]) < 1e-12) return null;
+      [M[c], M[piv]] = [M[piv], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c) { const k = M[r][c] / M[c][c]; for (let k2 = c; k2 <= n; k2++) M[r][k2] -= k * M[c][k2]; }
+    }
+    return M.map((row, i) => row[n] / row[i]);
+  }
+
   // "See it on your table": the phone's own AR viewer, Quick Look on iPhone and Scene Viewer on Android
+  if (!V.model) { $("ar").hidden = true; $("arHint").hidden = true; }
   function loadAR() {
     if (!V.model) return;
     const sc = document.createElement("script"); sc.type = "module";
