@@ -63,6 +63,14 @@
             "destination": "/w.html"
         },
         {
+            "source": "/R/:id",
+            "destination": "/ride.html"
+        },
+        {
+            "source": "/r/:id",
+            "destination": "/ride.html"
+        },
+        {
             "source": "/",
             "destination": "/index.html"
         }
