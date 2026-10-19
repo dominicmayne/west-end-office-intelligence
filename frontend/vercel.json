@@ -51,6 +51,18 @@
             "destination": "/w.html"
         },
         {
+            "source": "/W/:id",
+            "destination": "/w.html"
+        },
+        {
+            "source": "/w/:id/:t",
+            "destination": "/w.html"
+        },
+        {
+            "source": "/W/:id/:t",
+            "destination": "/w.html"
+        },
+        {
             "source": "/",
             "destination": "/index.html"
         }
