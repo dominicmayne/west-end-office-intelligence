@@ -50,6 +50,26 @@
       bg: "radial-gradient(70% 55% at 50% 45%, #fff8ee 0%, transparent 70%), linear-gradient(180deg, #f6ecdd 0%, #e6d3bb 100%)",
     },
   };
+  // Sample worlds made for venues on the outreach list: their name on the sign, the demo's layout and wayfinding,
+  // and a placeholder menu. Ids stay at four letters so every code fits the small 29x29 size.
+  const SAMPLE_MENU = [["Your menu goes here", ""], ["Prices and dishes", "from you"], ["Changeable any time", "no reprint"]];
+  [
+    ["manu", "Manuka Kitchen", "Restaurant · Fulham Road", "#2f5d50", "This week", "Pasta Tuesday, Steak Thursday, Fizz Friday"],
+    ["love", "Love Walk Coffee", "Café · Fulham Broadway", "#7a4a2c", "Today", "Your special goes here, changeable any time"],
+    ["blue", "The Little Blue Door", "Bar & dining · Fulham Road", "#244a8f", "Tonight", "Your special goes here, changeable any time"],
+    ["cant", "1910 Cantina", "Cantina · Parsons Green", "#b2452a", "31 October", "Día de los Muertos fiesta, book your table"],
+    ["comm", "Common Pizza", "Pizza & bar · Parsons Green", "#9b2c22", "October", "£5 pints all month"],
+    ["stub", "Stubby's", "Sandwiches · Parsons Green Lane", "#5c4a8a", "Today", "Your special goes here, changeable any time"],
+    ["rond", "Rondor Coffee", "Coffee · Parsons Green", "#3d5a6c", "Today", "Your special goes here, changeable any time"],
+    ["harw", "The Harwood Arms", "Pub · Walham Grove", "#5a3d2b", "Tonight", "Your special goes here, changeable any time"],
+    ["papp", "Pappa Ciccia", "Pizzeria · Munster Road", "#a0302a", "Today", "Your special goes here, changeable any time"],
+    ["dist", "District Coffee", "Coffee · Parsons Green Lane", "#2d4f45", "Today", "Your special goes here, changeable any time"],
+    ["koji", "Koji", "Japanese · New Kings Road", "#3a2e2a", "Tonight", "Your special goes here, changeable any time"],
+    ["bird", "Birdhouse", "Café · St John's Hill", "#4d6b3a", "Today", "Your special goes here, changeable any time"],
+    ["stor", "Story Coffee", "Coffee · St John's Hill", "#6b4a33", "Today", "Your special goes here, changeable any time"],
+  ].forEach(([id, name, place, colour, label, text]) => {
+    window.QRW_VENUES[id] = { ...window.QRW_VENUES.demo, url: "HTTPS://WWW.DOMINICMAYNE.COM/W/" + id.toUpperCase(), name, place, colour, special: { label, text }, menu: SAMPLE_MENU, wifi: { network: "Your Wi-Fi", password: "shown-here" }, poster: null, tag: "Sample for you", sample: true };
+  });
   // /w/<venue> or /w/<venue>/<table>, in either case
   const parts = location.pathname.split("/").filter(Boolean), wi = parts.findIndex((p) => p.toLowerCase() === "w");
   const qs = new URLSearchParams(location.search), id = ((wi >= 0 && parts[wi + 1]) || qs.get("v") || "demo").toLowerCase();
@@ -2666,7 +2686,7 @@ window.QRW_MAP = (api, V) => {
   const V = window.QRW_VENUE, $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   document.title = V.name;
-  $("vName").textContent = V.name; $("vPlace").textContent = V.place; $("vDemo").hidden = !V.demo;
+  $("vName").textContent = V.name; $("vPlace").textContent = V.place; $("vDemo").hidden = !V.demo; if (V.tag) $("vDemo").textContent = V.tag;
   $("vSpecial").querySelector("b").textContent = V.special.label; $("vSpecial").querySelector("span").textContent = V.special.text;
   $("more-menu").innerHTML = V.menu.map(([a, b]) => `<div class="row" style="display:flex;justify-content:space-between"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join("");
   $("more-wifi").innerHTML = `<div class="row">Network <b>${esc(V.wifi.network)}</b></div><div class="row">Password <b>${esc(V.wifi.password)}</b> <button class="act" type="button" id="copyWifi" style="display:inline-flex;padding:6px 12px;margin-left:8px">Copy</button></div>`;
