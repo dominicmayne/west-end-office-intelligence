@@ -45,7 +45,7 @@ img { display: block; max-width: 100%; }
 .btn.primary { background: #fff; color: #0b0d14; }
 .btn.ghost { background: rgba(255, 255, 255, 0.08); border: 0.5px solid var(--stroke); }
 .btn.ride { background: linear-gradient(180deg, #ff5a4f, var(--ride)); color: #fff; box-shadow: 0 10px 30px rgba(255, 59, 48, 0.35); }
-.btn.table { background: linear-gradient(180deg, #f08f62, var(--table)); color: #fff; box-shadow: 0 10px 30px rgba(224, 122, 79, 0.35); }
+.btn.table { background: linear-gradient(180deg, #ffe066, var(--gold) 55%, #ffb800); color: #1a1406; box-shadow: 0 10px 30px rgba(255, 196, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
 .nav .btn { padding: 8px 14px; font-size: 14px; }
 
 /* hero */
