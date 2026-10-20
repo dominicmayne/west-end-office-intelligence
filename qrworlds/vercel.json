@@ -1,0 +1,14 @@
+{
+    "cleanUrls": true,
+    "rewrites": [
+        { "source": "/R/:id", "destination": "/ride.html" },
+        { "source": "/r/:id", "destination": "/ride.html" },
+        { "source": "/W/:id", "destination": "/w.html" },
+        { "source": "/w/:id", "destination": "/w.html" },
+        { "source": "/W/:id/:t", "destination": "/w.html" },
+        { "source": "/w/:id/:t", "destination": "/w.html" }
+    ],
+    "headers": [
+        { "source": "/vendor/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }
+    ]
+}
