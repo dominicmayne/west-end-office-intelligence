@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /r/
+Disallow: /R/
+Disallow: /w/
+Disallow: /W/
+Sitemap: https://www.qrworlds.co.uk/sitemap.xml

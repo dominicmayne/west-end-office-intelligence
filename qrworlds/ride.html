@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RideWorld · QR Worlds</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="RideWorld · Scan & race">
+<meta property="og:description" content="Scan a ride sticker and race it round the track. A QR Worlds concept for Ride On! Entertainment.">
+<meta property="og:image" content="https://www.qrworlds.co.uk/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="noindex">
 <meta name="description" content="Scan a ride sticker and race it round the track. A QR Worlds concept for Ride On! Entertainment.">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -825,7 +830,7 @@ function startRace() {
   closeSheet(); mode = 'race'; document.body.classList.add('racing');
   $('dock').classList.add('hide'); $('hero').classList.add('hide'); $('hud').classList.add('show'); $('result').classList.remove('show');
   player.visible = rival.visible = true; hero.visible = false;
-  Object.assign(race, { p: 0, r: 0, v: 0, rv: 0, time: 0, state: 'count', count: 3.99 });
+  Object.assign(race, { p: 0, r: 0, v: 0, rv: 0, time: 0, state: 'count', count: 3.0001 });
   orbit.target.set(2.2, 0.6, 0); orbit.tPitch = 1.0; orbit.tDist = innerHeight > innerWidth ? 31 : 19; orbit.tYaw = Math.PI / 2;
   placeOnTrack(player, 0, -0.5); placeOnTrack(rival, 0, 0.55);
   $('tapBtn').style.display = '';
@@ -846,6 +851,7 @@ function tap() {
 }
 $('tapBtn').addEventListener('pointerdown', (e) => { e.preventDefault(); tap(); });
 addEventListener('keydown', (e) => { if (e.code === 'Space' && mode === 'race') { e.preventDefault(); tap(); } });
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && openKey) closeSheet(); });
 $('quitBtn').addEventListener('click', () => endRace(true));
 function updateHud() {
   $('hudLap').textContent = `Lap ${Math.min(race.laps, Math.floor(race.p) + 1)}/${race.laps}`;
