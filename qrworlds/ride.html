@@ -950,7 +950,8 @@ function wireSheet(key) {
     sheet.querySelectorAll('.chip').forEach((c) => (c.onclick = () => { pick = c.textContent; sheet.querySelectorAll('.chip').forEach((x) => x.classList.toggle('on', x === c)); $('sendFault').disabled = false; }));
     $('sendFault').onclick = () => {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      $('faultBody').innerHTML = `<div class="done"><div class="tick">${check}</div><h2>Sent. Thank you!</h2><p class="sub">An engineer has been told about <b>${pick.toLowerCase()}</b> on ride ${RIDE_ID} at ${time}. In the real version this goes straight to Ride On!'s maintenance team.</p></div>`;
+      $('faultBody').innerHTML = `<div class="done"><div class="tick">${check}</div><h2>Sent. Thank you!</h2><p class="sub">An engineer has been told about <b>${pick.toLowerCase()}</b> on ride ${RIDE_ID} at ${time}. In the real version this goes straight to Ride On!'s maintenance team.</p><a class="pill-btn" href="/rideworld/log" target="_top">See it in the engineer log</a></div>`;
+      try { const k = 'qrw-faults', list = JSON.parse(localStorage.getItem(k) || '[]'); list.unshift({ id: 'm' + Date.now(), ride: RIDE_ID, issue: pick, t: Date.now() }); localStorage.setItem(k, JSON.stringify(list.slice(0, 20))); } catch (e) {}
       sfx(784, 0.1); setTimeout(() => sfx(1047, 0.2), 110);
     };
   }
