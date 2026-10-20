@@ -7,8 +7,9 @@
 <meta name="robots" content="noindex">
 <meta name="description" content="Scan a ride sticker and race it round the track. A QR Worlds concept for Ride On! Entertainment.">
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preload" href="/vendor/three-r128.min.js" as="script">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <style>
 :root {
   --bg: #0b0d14;
@@ -190,8 +191,8 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 <div class="intro" id="intro"><div class="msg glass" id="introMsg">Unfolding your ride world…</div></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="/vendor/three-r128.min.js"></script>
+<script src="/vendor/qrcode-1.4.4.min.js"></script>
 <script>
 (() => {
 'use strict';
