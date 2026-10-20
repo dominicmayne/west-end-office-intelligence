@@ -824,7 +824,7 @@ function resize() {
 addEventListener('resize', resize); resize(); orbit.dist = orbit.tDist;
 
 /* ---------- Race game ---------- */
-const race = { laps: 3, p: 0, r: 0, v: 0, rv: 0, time: 0, state: 'off', count: 0 };
+const race = { laps: 2, p: 0, r: 0, v: 0, rv: 0, time: 0, state: 'off', count: 0 };
 const fmt = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
 function startRace() {
   closeSheet(); mode = 'race'; document.body.classList.add('racing');
@@ -845,7 +845,7 @@ function endRace(abort) {
 }
 function tap() {
   if (race.state !== 'go') return;
-  race.v = Math.min(race.v + 0.026, 0.3);
+  race.v = Math.min(race.v + 0.03, 0.3);
   const b = $('tapBtn'); b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 90);
   sfx(220 + race.v * 900, 0.04, 'square', 0.04);
 }
@@ -870,8 +870,8 @@ function updateRace(dt) {
   if (race.state !== 'go') return;
   race.time += dt;
   race.v = Math.max(0.02, race.v - race.v * 1.15 * dt);
-  // Blue Flash needs about 5-6 taps a second to beat, and speeds up when it falls behind
-  race.rv = 0.128 + Math.sin(race.time * 0.9) * 0.01 + (race.p > race.r ? 0.02 : 0);
+  // Blue Flash is beatable at about 3 taps a second, so young kids can win; it pushes a little when behind to keep it close
+  race.rv = 0.07 + Math.sin(race.time * 0.9) * 0.006 + (race.p > race.r ? 0.008 : 0);
   race.p += race.v * dt; race.r += race.rv * dt;
   placeOnTrack(player, race.p, -0.5); placeOnTrack(rival, race.r, 0.55);
   player.wheels.forEach((w) => (w.rotation.z -= race.v * 2));
