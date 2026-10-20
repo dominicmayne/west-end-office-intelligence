@@ -20,6 +20,8 @@
       special: { label: "Today", text: "Pumpkin cinnamon bun and a flat white, £6.20" },
       menu: [["Flat white", "£3.40"], ["Oat latte", "£3.80"], ["Pumpkin cinnamon bun", "£3.40"], ["Sourdough, avocado, chilli", "£9.50"], ["Mushrooms on toast", "£10.00"], ["Fig and almond cake", "£4.20"]],
       wifi: { network: "MossAndCrumb", password: "fernsandfigs" },
+      // the 14 UK allergens each dish contains ("may" = may contain traces)
+      allergens: [["Flat white", ["milk"]], ["Oat latte", []], ["Pumpkin cinnamon bun", ["gluten", "milk", "eggs"]], ["Sourdough, avocado, chilli", ["gluten", "sesame"]], ["Mushrooms on toast", ["gluten", "milk", "sulphites"]], ["Fig and almond cake", ["nuts", "eggs"], ["peanuts"]]],
       review: "#review", instagram: "#instagram",
       // their order-and-pay link; {table} is replaced with the table number from the code
       order: "#order?table={table}", table: "12",
@@ -329,6 +331,16 @@ body {
 .more[hidden] { display: none; }
 .more .row { padding: 7px 0; border-bottom: 1px solid var(--line); }
 .more .row:last-child { border: 0; }
+.alg-q { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.algs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.algs button { border: 1px solid var(--line); background: #fff; color: var(--ink); font: 600 12px var(--body); padding: 6px 10px; border-radius: 99px; cursor: pointer; transition: background .2s, color .2s; }
+.algs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.dish { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; transition: opacity .25s; }
+.dish small { color: var(--muted); font-size: 12px; text-align: right; }
+.dish.no span { opacity: .4; }
+.dish.no small { color: #b3261e; }
+.dish.ok small { color: #2e7d32; }
+.alg-note { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
 .ar {
   width: 100%; margin-top: 10px; padding: 15px; border: 0; border-radius: 16px; cursor: pointer;
   background: var(--ink); color: #fff; font: 600 16px var(--body);
@@ -2660,6 +2672,7 @@ window.QRW_MAP = (api, V) => {
     <p class="route" id="route" hidden></p>
   </div>
   <div class="acts">
+    <button class="act wide" type="button" data-more="allergens" id="vAllergens" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Allergens <small style="margin-left:auto;font-weight:500;color:var(--muted)">Filter the menu for you</small></button>
     <button class="act" type="button" data-more="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Menu</button>
     <button class="act" type="button" data-more="wifi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/></svg>Wi-Fi</button>
     <a class="act" id="vReview" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8z"/></svg>Leave a review</a>
@@ -2668,6 +2681,7 @@ window.QRW_MAP = (api, V) => {
   <div class="special" id="vSpecial"><b></b><span></span></div>
   <div class="more" id="more-menu" hidden></div>
   <div class="more" id="more-wifi" hidden></div>
+  <div class="more" id="more-allergens" hidden></div>
   <button class="ar" id="ar" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg><span id="arTxt">See it on your table</span></button>
   <p class="hint2" id="arHint">Getting the 3D model ready</p>
   <p class="made">Tap the world to see its code again · <a href="/tableworld">Made with QR Worlds</a></p>
@@ -2691,6 +2705,21 @@ window.QRW_MAP = (api, V) => {
   $("vSpecial").querySelector("b").textContent = V.special.label; $("vSpecial").querySelector("span").textContent = V.special.text;
   $("more-menu").innerHTML = V.menu.map(([a, b]) => `<div class="row" style="display:flex;justify-content:space-between"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join("");
   $("more-wifi").innerHTML = `<div class="row">Network <b>${esc(V.wifi.network)}</b></div><div class="row">Password <b>${esc(V.wifi.password)}</b> <button class="act" type="button" id="copyWifi" style="display:inline-flex;padding:6px 12px;margin-left:8px">Copy</button></div>`;
+  if (V.allergens) {
+    const ALL = ["gluten", "milk", "eggs", "nuts", "peanuts", "sesame", "soya", "fish", "crustaceans", "molluscs", "celery", "mustard", "lupin", "sulphites"];
+    const avoid = new Set(), box = $("more-allergens");
+    $("vAllergens").hidden = false;
+    const draw = () => {
+      const list = V.allergens.map(([dish, has, may = []]) => {
+        const hit = has.filter((a) => avoid.has(a)), maybe = may.filter((a) => avoid.has(a));
+        const note = hit.length ? "Contains " + hit.join(", ") : maybe.length ? "May contain " + maybe.join(", ") : avoid.size ? "Free from your picks" : (has.length ? has.join(", ") : "None of the 14") + (may.length ? " · may contain " + may.join(", ") : "");
+        return `<div class="row dish ${hit.length || maybe.length ? "no" : avoid.size ? "ok" : ""}"><span>${esc(dish)}</span><small>${esc(note)}</small></div>`;
+      }).join("");
+      box.innerHTML = `<p class="alg-q">Tap anything you avoid and the menu sorts itself.</p><div class="algs">${ALL.map((a) => `<button type="button" data-alg="${a}" class="${avoid.has(a) ? "on" : ""}">${a[0].toUpperCase() + a.slice(1)}</button>`).join("")}</div>${list}<p class="alg-note">${V.demo ? "Sample allergen information for a made-up café. " : ""}Always tell a member of staff about any allergy before you order.</p>`;
+    };
+    box.addEventListener("click", (e) => { const a = e.target.dataset && e.target.dataset.alg; if (!a) return; avoid.has(a) ? avoid.delete(a) : avoid.add(a); draw(); });
+    draw();
+  }
   let tt;
   const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); };
   document.querySelectorAll("[data-more]").forEach((b) => b.addEventListener("click", () => {
