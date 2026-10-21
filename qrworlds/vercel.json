@@ -10,6 +10,14 @@
       "destination": "/log"
     },
     {
+      "source": "/H/:id",
+      "destination": "/home"
+    },
+    {
+      "source": "/h/:id",
+      "destination": "/home"
+    },
+    {
       "source": "/R/:id",
       "destination": "/ride"
     },
