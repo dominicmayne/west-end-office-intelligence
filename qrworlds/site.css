@@ -77,6 +77,11 @@ h2 { margin: 0; font-size: clamp(30px, 4.4vw, 48px); letter-spacing: -0.045em; l
 .pcard .tag { font-size: 13px; font-weight: 700; }
 .pcard.ride .tag { color: var(--ride-2); }
 .pcard.table .tag { color: var(--table-2); }
+.pcard.home { grid-column: 1 / -1; min-height: 420px; cursor: default; }
+.pcard.home:hover { transform: none; }
+.pcard.home .tag { color: #e8c27a; }
+.pcard.home img { object-position: center 40%; }
+@media (min-width: 861px) { .pcard.home img { left: 28%; width: 72%; } .pcard.home::before { background: linear-gradient(90deg, rgba(7, 8, 13, 0.95) 25%, transparent 60%); } }
 .pcard h3 { margin: 6px 0 0; font-size: 36px; letter-spacing: -0.045em; font-weight: 800; line-height: 1; }
 .pcard p { margin: 10px 0 18px; color: #c7c7d1; max-width: 420px; }
 .pcard .go { font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
