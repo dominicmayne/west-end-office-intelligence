@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="/site.css">
 <style>
+  [hidden] { display: none !important; }
   .lhead { padding: 48px 0 8px; }
   .lhead h1 { font-size: clamp(38px, 6vw, 64px); }
   .sample { display: inline-flex; gap: 8px; align-items: center; margin-top: 16px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--gold); background: rgba(255, 214, 10, 0.1); border: 0.5px solid rgba(255, 214, 10, 0.3); }
@@ -47,6 +48,9 @@
   .empty { padding: 32px; text-align: center; color: var(--muted); border-radius: 20px; border: 0.5px dashed var(--stroke); }
   .how { margin: 8px 0 72px; padding: 24px; border-radius: 24px; background: var(--bg-2); border: 0.5px solid var(--stroke); color: #c7c7d1; font-size: 15px; }
   .how b { color: var(--text); }
+  .signin { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 72px; }
+  .signin input { font: inherit; font-size: 16px; color: var(--text); background: rgba(255, 255, 255, 0.06); border: 0.5px solid var(--stroke); border-radius: 999px; padding: 12px 18px; min-width: 0; flex: 1 1 260px; }
+  .signin p { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 14px; }
   @media (max-width: 860px) {
     .kpis { grid-template-columns: 1fr 1fr; }
     .item { grid-template-columns: auto 1fr; }
@@ -79,12 +83,16 @@
   <select id="centre" aria-label="Centre"><option value="">All centres</option></select>
 </div>
 <div class="list" id="list"></div>
-<div class="how"><b>In the pilot</b>, this becomes a private page that only Ride On!'s office and engineers can sign in to. Engineers mark a ride fixed from their phone, and you get the weekly numbers by email. Parents never give a name or phone number, and nothing is collected about children.</div>
+<form class="signin" id="signin" hidden><input type="email" id="email" placeholder="Your work email" required autocomplete="email"><button class="btn primary">Email me a sign-in link</button><p id="signMsg">Only people Ride On! has added can sign in.</p></form>
+<div class="how" id="how"><b>In the pilot</b>, this becomes a private page that only Ride On!'s office and engineers can sign in to. Engineers mark a ride fixed from their phone, and you get the weekly numbers by email. Parents never give a name or phone number, and nothing is collected about children.</div>
 </main>
 <footer><div class="wrap"><span>© QR Worlds · qrworlds.co.uk</span><a href="/r/RO-0412">Try the demo ride →</a></div></footer>
+<script src="/live.js"></script>
 <script>
 const MIN = 60000, now = Date.now();
-const rides = {
+// /engineers is the real pilot log (sign-in, live faults); /rideworld/log is the sample one
+const REAL = location.pathname.startsWith('/engineers');
+let rides = {
   'RO-0412': ['Red Racer', '🏎️', '#ff3b30', 'Kingston centre', 'Level 1, outside Toy Town'],
   'RO-0388': ['Bubble Bus', '🚌', '#0a84ff', 'Kingston centre', 'Ground floor, by the fountain'],
   'RO-0217': ['Jungle Jeep', '🚙', '#34c759', 'Croydon centre', 'Food court entrance'],
@@ -108,12 +116,12 @@ const seed = [
 const store = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } };
 const mine = (store('qrw-faults') || []).map((f) => ({ ...f, mine: true }));
 const fixes = store('qrw-fixed') || {};
-const all = [...mine, ...seed].map((f) => ({ ...f, fixed: fixes[f.id] || f.fixed })).sort((a, b) => b.t - a.t);
+let all = [...mine, ...seed].map((f) => ({ ...f, fixed: fixes[f.id] || f.fixed })).sort((a, b) => b.t - a.t);
 
 const $ = (id) => document.getElementById(id);
 const ago = (t) => { const m = Math.round((Date.now() - t) / MIN); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; };
 const dur = (ms) => { const m = Math.round(ms / MIN); return m < 60 ? m + ' min' : (m / 60).toFixed(1).replace('.0', '') + 'h'; };
-[...new Set(Object.values(rides).map((r) => r[3]))].forEach((c) => $('centre').add(new Option(c, c)));
+const centres = () => [...new Set(Object.values(rides).map((r) => r[3]))].forEach((c) => $('centre').add(new Option(c, c)));
 
 let filter = 'all';
 function render() {
@@ -139,11 +147,42 @@ function render() {
 }
 $('seg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; filter = b.dataset.f; $('seg').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); render(); });
 $('centre').addEventListener('change', render);
-$('list').addEventListener('click', (e) => {
+$('list').addEventListener('click', async (e) => {
   const b = e.target.closest('.fix[data-id]'); if (!b) return;
-  const f = all.find((x) => x.id === b.dataset.id); f.fixed = Date.now(); fixes[f.id] = f.fixed; store('qrw-fixed', fixes); render();
+  const f = all.find((x) => x.id === b.dataset.id);
+  if (REAL) {
+    b.disabled = true;
+    try { await QRW.api('/rest/v1/faults?id=eq.' + f.id, { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ fixed_at: new Date().toISOString() }) }); } catch (err) { b.disabled = false; return alert('Couldn’t save. Check your signal and try again.'); }
+    f.fixed = Date.now();
+  } else { f.fixed = Date.now(); fixes[f.id] = f.fixed; store('qrw-fixed', fixes); }
+  render();
 });
-render();
+
+async function loadReal() {
+  document.querySelector('.sample').hidden = true; $('how').hidden = true;
+  document.querySelector('.lhead .lede').textContent = 'Faults reported from the stickers on your rides. Tap Mark fixed when a ride is back up.';
+  // The sign-in email link lands back here with the session in the address
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('access_token')) { store('qrw-session', { token: h.get('access_token'), exp: +h.get('expires_at') || now / 1000 + 3600 }); history.replaceState(null, '', location.pathname); }
+  const showSignIn = (msg) => { $('list').innerHTML = ''; document.querySelector('.bar').hidden = true; $('signin').hidden = false; if (msg) $('signMsg').textContent = msg; };
+  if (!QRW.on) return showSignIn('The pilot log isn’t connected yet.');
+  if (!QRW.token()) return showSignIn();
+  try {
+    const since = new Date(now - 60 * 1440 * MIN).toISOString();
+    const [rs, fs] = await Promise.all([QRW.api('/rest/v1/rides?select=*'), QRW.api('/rest/v1/faults?select=*&order=created_at.desc&created_at=gte.' + since)]);
+    rides = Object.fromEntries(rs.map((r) => [r.id, [r.name, r.emoji, r.colour, r.centre, r.spot]]));
+    all = fs.map((f) => ({ id: String(f.id), ride: f.ride_id, issue: f.issue, t: Date.parse(f.created_at), fixed: f.fixed_at ? Date.parse(f.fixed_at) : null }));
+    centres(); render();
+  } catch (err) { localStorage.removeItem('qrw-session'); showSignIn('Your sign-in has run out. Enter your email for a new link.'); }
+}
+$('signin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await QRW.api('/auth/v1/otp?redirect_to=' + encodeURIComponent(location.origin + '/engineers'), { method: 'POST', body: JSON.stringify({ email: $('email').value.trim(), create_user: false }) });
+    $('signMsg').textContent = 'Check your email for the sign-in link.';
+  } catch (err) { $('signMsg').textContent = 'That email isn’t on the list. Ask Ride On! to add you.'; }
+});
+if (REAL) loadReal(); else { centres(); render(); }
 </script>
 </body>
 </html>
