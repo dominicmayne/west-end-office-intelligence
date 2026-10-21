@@ -1,5 +1,7 @@
 # Switching RideWorld from demo to live
 
+These files sit outside `qrworlds/` so the website does not publish them.
+
 Until these steps are done, every page stays in demo mode exactly as it is now.
 
 1. Go to supabase.com, sign in with GitHub, and click **New project**. Name it `qrworlds` and pick the London region. Save the database password in your password manager. You won't need it here.
