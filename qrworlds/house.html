@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HomeWorld · Linden Street</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex">
+<meta name="description" content="Scan the board and step inside. A QR Worlds concept for estate agents, with a made-up agency and address.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preload" href="/vendor/three-r128.min.js" as="script">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<style>
+:root {
+  --bg: #0b0d14;
+  --glass: rgba(22, 23, 28, 0.72);
+  --glass-2: rgba(255, 255, 255, 0.07);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --text: #f5f5f7;
+  --muted: #a7a7b0;
+  --gold: #d9b77e;
+  --gold-2: #b8925a;
+  --ok: #30d158;
+  --blue: #0a84ff;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+canvas#world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+.glass { background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px); border: 0.5px solid var(--stroke); }
+
+.top { position: fixed; top: max(14px, env(safe-area-inset-top)); left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 5; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.badge { display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; border-radius: 999px; }
+.mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: #f5f3ef; color: #111216; font-weight: 800; font-size: 12px; letter-spacing: -0.04em; }
+.badge b { display: block; font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+.badge small { display: block; font-size: 11px; color: var(--muted); }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; transition: transform 0.4s var(--spring); }
+.icon-btn:active { transform: scale(0.88); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+.shade { position: fixed; left: 0; right: 0; top: 0; height: 240px; z-index: 3; pointer-events: none; background: linear-gradient(rgba(8, 9, 16, 0.7), rgba(8, 9, 16, 0.2) 65%, transparent); }
+
+.toast { position: fixed; left: 50%; top: calc(max(14px, env(safe-area-inset-top)) + 116px); transform: translate(-50%, -12px); z-index: 6; padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.5s var(--spring); white-space: nowrap; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast span { color: var(--gold); margin-left: 6px; font-variant-numeric: tabular-nums; }
+
+.dock { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 6; width: min(calc(100% - 28px), 440px); padding: 18px 18px 14px; border-radius: 28px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); transition: transform 0.6s var(--spring), opacity 0.4s var(--ease); }
+.dock.hide { transform: translate(-50%, 130%); opacity: 0; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.price { margin-top: 4px; font-size: 30px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.price small { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
+.addr { margin-top: 6px; font-size: 14px; color: var(--muted); }
+.facts-row { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 14px 0 14px; padding-top: 14px; border-top: 0.5px solid var(--stroke); font-size: 13px; font-weight: 600; color: #d8d8de; }
+.facts-row span { display: inline-flex; align-items: center; gap: 6px; }
+.facts-row svg { width: 16px; height: 16px; color: var(--muted); }
+.cta { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; border-radius: 14px; font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: #111216; background: #f5f3ef; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); transition: transform 0.4s var(--spring), background 0.2s; }
+.cta:hover { background: #fff; }
+.cta:active { transform: scale(0.97); }
+.cta svg { width: 18px; height: 18px; }
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.tile { display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #cfcfd6; background: rgba(255, 255, 255, 0.06); transition: transform 0.4s var(--spring), color 0.2s, background 0.25s; }
+.tile svg { width: 16px; height: 16px; flex: none; }
+.tile:active { transform: scale(0.94); }
+.tile.on { color: #111216; background: var(--gold); }
+@media (max-width: 380px) { .tile svg { display: none; } }
+.tile:focus-visible, .cta:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.scrim { position: fixed; inset: 0; z-index: 7; background: rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease); }
+.scrim.show { opacity: 1; pointer-events: auto; }
+.sheet { position: fixed; left: 50%; bottom: 0; z-index: 8; width: min(100%, 520px); max-height: 78vh; overflow: auto; border-radius: 32px 32px 0 0; padding: 10px max(22px, env(safe-area-inset-left)) calc(26px + env(safe-area-inset-bottom)); box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.3); transform: translate(-50%, 105%); transition: transform 0.6s var(--spring); }
+.sheet.show { transform: translate(-50%, 0); }
+.sheet.peek { max-height: 42vh; }
+.sheet-x { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+.sheet-x svg { width: 14px; height: 14px; }
+.grab { width: 38px; height: 5px; border-radius: 3px; background: var(--stroke); margin: 0 auto 14px; }
+.sheet h2 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.035em; padding-right: 36px; }
+.sheet .sub { margin: 6px 0 18px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+.row { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 18px; background: var(--glass-2); margin-bottom: 8px; transition: transform 0.3s var(--spring), background 0.2s; }
+button.row:active { transform: scale(0.97); }
+.row.on { background: rgba(232, 194, 122, 0.16); }
+.row .sw { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center; font-size: 19px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+.row b { display: block; font-size: 15px; font-weight: 600; }
+.row small { display: block; font-size: 12px; color: var(--muted); margin-top: 1px; }
+.row .end { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 16px; }
+.fact { padding: 12px 6px; border-radius: 16px; background: var(--glass-2); text-align: center; }
+.fact b { display: block; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.fact small { font-size: 11px; color: var(--muted); }
+.pill-btn { display: block; width: 100%; padding: 15px; border-radius: 14px; font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: #111216; background: #f5f3ef; text-align: center; text-decoration: none; margin-top: 14px; transition: transform 0.4s var(--spring), opacity 0.2s; }
+.pill-btn:active { transform: scale(0.97); }
+.pill-btn[disabled] { opacity: 0.4; pointer-events: none; }
+.pill-btn.ghost { background: var(--glass-2); color: var(--text); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 10px 14px; border-radius: 999px; background: var(--glass-2); font-size: 14px; font-weight: 600; border: 1.5px solid transparent; transition: transform 0.3s var(--spring); }
+.chip:active { transform: scale(0.94); }
+.chip.on { border-color: var(--gold); color: var(--gold); }
+.label { margin: 18px 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.45; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { padding: 14px 10px; border-radius: 16px; background: var(--glass-2); }
+.stat b { display: block; font-size: 26px; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--gold); }
+.stat small { font-size: 11px; color: var(--muted); }
+.bars { display: flex; align-items: flex-end; gap: 8px; height: 110px; padding: 14px 14px 0; border-radius: 18px; background: var(--glass-2); margin-top: 8px; }
+.bars div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; font-size: 11px; color: var(--muted); padding-bottom: 8px; }
+.bars i { display: block; width: 100%; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, var(--gold), rgba(201, 151, 63, 0.4)); transform-origin: bottom; animation: grow 0.9s var(--spring) both; }
+@keyframes grow { from { transform: scaleY(0); } }
+.done { text-align: center; padding: 10px 0 4px; }
+.done .tick { width: 72px; height: 72px; border-radius: 50%; background: var(--ok); margin: 0 auto 14px; display: grid; place-items: center; animation: pop 0.7s var(--spring); }
+.done .tick svg { width: 36px; height: 36px; color: #fff; }
+@keyframes pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.floors { position: fixed; left: 50%; top: calc(max(14px, env(safe-area-inset-top)) + 60px); transform: translateX(-50%); z-index: 5; display: flex; gap: 2px; padding: 4px; border-radius: 999px; transition: opacity 0.4s var(--ease); }
+.floors.hide { opacity: 0; pointer-events: none; }
+.floors button { height: 34px; padding: 0 14px; white-space: nowrap; border-radius: 999px; font-size: 13px; font-weight: 600; color: #cfcfd6; transition: background 0.25s, color 0.2s, transform 0.4s var(--spring); }
+.floors button:active { transform: scale(0.94); }
+.floors button.on { background: #f5f3ef; color: #111216; }
+.disc { margin-top: 4px; font-size: 11px; color: #7d7d86; }
+.intro { position: fixed; inset: 0; z-index: 9; display: grid; place-items: end center; padding-bottom: calc(60px + env(safe-area-inset-bottom)); pointer-events: none; transition: opacity 0.8s var(--ease); }
+.intro.gone { opacity: 0; }
+.intro .msg { padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+<canvas id="world"></canvas>
+
+<div class="top">
+  <div class="badge glass"><div class="mark">H&amp;F</div><div><b>Hale &amp; Finch</b><small>Sample listing · made-up agency</small></div></div>
+  <button class="icon-btn glass" id="replayBtn" aria-label="Replay the build"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+</div>
+
+<div class="shade"></div>
+
+<div class="floors glass hide" id="floors" role="group" aria-label="Floors"><button data-fl="all" class="on">Whole house</button><button data-fl="0">Ground</button><button data-fl="1">First</button></div>
+
+<div class="toast glass" id="toast"></div>
+
+<section class="dock glass hide" id="dock" aria-label="Listing">
+  <div class="head"><div><span class="tag">To let · Available now</span><div class="price">£2,250 <small>pcm</small></div><div class="addr">Linden Street · Roath, Cardiff</div><div class="disc">Illustrative 3D model based on the floorplan</div></div></div>
+  <div class="facts-row">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M6 10V7a1 1 0 0 1 1-1h4v4M13 10V6h4a1 1 0 0 1 1 1v3"/></svg>4 bedrooms</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM6 12V5a2 2 0 0 1 4 0"/></svg>Bath + WC</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3"/></svg>982 sq ft</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5l8-3 8 3v16M9 21v-4h6v4M8 9h2M14 9h2M8 13h2M14 13h2"/></svg>Terraced house</span>
+  </div>
+  <button class="cta" id="viewBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>Book a viewing</button>
+  <div class="tabs">
+    <button class="tile" data-panel="rooms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg>Rooms</button>
+    <button class="tile" id="outBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10l7-6 7 6v11"/><path d="M10 21v-6h4v6"/></svg><span id="outLbl">Outside</span></button>
+    <button class="tile" data-panel="area"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Area</button>
+    <button class="tile" data-panel="agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stats</button>
+  </div>
+</section>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet glass" id="sheet" aria-live="polite"></section>
+<div class="intro" id="intro"><div class="msg glass">Building the home…</div></div>
+
+<script src="/vendor/three-r128.min.js"></script>
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+const ease = (x) => { x = Math.min(Math.max(x, 0), 1); return 1 - Math.pow(1 - x, 3); };
+const springE = (x) => { x = Math.min(Math.max(x, 0), 1); return 1 - Math.exp(-6 * x) * Math.cos(9 * x); };
+
+/* ---------- The house, traced from the agent's floorplan (metres, x across, z from the back of the house to the front) ---------- */
+const ROOMS = [
+  { id: 'lounge', fl: 0, name: 'Lounge', size: '4.20 × 3.55 m', ft: '13′10″ × 11′8″', em: '🛋️', col: 0xeee7c8, floor: 0xb98b5e, rects: [[1.1, 10.3, 4.2, 13.6], [0, 6.7, 1.5, 10.3], [0, 10.3, 1.1, 12.2]] },
+  { id: 'kitchen', fl: 0, name: 'Kitchen / diner', size: '2.82 × 5.32 m', ft: '9′3″ × 17′6″', em: '🍳', col: 0xf2cfd3, floor: 0x8f98a3, rects: [[0, 1.4, 2.85, 6.7]] },
+  { id: 'bed4', fl: 0, name: 'Bedroom 4', size: '2.59 × 3.55 m', ft: '8′6″ × 11′8″', em: '🛏️', col: 0xcfe8cf, floor: 0xbdb2a2, rects: [[1.5, 6.7, 4.2, 10.3]] },
+  { id: 'wc', fl: 0, name: 'WC', size: 'Downstairs WC', ft: '', em: '🚽', col: 0xcfe6ee, floor: 0x9fb0bb, rects: [[0, 0, 1.0, 1.4]] },
+  { id: 'porch', fl: 0, name: 'Entrance', size: 'Front porch', ft: '', em: '🚪', col: 0xf1d6b0, floor: 0xa97e55, rects: [[0, 12.2, 1.1, 13.6]], quiet: true },
+  { id: 'bed1', fl: 1, name: 'Bedroom 1', size: '4.20 × 3.29 m', ft: '13′10″ × 10′9″', em: '🛏️', col: 0xcfe8cf, floor: 0xbdb2a2, rects: [[0, 10.3, 4.2, 13.6]] },
+  { id: 'bed2', fl: 1, name: 'Bedroom 2', size: '2.82 × 3.46 m', ft: '9′3″ × 11′4″', em: '🛏️', col: 0xd7ecd3, floor: 0xbdb2a2, rects: [[0, 1.3, 3.1, 4.8]] },
+  { id: 'bed3', fl: 1, name: 'Bedroom 3', size: '2.58 × 3.29 m', ft: '8′5″ × 10′10″', em: '🛏️', col: 0xd7ecd3, floor: 0xbdb2a2, rects: [[1.6, 6.9, 4.2, 10.3]] },
+  { id: 'bath', fl: 1, name: 'Bathroom', size: '1.73 × 1.96 m', ft: '5′8″ × 6′5″', em: '🛁', col: 0xcfe6ee, floor: 0x9fb0bb, rects: [[1.1, 4.8, 3.1, 6.9]] },
+  { id: 'landing', fl: 1, name: 'Landing', size: 'Stairs and landing', ft: '', em: '🪜', col: 0xf1d6b0, floor: 0xa97e55, rects: [[0, 4.8, 1.1, 6.9], [0, 6.9, 1.6, 10.3]], quiet: true },
+];
+// Wall runs per floor: [x1, z1, x2, z2, outer, openings]; openings are [from, to, 'door' | 'win'] along the run
+const WALLS = [[
+  [0, 0, 1.0, 0, 1, [[0.3, 0.7, 'win']]],
+  [1.0, 0, 1.0, 1.4, 1, []],
+  [1.0, 1.4, 2.85, 1.4, 1, [[0.5, 1.4, 'win']]],
+  [0, 1.4, 1.0, 1.4, 0, [[0.2, 0.8, 'door']]],
+  [2.85, 1.4, 2.85, 6.7, 1, [[0.4, 1.2, 'door'], [2.6, 3.6, 'win']]],
+  [0, 0, 0, 13.6, 1, []],
+  [0, 6.7, 1.5, 6.7, 0, [[0.6, 1.3, 'door']]],
+  [1.5, 6.7, 2.85, 6.7, 0, []],
+  [2.85, 6.7, 4.2, 6.7, 1, [[0.2, 0.95, 'win']]],
+  [4.2, 6.7, 4.2, 13.6, 1, []],
+  [1.5, 6.7, 1.5, 10.3, 0, [[2.85, 3.5, 'door']]],
+  [1.5, 10.3, 4.2, 10.3, 0, []],
+  [0, 13.6, 1.4, 13.6, 1, [[0.15, 0.95, 'door']]],
+  [3.4, 13.6, 4.2, 13.6, 1, []],
+  [1.1, 12.2, 1.1, 13.6, 0, []],
+  [0, 12.2, 1.1, 12.2, 0, [[0.2, 0.85, 'door']]],
+], [
+  [0, 1.3, 3.1, 1.3, 1, [[0.9, 1.8, 'win']]],
+  [3.1, 1.3, 3.1, 6.9, 1, [[4.1, 4.7, 'win']]],
+  [3.1, 6.9, 4.2, 6.9, 1, [[0.35, 0.95, 'win']]],
+  [4.2, 6.9, 4.2, 13.6, 1, []],
+  [0, 1.3, 0, 13.6, 1, []],
+  [0, 13.6, 4.2, 13.6, 1, [[0.4, 1.3, 'win'], [2.8, 3.7, 'win']]],
+  [0, 4.8, 3.1, 4.8, 0, [[0.25, 0.9, 'door']]],
+  [1.1, 4.8, 1.1, 6.9, 0, [[0.7, 1.35, 'door']]],
+  [1.1, 6.9, 3.1, 6.9, 0, []],
+  [1.6, 6.9, 1.6, 10.3, 0, [[2.6, 3.25, 'door']]],
+  [0, 10.3, 4.2, 10.3, 0, [[1.0, 1.65, 'door']]],
+]];
+const BAY = [[1.4, 13.6], [1.75, 14.2], [3.05, 14.2], [3.4, 13.6]]; // the lounge bay window
+const CX = 2.1, CZ = 7.1, H = 1.15, LIFT = 2.6; // plan centre; walls cut at 1.15 m; gap between floors in the whole-house view
+
+/* ---------- Renderer, scene, camera ---------- */
+const canvas = $('world');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300);
+{
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+  const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#11131f'); gr.addColorStop(0.6, '#2a2233'); gr.addColorStop(1, '#4a3528');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+  scene.background = new THREE.CanvasTexture(c); scene.background.encoding = THREE.sRGBEncoding;
+}
+scene.fog = new THREE.Fog(0x2a2233, 40, 110);
+scene.add(new THREE.HemisphereLight(0xcfd8ff, 0x3a2a22, 0.5));
+const sun = new THREE.DirectionalLight(0xffe2bc, 1.05);
+sun.position.set(-8, 16, 10); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; scene.add(sun);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(60, 64), new THREE.MeshStandardMaterial({ color: 0x1c1a20, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+const M = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, ...o });
+function box(parent, w, h, d, x, y, z, mat, ry = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; parent.add(m); return m;
+}
+function textSprite(top, bottom) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 180;
+  const g = c.getContext('2d');
+  g.font = '700 54px -apple-system, Inter, sans-serif'; const w1 = g.measureText(top).width;
+  g.font = '600 38px -apple-system, Inter, sans-serif'; const w2 = bottom ? g.measureText(bottom).width : 0;
+  const w = Math.max(w1, w2) + 60, x0 = (512 - w) / 2, h = bottom ? 150 : 90;
+  g.fillStyle = 'rgba(250,249,246,0.95)'; g.beginPath(); g.roundRect ? g.roundRect(x0, 10, w, h, 40) : g.rect(x0, 10, w, h); g.fill();
+  g.textAlign = 'center'; g.fillStyle = '#16171c'; g.font = '700 54px -apple-system, Inter, sans-serif'; g.fillText(top, 256, 72);
+  if (bottom) { g.fillStyle = '#8a6a3a'; g.font = '600 38px -apple-system, Inter, sans-serif'; g.fillText(bottom, 256, 130); }
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+  const k = innerWidth < innerHeight ? 2.7 : 2.3; s.scale.set(k, k * 180 / 512, 1); s.renderOrder = 10; return s;
+}
+
+/* ---------- Dollhouse: one group per floor ---------- */
+const house = new THREE.Group(); scene.add(house);
+const wallMat = M(0xe9e4dc, { roughness: 0.95 }), capMat = M(0x2b2630), glassMat = new THREE.MeshStandardMaterial({ color: 0x9fd2ff, transparent: true, opacity: 0.35, roughness: 0.1, metalness: 0.1 });
+const doorMat = M(0xc49a6c, { roughness: 0.7 }), slabMat = M(0x3a3340);
+const LV = [0, 1].map((i) => {
+  const g = new THREE.Group(); g.position.set(-CX, 0.3 + i * LIFT, -CZ); house.add(g);
+  const L = { g, floors: new THREE.Group(), walls: new THREE.Group(), furniture: new THREE.Group(), labels: new THREE.Group(), y: g.position.y };
+  g.add(L.floors, L.walls, L.furniture, L.labels);
+  L.base = i ? box(g, 4.6, 0.16, 12.7, CX, -0.08, 7.45, slabMat) : box(g, 4.8, 0.3, 14.9, CX, -0.15, 7.1, slabMat);
+  return L;
+});
+
+ROOMS.forEach((r) => {
+  const L = LV[r.fl];
+  r.mat = M(r.floor, { roughness: 0.85, emissive: 0xe8c27a, emissiveIntensity: 0 });
+  r.rects.forEach(([x1, z1, x2, z2]) => { const m = box(L.floors, x2 - x1, 0.06, z2 - z1, (x1 + x2) / 2, 0.03, (z1 + z2) / 2, r.mat); m.userData.room = r; });
+  const [x1, z1, x2, z2] = r.rects[0];
+  r.c = new THREE.Vector3((x1 + x2) / 2, 0, (z1 + z2) / 2);
+  const s = textSprite(r.name, r.ft ? r.size : '');
+  s.position.set(r.c.x, H + 0.9, r.c.z); s.userData.room = r; r.label = s; s.visible = !r.quiet; L.labels.add(s);
+});
+
+function wallPiece(parent, x1, z1, x2, z2, t, y0, y1, mat) {
+  const len = Math.hypot(x2 - x1, z2 - z1), a = -Math.atan2(z2 - z1, x2 - x1), m = box(parent, len, y1 - y0, t, (x1 + x2) / 2, (y0 + y1) / 2, (z1 + z2) / 2, mat, a);
+  if (mat === wallMat) box(parent, len, 0.03, t + 0.01, (x1 + x2) / 2, y1 + 0.015, (z1 + z2) / 2, capMat, a);
+  return m;
+}
+WALLS.forEach((runs, i) => runs.forEach(([x1, z1, x2, z2, outer, gaps]) => {
+  const W = LV[i].walls, t = outer ? 0.2 : 0.1, len = Math.hypot(x2 - x1, z2 - z1), dx = (x2 - x1) / len, dz = (z2 - z1) / len;
+  const P = (s) => [x1 + dx * s, z1 + dz * s];
+  let s = 0;
+  [...gaps, [len, len, 'end']].forEach(([a, b, kind]) => {
+    if (a > s) wallPiece(W, ...P(s), ...P(a), t, 0, H, wallMat);
+    if (kind === 'win') { wallPiece(W, ...P(a), ...P(b), t, 0, 0.55, wallMat); wallPiece(W, ...P(a), ...P(b), 0.04, 0.55, H, glassMat); }
+    if (kind === 'door') { // the door leaf, hinged at one side and swung open
+      const [hx, hz] = P(a), w = b - a - 0.05, phi = Math.atan2(dz, dx) + 1.2;
+      box(W, w, 1.0, 0.04, hx + Math.cos(phi) * w / 2, 0.5, hz + Math.sin(phi) * w / 2, doorMat, -phi);
+    }
+    s = b;
+  });
+}));
+for (let i = 0; i < BAY.length - 1; i++) {
+  const [ax, az] = BAY[i], [bx, bz] = BAY[i + 1];
+  wallPiece(LV[0].walls, ax, az, bx, bz, 0.2, 0, 0.55, wallMat); wallPiece(LV[0].walls, ax, az, bx, bz, 0.05, 0.55, H, glassMat);
+}
+{ // bay floor
+  const sh = new THREE.Shape(BAY.map(([x, z]) => new THREE.Vector2(x, z)));
+  const m = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.06, bevelEnabled: false }), ROOMS[0].mat);
+  m.rotation.x = Math.PI / 2; m.position.y = 0.06; m.receiveShadow = true; m.userData.room = ROOMS[0]; LV[0].floors.add(m);
+}
+
+/* Furniture, placed as drawn on the floorplan */
+const fabric = M(0x8a93a6), wood = M(0xb58a5a, { roughness: 0.6 }), white = M(0xffffff, { roughness: 0.4 }), linen = M(0xf4efe6), steel = M(0xc8ccd2, { metalness: 0.4, roughness: 0.4 }), dark = M(0x34343c), worktop = M(0x6b6b74), robe = M(0xe9e3d8), stair = M(0xa97e55, { roughness: 0.7 });
+function bed(F, x, z, w, len, cover, headAt) { // headAt: -1 = head towards the back (smaller z), 1 = towards the front
+  box(F, w, 0.42, len, x, 0.25, z, linen); box(F, w, 0.08, len * 0.32, x, 0.5, z - headAt * len * 0.3, cover);
+  box(F, w + 0.1, 0.9, 0.08, x, 0.5, z + headAt * (len / 2 + 0.04), wood);
+  [-1, 1].forEach((s) => box(F, w * 0.4, 0.12, 0.34, x + s * w * 0.24, 0.52, z + headAt * (len / 2 - 0.25), white));
+}
+{ // Ground floor
+  const F = LV[0].furniture;
+  // WC
+  box(F, 0.38, 0.4, 0.5, 0.5, 0.2, 0.35, white); box(F, 0.38, 0.35, 0.16, 0.5, 0.55, 0.12, white); box(F, 0.4, 0.12, 0.3, 0.2, 0.8, 1.05, white);
+  // Kitchen: worktops along the back and left wall, sink, hob, fridge, breakfast bar with stools
+  box(F, 1.6, 0.9, 0.6, 1.95, 0.45, 1.75, white); box(F, 1.64, 0.04, 0.64, 1.95, 0.92, 1.75, worktop); box(F, 0.6, 0.02, 0.4, 1.7, 0.95, 1.75, steel);
+  box(F, 0.6, 0.9, 3.0, 0.35, 0.45, 3.9, white); box(F, 0.64, 0.04, 3.04, 0.35, 0.92, 3.9, worktop); box(F, 0.5, 0.02, 0.5, 0.35, 0.95, 4.4, dark);
+  box(F, 0.62, 1.1, 0.6, 0.35, 0.55, 5.9, steel);
+  box(F, 1.2, 0.9, 0.55, 2.2, 0.45, 3.35, wood); [1.85, 2.5].forEach((x) => box(F, 0.32, 0.65, 0.32, x, 0.33, 3.85, dark));
+  // Stairs up from the lounge
+  for (let k = 0; k < 9; k++) box(F, 0.8, 0.13 * (k + 1), 0.22, 0.42, 0.065 * (k + 1), 10.1 - k * 0.22, stair);
+  // Lounge: sofas, coffee table, rug, fireplace, TV
+  box(F, 1.8, 0.42, 0.75, 2.6, 0.27, 13.05, fabric); box(F, 1.8, 0.4, 0.18, 2.6, 0.6, 13.35, fabric);
+  box(F, 0.75, 0.42, 1.5, 1.6, 0.27, 11.6, fabric); box(F, 0.18, 0.4, 1.5, 1.32, 0.6, 11.6, fabric);
+  box(F, 2.0, 0.02, 1.4, 2.7, 0.07, 11.8, M(0xc9b79a)); box(F, 0.9, 0.36, 0.5, 2.7, 0.24, 11.8, wood);
+  box(F, 0.3, 1.0, 1.1, 4.0, 0.5, 11.8, M(0xd9d2c4)); box(F, 0.12, 0.5, 0.6, 3.83, 0.3, 11.8, dark);
+  // Bedroom 4: double bed, wardrobe
+  bed(F, 2.55, 7.85, 1.4, 2.0, M(0x9fb7d0), -1); box(F, 1.0, 1.05, 0.55, 3.6, 0.53, 9.9, robe);
+}
+{ // First floor
+  const F = LV[1].furniture;
+  bed(F, 2.6, 12.0, 1.5, 2.0, M(0xd0a59f), -1); box(F, 0.6, 1.05, 1.1, 0.4, 0.53, 12.6, robe); [1.65, 3.55].forEach((x) => box(F, 0.42, 0.5, 0.38, x, 0.25, 10.75, wood));
+  bed(F, 1.6, 3.1, 1.4, 2.0, M(0x9fb7d0), 1); box(F, 1.0, 1.05, 0.55, 2.4, 0.53, 1.65, robe);
+  bed(F, 2.9, 8.6, 1.35, 1.95, M(0xbfd8a8), -1); box(F, 0.55, 1.05, 0.9, 3.85, 0.53, 9.6, robe);
+  box(F, 0.7, 0.55, 1.6, 2.6, 0.28, 5.85, white); box(F, 0.55, 0.05, 1.45, 2.6, 0.53, 5.85, M(0x9fd2ff, { roughness: 0.2 }));
+  box(F, 0.38, 0.4, 0.5, 1.55, 0.2, 6.55, white); box(F, 0.5, 0.15, 0.38, 1.4, 0.8, 5.1, white);
+  box(F, 0.06, 0.9, 1.6, 0.9, 0.45, 7.8, wood); // banister round the stairwell
+  box(F, 0.5, 0.02, 1.6, 0.55, 0.07, 5.8, M(0xb46a4e));
+}
+LV.forEach((L, i) => L.furniture.children.forEach((m) => { m.userData.y = m.position.y; m.userData.d = i * 1.3 + ((m.position.x * 7 + m.position.z * 3) % 1) * 0.5; }));
+
+/* ---------- Outside: the terrace, with this house lit up ---------- */
+const outside = new THREE.Group(); outside.visible = false; scene.add(outside);
+{
+  const render = M(0xeae6dc), stone = M(0x8a5a3c, { roughness: 0.95 }), slate = M(0x4c5260, { roughness: 0.7 }), frame = M(0xffffff, { roughness: 0.5 }), chim = M(0xb0603e);
+  const lit = new THREE.MeshBasicMaterial({ color: 0xffc66b });
+  const win = new THREE.MeshStandardMaterial({ color: 0x31384a, roughness: 0.2, metalness: 0.3 });
+  const W = 4.6, D = 9, FL = 2.9, N = 5;
+  const prism = (w, h, len, mat) => { const s = new THREE.Shape([new THREE.Vector2(-w / 2, 0), new THREE.Vector2(w / 2, 0), new THREE.Vector2(0, h)]); const m = new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false }), mat); m.castShadow = m.receiveShadow = true; return m; };
+  box(outside, W * N, FL * 2, D, 0, FL, 0, render);
+  const roof = prism(D, 3.0, W * N + 0.3, slate); roof.rotation.y = Math.PI / 2; roof.position.set(-W * N / 2 - 0.15, FL * 2, 0); outside.add(roof);
+  const doors = [0x5b2e22, 0x1f5fb8, 0x2f3f55, 0x3d5a3a, 0x5b2e22];
+  for (let h = 0; h < N; h++) {
+    const x0 = (h - (N - 1) / 2) * W, mine = h === 2, fz = D / 2;
+    [-1, 1].forEach((sd) => { for (let y = 0.2, k = 0; y < FL * 2; y += 0.34, k++) box(outside, k % 2 ? 0.28 : 0.46, 0.3, 0.06, x0 + sd * (W / 2 - 0.2), y, fz + 0.03, stone); });
+    if (h) box(outside, 0.9, 1.5, 0.9, x0 - W / 2, FL * 2 + 2.2, 0, chim);
+    // canted two-storey bay on the right, front door on the left
+    const bx = x0 + 0.7;
+    for (let f = 0; f < 2; f++) {
+      const y = FL * f + FL / 2 + 0.1, on = mine;
+      box(outside, 2.0, FL - 0.25, 0.75, bx, y, fz + 0.37, render);
+      [-0.6, 0.6].forEach((s) => { const p = box(outside, 0.35, FL - 0.25, 0.75, bx + s * 1.2, y, fz + 0.2, render, s * 0.7); p.castShadow = false; });
+      [-0.55, 0.55].forEach((wx) => { box(outside, 0.85, 1.55, 0.06, bx + wx, y + 0.1, fz + 0.76, frame); box(outside, 0.7, 1.4, 0.05, bx + wx, y + 0.1, fz + 0.79, on ? lit : win); });
+      box(outside, 2.6, 0.14, 1.0, bx, FL * (f + 1) - 0.05, fz + 0.4, f ? slate : render);
+    }
+    box(outside, 1.05, 2.2, 0.1, x0 - 1.35, 1.1, fz + 0.05, M(doors[h]));
+    box(outside, 1.05, 0.5, 0.08, x0 - 1.35, 2.5, fz + 0.06, mine ? lit : win);
+    box(outside, 0.95, 1.4, 0.08, x0 - 1.35, FL + FL / 2 + 0.2, fz + 0.04, frame); box(outside, 0.8, 1.25, 0.06, x0 - 1.35, FL + FL / 2 + 0.2, fz + 0.08, mine ? lit : win);
+    // railings
+    for (let k = 0; k < 14; k++) box(outside, 0.04, 0.9, 0.04, x0 - 1.9 + k * 0.3, 0.45, fz + 1.6, dark);
+    box(outside, W, 0.05, 0.06, x0, 0.88, fz + 1.6, dark);
+  }
+  box(outside, W * N + 2, 0.08, 4, 0, 0.04, D / 2 + 3, M(0x3a3a40)); // pavement
+  const tag = textSprite('This house', '4 bed terrace'); tag.position.set(0, FL * 2 + 1.2, D / 2 + 2.4); tag.scale.multiplyScalar(1.4); outside.add(tag);
+  outside.traverse((m) => { if (m.isMesh && m.castShadow !== false) m.castShadow = m.receiveShadow = true; });
+}
+
+/* ---------- Camera: orbit with drag, fly to rooms ---------- */
+const HOME = { az: -0.75, pol: 1.0, r: 24, tx: 0, ty: 1.9, tz: 0.6 };
+const cam = { az: 0.0, pol: 0.02, r: 15, tx: 0, ty: 0, tz: 0 }, goal = { ...HOME };
+let intro = true, t0 = performance.now(), view = 'in', floorView = 'all';
+function placeCamera() {
+  const sp = Math.sin(cam.pol);
+  camera.position.set(cam.tx + cam.r * sp * Math.sin(cam.az), cam.ty + cam.r * Math.cos(cam.pol), cam.tz + cam.r * sp * Math.cos(cam.az));
+  camera.lookAt(cam.tx, cam.ty, cam.tz);
+}
+const fitR = (r) => r * Math.max(1, 0.9 * innerHeight / innerWidth); // pull back on a phone held upright
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+let drag = null, moved = 0;
+canvas.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; moved = 0; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', (e) => {
+  if (!drag || intro) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved += Math.abs(dx) + Math.abs(dy);
+  goal.az -= dx * 0.006; goal.pol = Math.min(1.35, Math.max(0.15, goal.pol - dy * 0.005)); drag = { x: e.clientX, y: e.clientY };
+});
+canvas.addEventListener('pointerup', (e) => { if (drag && moved < 8 && !intro) pick(e); drag = null; });
+canvas.addEventListener('wheel', (e) => { e.preventDefault(); goal.r = Math.min(45, Math.max(6, goal.r * (1 + e.deltaY * 0.001))); }, { passive: false });
+
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pick(e) {
+  if (view !== 'in') return;
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const objs = LV.filter((L) => L.g.visible).flatMap((L) => [...L.floors.children, ...L.labels.children.filter((s) => s.visible)]);
+  const hit = ray.intersectObjects(objs)[0];
+  if (hit) focusRoom(hit.object.userData.room); else focusRoom(null);
+}
+
+/* Floors: the whole house (first floor lifted above the ground floor) or one floor on its own */
+const homeFor = (f) => (f === 'all' ? { ...HOME, r: fitR(HOME.r) } : { ...HOME, r: fitR(16.5), ty: 1.0, tz: 0.4, pol: 0.9 });
+function setFloor(f, keepCam) {
+  floorView = f;
+  document.querySelectorAll('#floors button').forEach((b) => b.classList.toggle('on', b.dataset.fl === String(f)));
+  LV.forEach((L, i) => { L.show = f === 'all' || f === i; L.ty = f === 1 ? 0.3 : 0.3 + i * LIFT; if (L.show) L.g.visible = true; if (L.show && L.g.scale.y < 0.05) L.g.scale.y = 0.05; });
+  ROOMS.forEach((r) => (r.label.visible = !r.quiet && f === r.fl));
+  if (!keepCam) Object.assign(goal, homeFor(f));
+}
+document.querySelectorAll('#floors button').forEach((b) => b.addEventListener('click', () => { focusRoom(null, true); setFloor(b.dataset.fl === 'all' ? 'all' : +b.dataset.fl); }));
+
+let focused = null, toastT;
+function focusRoom(r, quiet) {
+  focused = r;
+  ROOMS.forEach((x) => (x.label.material.opacity = !r || x === r ? 1 : 0.12));
+  if (!r) { if (!quiet) Object.assign(goal, { tx: 0, ty: homeFor(floorView).ty, tz: homeFor(floorView).tz, r: homeFor(floorView).r }); $('toast').classList.remove('show'); return; }
+  if (floorView !== r.fl) setFloor(r.fl, true);
+  const d = openKey === 'rooms' ? 1.4 : 0; // with the rooms sheet up, frame the room in the top half
+  Object.assign(goal, { tx: r.c.x - CX + Math.sin(goal.az) * d, ty: 0.4, tz: r.c.z - CZ + Math.cos(goal.az) * d, r: fitR(9), pol: Math.min(goal.pol, 0.9) });
+  $('toast').innerHTML = `${r.em} ${r.name}<span>${r.ft ? r.size + ' · ' + r.ft : r.size}</span>`; $('toast').classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('show'), 3200);
+  document.querySelectorAll('.row[data-room]').forEach((b) => b.classList.toggle('on', b.dataset.room === r.id));
+}
+
+function setView(v) {
+  view = v; closeSheet(); focusRoom(null, true);
+  house.visible = v === 'in'; outside.visible = v === 'out';
+  $('floors').classList.toggle('hide', v !== 'in');
+  $('outLbl').textContent = v === 'in' ? 'Outside' : 'Inside';
+  $('outBtn').classList.toggle('on', v === 'out');
+  if (v === 'out') { outside.scale.setScalar(0.9); Object.assign(goal, { az: -0.3, pol: 1.36, r: fitR(27), tx: 0, ty: 3.6, tz: 0 }); }
+  else Object.assign(goal, homeFor(floorView));
+}
+$('outBtn').addEventListener('click', () => setView(view === 'in' ? 'out' : 'in'));
+
+/* ---------- Intro: the ground floor builds, then the first floor builds on top ---------- */
+const INTRO = 4.6;
+ROOMS.forEach((r, i) => (r.d = (i % 5) * 0.1));
+function runIntro(t) {
+  LV.forEach((L, i) => {
+    const s = t - i * 1.3;
+    L.base.scale.set(1, Math.max(0.0001, ease(s / 0.5)), 1);
+    L.floors.children.forEach((m) => { const k = springE((s - 0.35 - m.userData.room.d) / 0.6); m.scale.setScalar(Math.max(0.0001, k)); });
+    L.walls.scale.set(1, Math.max(0.0001, springE((s - 1.0) / 0.9)), 1);
+    L.furniture.children.forEach((m) => { const k = springE((t - 1.7 - m.userData.d) / 0.8); m.position.y = m.userData.y + (1 - k) * 2.5; m.visible = t > 1.7 + m.userData.d; });
+    L.g.position.y = L.y + (i ? (1 - ease(s / 0.8)) * 3 : 0);
+  });
+  const k = ease(t / 4.2);
+  cam.pol = 0.35 + (goal.pol - 0.35) * k; cam.az = 0.5 + (goal.az - 0.5) * k; cam.r = goal.r * (1.25 - 0.25 * k); cam.ty = goal.ty * k; cam.tz = goal.tz * k;
+  if (t > INTRO) finishIntro();
+}
+function finishIntro() {
+  intro = false;
+  LV.forEach((L) => {
+    L.floors.children.forEach((m) => m.scale.set(1, 1, 1)); L.base.scale.set(1, 1, 1); L.walls.scale.set(1, 1, 1); L.g.position.y = L.y;
+    L.furniture.children.forEach((m) => { m.position.y = m.userData.y; m.visible = true; });
+  });
+  $('intro').classList.add('gone'); $('dock').classList.remove('hide'); $('floors').classList.remove('hide');
+}
+function replay() {
+  setView('in'); setFloor('all'); intro = true; t0 = performance.now();
+  LV.forEach((L) => { L.g.visible = true; L.g.position.y = L.y = 0.3 + LV.indexOf(L) * LIFT; });
+  $('intro').classList.remove('gone'); $('dock').classList.add('hide'); $('floors').classList.add('hide');
+}
+$('replayBtn').addEventListener('click', replay);
+setFloor('all');
+goal.r = fitR(HOME.r);
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finishIntro(); Object.assign(cam, goal); }
+
+/* ---------- Sheets ---------- */
+const sheet = $('sheet'), scrim = $('scrim');
+const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const hex = (n) => '#' + n.toString(16).padStart(6, '0');
+const roomRow = (r) => `<button class="row" data-room="${r.id}"><div class="sw" style="background:${hex(r.col)}">${r.em}</div><div><b>${r.name}</b><small>${r.ft || r.size}</small></div><div class="end">${r.ft ? r.size : ''}</div></button>`;
+const panels = {
+  rooms: () => `<h2>Inside the house</h2><p class="sub">Tap a room to fly to it. Sizes are from the floorplan.</p>
+    <div class="facts"><div class="fact"><b>4</b><small>Bedrooms</small></div><div class="fact"><b>1+1</b><small>Bath + WC</small></div><div class="fact"><b>982</b><small>Sq ft</small></div><div class="fact"><b>2</b><small>Floors</small></div></div>
+    <div class="label">Ground floor</div>${ROOMS.filter((r) => r.fl === 0).map(roomRow).join('')}
+    <div class="label">First floor</div>${ROOMS.filter((r) => r.fl === 1).map(roomRow).join('')}
+    <p class="note">Total area 91.2 m² (982 sq ft). Measurements are approximate. The model is drawn from the floorplan, so furniture is for scale only.</p>`,
+  area: () => `<h2>Around Linden Street</h2><p class="sub">Walking times from the front door.</p>
+    <div class="row"><div class="sw" style="background:#ff9f0a">🛍️</div><div><b>Albany Road</b><small>Shops, cafés, supermarket</small></div><div class="end">5 min walk</div></div>
+    <div class="row"><div class="sw" style="background:#30d158">🌳</div><div><b>Roath Park</b><small>Lake, rose garden, playground</small></div><div class="end">15 min walk</div></div>
+    <div class="row"><div class="sw" style="background:#0a84ff">🚆</div><div><b>Train station</b><small>Into the city centre</small></div><div class="end">12 min walk</div></div>
+    <div class="row"><div class="sw" style="background:#bf5af2">🎓</div><div><b>University</b><small>Main campus</small></div><div class="end">15 min walk</div></div>
+    <div class="row"><div class="sw" style="background:#ff375f">🚌</div><div><b>Bus stop</b><small>Every few minutes into town</small></div><div class="end">2 min walk</div></div>
+    <p class="note">Sample places and times for the demo. In the real version these come from the agent's listing and public transport data.</p>`,
+  viewing: () => `<div id="vBody"><h2>Book a viewing</h2><p class="sub">Pick a time that suits. The agent confirms by email.</p>
+    <div class="label">This week</div><div class="chips">${['Thu 17:30', 'Fri 12:15', 'Sat 10:00', 'Sat 11:30', 'Mon 18:00'].map((s) => `<button class="chip">${s}</button>`).join('')}</div>
+    <button class="pill-btn" id="vSend" disabled>Request this time</button>
+    <a class="pill-btn ghost" href="mailto:dominic.d.mayne@gmail.com?subject=HomeWorld%20demo">Ask a question</a>
+    <p class="note">In the real version this opens the agent's own booking page, so their diary stays the one place viewings live.</p></div>`,
+  agent: () => `<h2>What the landlord sees</h2><p class="sub">Every scan of the board and window card, tracked for this property.</p>
+    <div class="stats"><div class="stat"><b>211</b><small>Board scans this week</small></div><div class="stat"><b>18</b><small>Viewing requests</small></div><div class="stat"><b>3m 05s</b><small>Avg time inside</small></div></div>
+    <div class="label">Scans per day</div>
+    <div class="bars">${[['M', 22], ['T', 19], ['W', 26], ['T', 28], ['F', 31], ['S', 47], ['S', 38]].map(([d, n], i) => `<div><i style="height:${n * 1.7}px;animation-delay:${i * 0.05}s"></i>${d}</div>`).join('')}</div>
+    <div class="label">Most looked-at rooms</div>
+    <div class="row"><div class="sw" style="background:#f2cfd3">🍳</div><div><b>Kitchen / diner</b><small>Breakfast bar, garden door</small></div><div class="end">34%</div></div>
+    <div class="row"><div class="sw" style="background:#cfe8cf">🛏️</div><div><b>Bedroom 1</b><small>Front double</small></div><div class="end">22%</div></div>
+    <p class="note">Example numbers for the demo. Agents send these in their weekly update to the landlord or seller, and nobody scanning gives a name or phone number.</p>`,
+};
+let openKey = null;
+function openSheet(key) {
+  if (openKey === key) return closeSheet();
+  if (key === 'rooms' && view !== 'in') setView('in');
+  openKey = key; sheet.innerHTML = '<div class="grab"></div><button class="icon-btn sheet-x" id="sheetX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></button>' + panels[key]();
+  sheet.classList.toggle('peek', key === 'rooms'); scrim.classList.toggle('show', key !== 'rooms');
+  $('sheetX').onclick = closeSheet; sheet.classList.add('show'); $('dock').classList.add('hide');
+  document.querySelectorAll('.tile[data-panel]').forEach((t) => t.classList.toggle('on', t.dataset.panel === key));
+  if (key === 'rooms') sheet.querySelectorAll('.row[data-room]').forEach((b) => (b.onclick = () => focusRoom(ROOMS.find((r) => r.id === b.dataset.room))));
+  if (key === 'viewing') {
+    let pick = null;
+    sheet.querySelectorAll('.chip').forEach((c) => (c.onclick = () => { pick = c.textContent; sheet.querySelectorAll('.chip').forEach((x) => x.classList.toggle('on', x === c)); $('vSend').disabled = false; }));
+    $('vSend').onclick = () => { $('vBody').innerHTML = `<div class="done"><div class="tick">${check}</div><h2 style="padding:0">Request sent</h2><p class="sub">${pick} at Linden Street. In the real version this goes straight into the agent's diary.</p></div>`; };
+  }
+}
+function closeSheet() { if (!intro) $('dock').classList.remove('hide'); openKey = null; sheet.classList.remove('show'); scrim.classList.remove('show'); document.querySelectorAll('.tile[data-panel]').forEach((t) => t.classList.remove('on')); }
+document.querySelectorAll('.tile[data-panel]').forEach((t) => t.addEventListener('click', () => openSheet(t.dataset.panel)));
+$('viewBtn').addEventListener('click', () => openSheet('viewing'));
+scrim.addEventListener('click', closeSheet);
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+
+/* ---------- Frame loop ---------- */
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (intro) runIntro((now - t0) / 1000);
+  else {
+    const k = 1 - Math.pow(0.002, dt);
+    for (const p of ['az', 'pol', 'r', 'tx', 'ty', 'tz']) cam[p] += (goal[p] - cam[p]) * k;
+    if (!drag && !focused && !openKey) goal.az += dt * 0.04;
+    if (outside.visible) outside.scale.setScalar(outside.scale.x + (1 - outside.scale.x) * k);
+    LV.forEach((L) => { // a hidden floor floats up and fades out of the way
+      const ty = L.show ? L.ty : L.y + 3.5, s = L.show ? 1 : 0.0001;
+      L.g.position.y += (ty - L.g.position.y) * k;
+      const sc = L.g.scale.y + (s - L.g.scale.y) * k; L.g.scale.set(1, sc, 1);
+      if (!L.show && sc < 0.02) L.g.visible = false;
+    });
+  }
+  ROOMS.forEach((r) => (r.mat.emissiveIntensity = r === focused ? 0.18 + Math.sin(now / 300) * 0.08 : 0));
+  placeCamera(); renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

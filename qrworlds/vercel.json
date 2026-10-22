@@ -10,6 +10,14 @@
       "destination": "/log"
     },
     {
+      "source": "/h/linden",
+      "destination": "/house"
+    },
+    {
+      "source": "/H/linden",
+      "destination": "/house"
+    },
+    {
       "source": "/H/:id",
       "destination": "/home"
     },
