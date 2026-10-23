@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OfficeWorld · QR Worlds</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex">
+<meta name="description" content="A floorplan turned into a 3D model of a serviced office floor, with live occupancy. A QR Worlds sample with a made-up building.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preload" href="/vendor/three-r128.min.js" as="script">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Lato:wght@300;400;700&display=swap" media="print" onload="this.media='all';window.fontsIn&&fontsIn()" id="fontcss">
+<style>
+:root {
+  --bg: #0b0d14;
+  --glass: rgba(22, 23, 28, 0.72);
+  --glass-2: rgba(255, 255, 255, 0.07);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --text: #f5f5f7;
+  --muted: #a7a7b0;
+  --gold: #d9b77e;
+  --gold-2: #b8925a;
+  --ok: #30d158;
+  --blue: #0a84ff;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+canvas#world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+.glass { background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px); border: 0.5px solid var(--stroke); }
+
+.top { position: fixed; top: max(14px, env(safe-area-inset-top)); left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 5; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.badge { display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; border-radius: 999px; }
+.mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: #f5f3ef; color: #111216; font-weight: 800; font-size: 12px; letter-spacing: -0.04em; }
+.badge b { display: block; font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+.badge small { display: block; font-size: 11px; color: var(--muted); }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; transition: transform 0.4s var(--spring); }
+.icon-btn:active { transform: scale(0.88); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+.shade { position: fixed; left: 0; right: 0; top: 0; height: 240px; z-index: 3; pointer-events: none; background: linear-gradient(rgba(8, 9, 16, 0.7), rgba(8, 9, 16, 0.2) 65%, transparent); }
+
+.toast { position: fixed; left: 50%; top: calc(max(14px, env(safe-area-inset-top)) + 64px); transform: translate(-50%, -12px); z-index: 6; padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.5s var(--spring); white-space: nowrap; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast span { color: var(--gold); margin-left: 6px; font-variant-numeric: tabular-nums; }
+
+.dock { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 6; width: min(calc(100% - 28px), 440px); padding: 18px 18px 14px; border-radius: 28px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); transition: transform 0.6s var(--spring), opacity 0.4s var(--ease); }
+.dock.hide { transform: translate(-50%, 130%); opacity: 0; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.price { margin-top: 4px; font-size: 30px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.price small { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
+.addr { margin-top: 6px; font-size: 14px; color: var(--muted); }
+.facts-row { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 14px 0 14px; padding-top: 14px; border-top: 0.5px solid var(--stroke); font-size: 13px; font-weight: 600; color: #d8d8de; }
+.facts-row span { display: inline-flex; align-items: center; gap: 6px; }
+.facts-row svg { width: 16px; height: 16px; color: var(--muted); }
+.cta { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; border-radius: 14px; font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: #111216; background: #f5f3ef; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); transition: transform 0.4s var(--spring), background 0.2s; }
+.cta:hover { background: #fff; }
+.cta:active { transform: scale(0.97); }
+.cta svg { width: 18px; height: 18px; }
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.tile { display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #cfcfd6; background: rgba(255, 255, 255, 0.06); transition: transform 0.4s var(--spring), color 0.2s, background 0.25s; }
+.tile svg { width: 16px; height: 16px; flex: none; }
+.tile:active { transform: scale(0.94); }
+.tile.on { color: #111216; background: var(--gold); }
+@media (max-width: 380px) { .tile svg { display: none; } }
+.tile:focus-visible, .cta:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.scrim { position: fixed; inset: 0; z-index: 7; background: rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease); }
+.scrim.show { opacity: 1; pointer-events: auto; }
+.sheet { position: fixed; left: 50%; bottom: 0; z-index: 8; width: min(100%, 520px); max-height: 78vh; overflow: auto; border-radius: 32px 32px 0 0; padding: 10px max(22px, env(safe-area-inset-left)) calc(26px + env(safe-area-inset-bottom)); box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.3); transform: translate(-50%, 105%); transition: transform 0.6s var(--spring); }
+.sheet.show { transform: translate(-50%, 0); }
+.sheet.peek { max-height: 42vh; }
+.sheet-x { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+.sheet-x svg { width: 14px; height: 14px; }
+.grab { width: 38px; height: 5px; border-radius: 3px; background: var(--stroke); margin: 0 auto 14px; }
+.sheet h2 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.035em; padding-right: 36px; }
+.sheet .sub { margin: 6px 0 18px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+.row { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 18px; background: var(--glass-2); margin-bottom: 8px; transition: transform 0.3s var(--spring), background 0.2s; }
+button.row:active { transform: scale(0.97); }
+.row.on { background: rgba(232, 194, 122, 0.16); }
+.row .sw { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center; font-size: 19px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+.row b { display: block; font-size: 15px; font-weight: 600; }
+.row small { display: block; font-size: 12px; color: var(--muted); margin-top: 1px; }
+.row .end { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 16px; }
+.fact { padding: 12px 6px; border-radius: 16px; background: var(--glass-2); text-align: center; }
+.fact b { display: block; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.fact small { font-size: 11px; color: var(--muted); }
+.pill-btn { display: block; width: 100%; padding: 15px; border-radius: 14px; font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: #111216; background: #f5f3ef; text-align: center; text-decoration: none; margin-top: 14px; transition: transform 0.4s var(--spring), opacity 0.2s; }
+.pill-btn:active { transform: scale(0.97); }
+.pill-btn[disabled] { opacity: 0.4; pointer-events: none; }
+.pill-btn.ghost { background: var(--glass-2); color: var(--text); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 10px 14px; border-radius: 999px; background: var(--glass-2); font-size: 14px; font-weight: 600; border: 1.5px solid transparent; transition: transform 0.3s var(--spring); }
+.chip:active { transform: scale(0.94); }
+.chip.on { border-color: var(--gold); color: var(--gold); }
+.label { margin: 18px 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.45; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { padding: 14px 10px; border-radius: 16px; background: var(--glass-2); }
+.stat b { display: block; font-size: 26px; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--gold); }
+.stat small { font-size: 11px; color: var(--muted); }
+.bars { display: flex; align-items: flex-end; gap: 8px; height: 110px; padding: 14px 14px 0; border-radius: 18px; background: var(--glass-2); margin-top: 8px; }
+.bars div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; font-size: 11px; color: var(--muted); padding-bottom: 8px; }
+.bars i { display: block; width: 100%; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, var(--gold), rgba(201, 151, 63, 0.4)); transform-origin: bottom; animation: grow 0.9s var(--spring) both; }
+@keyframes grow { from { transform: scaleY(0); } }
+.done { text-align: center; padding: 10px 0 4px; }
+.done .tick { width: 72px; height: 72px; border-radius: 50%; background: var(--ok); margin: 0 auto 14px; display: grid; place-items: center; animation: pop 0.7s var(--spring); }
+.done .tick svg { width: 36px; height: 36px; color: #fff; }
+@keyframes pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.intro { position: fixed; inset: 0; z-index: 9; display: grid; place-items: end center; padding-bottom: calc(60px + env(safe-area-inset-bottom)); pointer-events: none; transition: opacity 0.8s var(--ease); }
+.intro.gone { opacity: 0; }
+.intro .msg { padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+/* One Avenue-style skin: warm white cards, muted gold, Bodoni headings, square buttons */
+:root { --bg: #1a1814; --glass: rgba(247, 245, 241, 0.94); --glass-2: rgba(60, 50, 30, 0.06); --stroke: rgba(0, 0, 0, 0.1); --text: #1b1a17; --muted: #6e695f; --gold: #a8925c; --gold-2: #8a7442; --serif: "Bodoni Moda", "Bodoni 72", Didot, Georgia, serif; --font: "Lato", -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+body { color: var(--text); }
+.glass { -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.shade { background: linear-gradient(rgba(10, 9, 7, 0.55), rgba(10, 9, 7, 0.15) 65%, transparent); }
+.mark { background: var(--gold); color: #fff; font-family: var(--serif); font-weight: 700; border-radius: 2px; font-size: 13px; }
+.badge { border-radius: 4px; }
+.badge b, .price, .sheet h2, .stat b, .fact b, .done h2 { font-family: var(--serif); font-weight: 700; letter-spacing: -0.01em; }
+.price { font-size: 32px; }
+.dock { border-radius: 6px; }
+.sheet { border-radius: 10px 10px 0 0; }
+.tag { color: var(--gold-2); }
+.facts-row { color: #3a3833; }
+.cta, .pill-btn { background: var(--gold); color: #fff; border-radius: 2px; font-family: var(--serif); font-weight: 700; letter-spacing: 0.01em; box-shadow: none; }
+.cta:hover { background: #b59f68; }
+.pill-btn.ghost { background: transparent; color: var(--gold-2); border: 1px solid var(--gold); }
+.tile { border-radius: 2px; color: #3a3833; background: rgba(60, 50, 30, 0.07); }
+.tile.on { background: var(--gold); color: #fff; }
+.row, .fact, .stat, .bars { border-radius: 4px; }
+.row.on { background: rgba(168, 146, 92, 0.18); }
+.chip { border-radius: 2px; }
+.chip.on { border-color: var(--gold); color: var(--gold-2); }
+.stat b { color: var(--gold-2); }
+.toast span { color: var(--gold-2); }
+.sheet-x { background: rgba(0, 0, 0, 0.06); }
+.bars i { background: linear-gradient(180deg, var(--gold), rgba(168, 146, 92, 0.35)); }
+.icon-btn { border-radius: 4px; }
+.toast, .legend, .intro .msg { border-radius: 4px; }
+.st.avail { background: rgba(48, 160, 80, 0.14); color: #1f7a3a; }
+.st.hold { background: rgba(214, 128, 0, 0.14); color: #a35f00; }
+.st.occ { background: rgba(0, 0, 0, 0.06); color: var(--muted); }
+.amen { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-top: 4px; }
+.amen div { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.35; color: var(--muted); }
+.amen b { display: block; color: var(--text); font-size: 14px; }
+.amen i { flex: none; width: 8px; height: 8px; margin-top: 5px; background: var(--gold); }
+@media (min-width: 900px) {
+  .dock { left: 24px; bottom: 24px; transform: none; width: 420px; }
+  .dock.hide { transform: translateY(calc(100% + 40px)); }
+  .sheet { left: 24px; bottom: 24px; width: 440px; border-radius: 6px; max-height: calc(100vh - 110px); transform: translateY(calc(100% + 40px)); }
+  .sheet.show { transform: none; }
+  .sheet.peek { max-height: calc(100vh - 110px); }
+  .toast, .legend { left: calc(50% + 230px); }
+}
+.fine { margin-top: 10px; font-size: 11px; color: var(--muted); text-align: center; }
+.legend { position: fixed; left: 50%; top: calc(max(14px, env(safe-area-inset-top)) + 64px); transform: translate(-50%, -12px); z-index: 5; display: flex; gap: 14px; padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.5s var(--spring); white-space: nowrap; }
+.legend.show { opacity: 1; transform: translate(-50%, 0); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.st { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.st.avail { background: rgba(48, 209, 88, 0.18); color: #5be584; }
+.st.hold { background: rgba(255, 159, 10, 0.18); color: #ffb340; }
+.st.occ { background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+</style>
+</head>
+<body>
+<canvas id="world"></canvas>
+
+<div class="top">
+  <div class="badge glass"><div class="mark">QW</div><div><b>OfficeWorld</b><small>Sample floor · made-up building</small></div></div>
+  <button class="icon-btn glass" id="replayBtn" aria-label="Replay the build"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+</div>
+
+<div class="shade"></div>
+<div class="toast glass" id="toast"></div>
+<div class="legend glass" id="legend"><span><i style="background:#30d158"></i>Available</span><span><i style="background:#ff9f0a"></i>On hold</span><span><i style="background:#6b7180"></i>Let</span></div>
+
+<section class="dock glass hide" id="dock" aria-label="Floor">
+  <div class="head"><div><span class="tag">Fourth floor · 2 suites free now</span><div class="price">£650 <small>per desk / month, from</small></div><div class="addr">Sample building · City of London, EC3</div></div></div>
+  <div class="facts-row">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="3" rx="1"/><path d="M5 11v8M19 11v8M9 8V5h6v3"/></svg>46 desks</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3"/></svg>3,875 sq ft</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7-2.6"/></svg>2 meeting rooms</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>24/7 access</span>
+  </div>
+  <button class="cta" id="tourBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>Book a tour</button>
+  <div class="tabs">
+    <button class="tile" data-panel="spaces"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 10h18M10 10v11M15 3v7"/></svg>Spaces</button>
+    <button class="tile" id="occBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>Live</button>
+    <button class="tile" id="outBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1"/><path d="M9 6h2M13 6h2M9 10h2M13 10h2M9 14h2M13 14h2M10 22v-4h4v4"/></svg><span id="outLbl">Building</span></button>
+    <button class="tile" data-panel="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stats</button>
+  </div>
+  <div class="fine">Illustrative 3D model based on a floorplan. Check measurements.</div>
+</section>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet glass" id="sheet" aria-live="polite"></section>
+<div class="intro" id="intro"><div class="msg glass">Building the floor…</div></div>
+
+<script src="/vendor/three-r128.min.js"></script>
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+const ease = (x) => { x = Math.min(Math.max(x, 0), 1); return 1 - Math.pow(1 - x, 3); };
+const springE = (x) => { x = Math.min(Math.max(x, 0), 1); return 1 - Math.exp(-6 * x) * Math.cos(9 * x); };
+
+/* ---------- The floor, drawn as a typical Grade A City flex floorplate (metres, x across, z down the page) ---------- */
+// rect: [x1, z1, x2, z2]; status for suites: occ (let), hold, avail
+const SPACES = [
+  { id: 's401', name: 'Suite 401', kind: 'office', desks: 8, status: 'occ', em: '💼', floor: 0x8b857a, rect: [0, 0, 6, 5.6] },
+  { id: 's402', name: 'Suite 402', kind: 'office', desks: 4, status: 'avail', price: '£2,600', em: '💼', floor: 0x8b857a, rect: [6, 0, 10, 5.6] },
+  { id: 's403', name: 'Suite 403', kind: 'office', desks: 4, status: 'hold', price: '£2,600', em: '💼', floor: 0x8b857a, rect: [10, 0, 14, 5.6] },
+  { id: 'board', name: 'Boardroom', kind: 'meet', seats: 12, em: '🗂️', floor: 0x5a4030, rect: [14, 0, 20, 5.6] },
+  { id: 's404', name: 'Suite 404', kind: 'office', desks: 6, status: 'occ', em: '💼', floor: 0x8b857a, rect: [20, 0, 24, 6.4] },
+  { id: 's405', name: 'Suite 405', kind: 'office', desks: 2, status: 'avail', price: '£1,450', em: '💼', floor: 0x8b857a, rect: [20, 6.4, 24, 9.6] },
+  { id: 'booths', name: 'Phone booths', kind: 'meet', seats: 3, em: '📞', floor: 0x2e3a52, rect: [20, 9.6, 24, 11.8] },
+  { id: 's406', name: 'Suite 406', kind: 'office', desks: 6, status: 'occ', em: '💼', floor: 0x8b857a, rect: [0, 7, 5, 11.2] },
+  { id: 'meet', name: 'Meeting room', kind: 'meet', seats: 6, em: '🗂️', floor: 0x5a4030, rect: [0, 11.2, 5, 15] },
+  { id: 'cowork', name: 'Coworking', kind: 'shared', desks: 16, em: '💻', floor: 0xb08d63, rect: [5, 7, 20, 11.8] },
+  { id: 'reception', name: 'Reception', kind: 'shared', em: '🛎️', floor: 0xece8e1, marble: true, rect: [5, 11.8, 12.5, 15] },
+  { id: 'cafe', name: 'Café & kitchen', kind: 'shared', em: '☕', floor: 0xc4a37a, rect: [19, 11.8, 24, 15] },
+];
+const STATUS = { occ: { col: 0x6b7180, txt: 'Let' }, hold: { col: 0xff9f0a, txt: 'On hold' }, avail: { col: 0x30d158, txt: 'Available' } };
+SPACES.forEach((s) => { const [x1, z1, x2, z2] = s.rect; s.m2 = (x2 - x1) * (z2 - z1); s.ft = Math.round(s.m2 * 10.764); s.sub = s.desks ? `${s.desks} desks` : s.seats ? `${s.seats} seats` : ''; });
+// Wall runs: [x1, z1, x2, z2, type, openings]; type is ext (curtain wall), glass (partition) or navy (panelled feature wall); openings are [from, to] along the run
+const WALLS = [
+  [0, 0, 24, 0, 'ext', []], [24, 0, 24, 15, 'ext', []], [0, 0, 0, 15, 'ext', []], [0, 15, 12.5, 15, 'ext', []], [19, 15, 24, 15, 'ext', []],
+  [0, 5.6, 20, 5.6, 'glass', [[4.8, 5.6], [8.6, 9.4], [12.6, 13.4], [16.4, 17.6]]],
+  [6, 0, 6, 5.6, 'glass', []], [10, 0, 10, 5.6, 'glass', []], [14, 0, 14, 5.6, 'navy', []],
+  [20, 0, 20, 9.6, 'glass', [[5.7, 6.3], [7.4, 8.2]]], [20, 9.6, 20, 11.8, 'glass', []],
+  [20, 6.4, 24, 6.4, 'glass', []], [20, 9.6, 24, 9.6, 'glass', []],
+  [21.33, 9.6, 21.33, 11.8, 'glass', []], [22.67, 9.6, 22.67, 11.8, 'glass', []],
+  [20, 11.8, 24, 11.8, 'glass', [[0.4, 0.95], [1.73, 2.28], [3.06, 3.61]]],
+  [0, 7, 5, 7, 'glass', []], [0, 11.2, 5, 11.2, 'glass', []],
+  [5, 7, 5, 11.2, 'glass', [[3.2, 4.0]]], [5, 11.2, 5, 15, 'navy', [[0.8, 1.6]]],
+];
+const CORE = [12.5, 11.8, 19, 15]; // lifts, stairs and WCs
+const CX = 12, CZ = 7.5, H = 1.5; // plan centre; walls are cut at 1.5 m so you can see in
+
+/* ---------- Renderer, scene, camera ---------- */
+const canvas = $('world');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
+{
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+  const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#12110e'); gr.addColorStop(0.6, '#2a241c'); gr.addColorStop(1, '#4d3d2b');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+  scene.background = new THREE.CanvasTexture(c); scene.background.encoding = THREE.sRGBEncoding;
+}
+scene.fog = new THREE.Fog(0x2a241c, 80, 200);
+scene.add(new THREE.HemisphereLight(0xcfd8ff, 0x3a2a22, 0.55));
+const sun = new THREE.DirectionalLight(0xffe2bc, 1.0);
+sun.position.set(-14, 26, 16); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 90 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; scene.add(sun);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(110, 64), new THREE.MeshStandardMaterial({ color: 0x1d1a16, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+const marbleTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#f1eee8'; g.fillRect(0, 0, 512, 512);
+  let sd = 3; const r = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 26; i++) {
+    g.strokeStyle = `rgba(${120 + r() * 40},${115 + r() * 30},${110 + r() * 30},${0.12 + r() * 0.25})`; g.lineWidth = 0.6 + r() * 2.2;
+    g.beginPath(); let x = r() * 512, y = r() * 512; g.moveTo(x, y);
+    for (let k = 0; k < 9; k++) { x += (r() - 0.3) * 90; y += (r() - 0.5) * 70; g.lineTo(x, y); } g.stroke();
+  }
+  g.strokeStyle = 'rgba(0,0,0,0.06)'; g.lineWidth = 2; for (let k = 0; k <= 512; k += 128) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, 512); g.moveTo(0, k); g.lineTo(512, k); g.stroke(); } // tile joints
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})();
+const M = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, ...o });
+function box(parent, w, h, d, x, y, z, mat, ry = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; parent.add(m); return m;
+}
+const SERIF = '"Bodoni Moda", "Bodoni 72", Didot, Georgia, serif', SANS = 'Lato, -apple-system, sans-serif', sprites = [];
+function drawLabel(c, top, bottom, accent) {
+  const g = c.getContext('2d'); g.clearRect(0, 0, 512, 180);
+  g.font = `700 50px ${SERIF}`; const w1 = g.measureText(top).width;
+  g.font = `700 32px ${SANS}`; const w2 = bottom ? g.measureText(bottom.toUpperCase()).width * 1.08 : 0;
+  const w = Math.max(w1, w2) + 64, x0 = (512 - w) / 2, h = bottom ? 146 : 90;
+  g.fillStyle = 'rgba(248,246,242,0.96)'; g.fillRect(x0, 10, w, h);
+  g.fillStyle = '#a8925c'; g.fillRect(x0, 10, w, 5);
+  g.textAlign = 'center'; g.fillStyle = '#1b1a17'; g.font = `700 50px ${SERIF}`; g.fillText(top, 256, 74);
+  if (bottom) { g.fillStyle = accent; g.font = `700 32px ${SANS}`; if ('letterSpacing' in g) g.letterSpacing = '2px'; g.fillText(bottom.toUpperCase(), 256, 128); if ('letterSpacing' in g) g.letterSpacing = '0px'; }
+}
+window.fontsIn = () => document.fonts && document.fonts.load(`700 50px "Bodoni Moda"`).then(() => document.fonts.load('700 32px Lato')).then(() => sprites.forEach(([c, a, t]) => { drawLabel(c, ...a); t.needsUpdate = true; }));
+function textSprite(top, bottom, accent = '#8a7442') {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 180;
+  drawLabel(c, top, bottom, accent);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; sprites.push([c, [top, bottom, accent], t]);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+  const k = innerWidth < innerHeight ? 5.2 : 4.2; s.scale.set(k, k * 180 / 512, 1); s.renderOrder = 10; return s;
+}
+
+/* ---------- The floor model ---------- */
+const house = new THREE.Group(); scene.add(house);
+const plan = new THREE.Group(); plan.position.set(-CX, 0.3, -CZ); house.add(plan);
+const floors = new THREE.Group(), walls = new THREE.Group(), furniture = new THREE.Group(), labels = new THREE.Group();
+plan.add(floors, walls, furniture, labels);
+const base = box(plan, 24.6, 0.3, 15.6, CX, -0.15, CZ, M(0x46413a, { roughness: 0.95 })); // slab, its top is the corridor carpet
+
+SPACES.forEach((r, i) => {
+  r.mat = M(r.floor, { roughness: r.marble ? 0.25 : 0.9, emissive: 0xe8c27a, emissiveIntensity: 0, ...(r.marble ? { map: marbleTex, color: 0xffffff } : {}) });
+  if (r.marble) r.floor = 0xffffff;
+  const [x1, z1, x2, z2] = r.rect;
+  const m = box(floors, x2 - x1 - 0.02, 0.06, z2 - z1 - 0.02, (x1 + x2) / 2, 0.03, (z1 + z2) / 2, r.mat);
+  m.userData.room = r; m.userData.d = i * 0.06;
+  r.c = new THREE.Vector3((x1 + x2) / 2, 0, (z1 + z2) / 2);
+  r.label = textSprite(r.name, r.sub); r.label.position.set(r.c.x, H + 1.1, r.c.z); r.label.userData.room = r; labels.add(r.label);
+  if (r.kind === 'office') {
+    r.occLabel = textSprite(r.name, STATUS[r.status].txt, r.status === 'avail' ? '#1f9e45' : r.status === 'hold' ? '#c67a00' : '#7a7f8c');
+    r.occLabel.position.copy(r.label.position); r.occLabel.userData.room = r; r.occLabel.visible = false; labels.add(r.occLabel);
+  }
+});
+
+const frameM = M(0x2a2622, { roughness: 0.5, metalness: 0.3 }), stone = M(0xe3ddd2, { roughness: 0.9 }), brass = M(0xc2a464, { metalness: 0.85, roughness: 0.3 }), navy = M(0x1e2940, { roughness: 0.6 }), marble = M(0xffffff, { map: marbleTex, roughness: 0.25 });
+const glassM = new THREE.MeshStandardMaterial({ color: 0xbfe3ff, transparent: true, opacity: 0.2, roughness: 0.05, metalness: 0.1, depthWrite: false });
+const extGlassM = new THREE.MeshStandardMaterial({ color: 0x9fc8ee, transparent: true, opacity: 0.3, roughness: 0.05, metalness: 0.2, depthWrite: false });
+const frostM = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, roughness: 0.6, depthWrite: false });
+function piece(x1, z1, x2, z2, t, y0, y1, mat) {
+  const len = Math.hypot(x2 - x1, z2 - z1);
+  const m = box(walls, len, y1 - y0, t, (x1 + x2) / 2, (y0 + y1) / 2, (z1 + z2) / 2, mat, -Math.atan2(z2 - z1, x2 - x1));
+  if (mat.transparent) m.castShadow = false;
+  return m;
+}
+WALLS.forEach(([x1, z1, x2, z2, type, gaps]) => {
+  const len = Math.hypot(x2 - x1, z2 - z1), dx = (x2 - x1) / len, dz = (z2 - z1) / len;
+  const P = (s) => [x1 + dx * s, z1 + dz * s];
+  let s = 0;
+  [...gaps, [len, len]].forEach(([a, b]) => {
+    if (a > s) {
+      if (type === 'ext') {
+        piece(...P(s), ...P(a), 0.25, 0, 0.35, stone); piece(...P(s), ...P(a), 0.05, 0.35, H, extGlassM); piece(...P(s), ...P(a), 0.28, H, H + 0.05, frameM);
+        for (let q = s + 1.5; q < a - 0.2; q += 1.5) { const [px, pz] = P(q); box(walls, 0.08, H - 0.35, 0.12, px, (H + 0.35) / 2, pz, frameM, -Math.atan2(dz, dx)); }
+      } else if (type === 'navy') {
+        piece(...P(s), ...P(a), 0.14, 0, H, navy); piece(...P(s), ...P(a), 0.18, H, H + 0.04, brass); piece(...P(s), ...P(a), 0.16, 0.85, 0.88, brass);
+        for (let q = s + 0.6; q < a - 0.2; q += 0.6) { const [px, pz] = P(q); box(walls, 0.025, H - 0.1, 0.17, px, H / 2, pz, brass, -Math.atan2(dz, dx)); }
+      } else {
+        piece(...P(s), ...P(a), 0.04, 0.06, H, glassM); piece(...P(s), ...P(a), 0.05, 0.9, 1.08, frostM);
+        piece(...P(s), ...P(a), 0.08, H, H + 0.04, frameM); piece(...P(s), ...P(a), 0.08, 0, 0.06, frameM);
+      }
+    }
+    if (b > a) [a, b].forEach((q) => { const [px, pz] = P(q); box(walls, 0.06, H, 0.1, px, H / 2, pz, brass, -Math.atan2(dz, dx)); }); // door frame posts
+    s = b;
+  });
+});
+{ // core: lifts, stairs, WCs
+  const [x1, z1, x2, z2] = CORE;
+  box(walls, x2 - x1, H, z2 - z1, (x1 + x2) / 2, H / 2, (z1 + z2) / 2, marble);
+  box(walls, 0.06, H, z2 - z1, x1 - 0.03, H / 2, (z1 + z2) / 2, navy); for (let z = z1 + 0.5; z < z2; z += 0.55) box(walls, 0.07, H - 0.1, 0.025, x1 - 0.04, H / 2, z, brass);
+  [14.2, 15.75, 17.3].forEach((x) => box(walls, 1.1, 1.3, 0.04, x, 0.65, z1 - 0.02, M(0xb9bec6, { metalness: 0.6, roughness: 0.3 })));
+  const t = textSprite('Lifts & WCs', ''); t.position.set((x1 + x2) / 2, H + 0.9, (z1 + z2) / 2); t.scale.multiplyScalar(0.8); t.userData.room = null; labels.add(t);
+}
+
+/* Furniture and people */
+const F = furniture, wood = M(0x4a3122, { roughness: 0.45 }), oak = M(0xe9e4da, { roughness: 0.5 }), white = M(0xf3f2ef, { roughness: 0.4 }), chairM = M(0x26262a), screenM = M(0x15161b, { roughness: 0.3 }), fabric = M(0xb9b8b2), fabric2 = M(0xb8743f, { roughness: 0.5 }), velvet = M(0x22305a, { roughness: 0.9 }), leaf = M(0x3f7a3a, { roughness: 0.7, side: THREE.DoubleSide }), potM = M(0x2a2622, { roughness: 0.5 }), glow = new THREE.MeshBasicMaterial({ color: 0xfff1d6 });
+const SHIRTS = [0x0a84ff, 0xff9f0a, 0x30d158, 0xbf5af2, 0xff375f, 0x64d2ff, 0xf5f3ef, 0x2c3e66].map((c) => M(c, { roughness: 0.7 }));
+const SKIN = [0xf1c7a5, 0xc68e62, 0x8d5a3b, 0xe0ac80].map((c) => M(c, { roughness: 0.6 }));
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+function person(g, x, z) {
+  const b = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.19, 0.55, 12), SHIRTS[Math.floor(rnd() * SHIRTS.length)]); b.position.set(x, 0.78, z); b.castShadow = true; g.add(b);
+  const h = new THREE.Mesh(new THREE.SphereGeometry(0.12, 14, 10), SKIN[Math.floor(rnd() * SKIN.length)]); h.position.set(x, 1.17, z); h.castShadow = true; g.add(h);
+}
+function chair(g, x, z, ry = 0, mat = chairM) { // back sits on the +z side before turning
+  const c = new THREE.Group(); c.position.set(x, 0, z); c.rotation.y = ry; g.add(c);
+  box(c, 0.46, 0.07, 0.46, 0, 0.46, 0, mat); box(c, 0.46, 0.48, 0.06, 0, 0.74, 0.22, mat); box(c, 0.06, 0.42, 0.06, 0, 0.22, 0, frameM);
+  return c;
+}
+function desk(x, z, ry, busy) { // facing -z in its own frame: screen at the back, chair at the front
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; F.add(g);
+  box(g, 1.3, 0.04, 0.68, 0, 0.72, 0, oak); box(g, 0.04, 0.7, 0.6, -0.6, 0.36, 0, white); box(g, 0.04, 0.7, 0.6, 0.6, 0.36, 0, white);
+  box(g, 0.56, 0.33, 0.03, 0, 0.98, -0.24, screenM); box(g, 0.05, 0.16, 0.05, 0, 0.82, -0.25, frameM);
+  chair(g, 0, 0.55);
+  if (busy) person(g, 0, 0.5);
+}
+function cluster(cx, zc, cols, busy) { // facing pairs of desks; busy(n) says whether desk n is in use
+  let n = 0;
+  for (let i = 0; i < cols; i++) {
+    const x = cx + (i - (cols - 1) / 2) * 1.35;
+    desk(x, zc - 0.36, Math.PI, busy(n++)); desk(x, zc + 0.36, 0, busy(n++));
+  }
+}
+function single(x, z, ry, busy) { desk(x, z, ry, busy); }
+function plant(x, z, s = 1) { // kentia palm in a tall dark square planter
+  const g = new THREE.Group(); g.position.set(x, 0, z); F.add(g);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * s, 0.22 * s, 0.6 * s, 4), potM); pot.rotation.y = Math.PI / 4; pot.position.y = 0.3 * s; pot.castShadow = true; g.add(pot);
+  for (let i = 0; i < 7; i++) {
+    const f = new THREE.Mesh(new THREE.PlaneGeometry(0.16 * s, 1.0 * s), leaf), a = (i / 7) * Math.PI * 2 + rnd();
+    f.geometry.translate(0, 0.5 * s, 0); f.position.y = 0.6 * s; f.rotation.set(0.5 + rnd() * 0.5, a, 0, 'YXZ'); f.castShadow = true; g.add(f);
+  }
+}
+function orchid(x, y, z) { box(F, 0.14, 0.14, 0.14, x, y + 0.07, z, white); [[0, 0.32], [0.06, 0.4], [-0.05, 0.46], [0.02, 0.52]].forEach(([dx, dy]) => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), M(0xb05cc8)); b.position.set(x + dx, y + dy, z); F.add(b); }); box(F, 0.015, 0.45, 0.015, x, y + 0.3, z, leaf); }
+function flowers(x, y, z) { box(F, 0.16, 0.22, 0.16, x, y + 0.11, z, glassM); for (let i = 0; i < 9; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), M(0xc0262c)); b.position.set(x + (rnd() - 0.5) * 0.28, y + 0.3 + rnd() * 0.15, z + (rnd() - 0.5) * 0.28); F.add(b); } }
+function pendant(x, z) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), glow); b.position.set(x, 2.15, z); F.add(b); box(F, 0.015, 0.5, 0.015, x, 2.55, z, brass); }
+function sofa(x, z, w, ry, mat = fabric) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; F.add(g);
+  box(g, w, 0.4, 0.8, 0, 0.22, 0, mat); box(g, w, 0.42, 0.18, 0, 0.6, 0.31, mat);
+  box(g, 0.18, 0.55, 0.8, -w / 2 + 0.09, 0.3, 0, mat); box(g, 0.18, 0.55, 0.8, w / 2 - 0.09, 0.3, 0, mat);
+}
+const all = () => true, none = () => false;
+// Suite 401: let, 7 of 8 in
+cluster(3, 1.6, 2, (n) => n !== 3); cluster(3, 4.0, 2, all); plant(0.5, 5.0);
+// Suite 402 and 403: empty, ready to go
+cluster(8, 2.4, 2, none); plant(9.4, 0.6, 0.8); cluster(12, 2.4, 2, none); plant(13.4, 0.6, 0.8);
+// Boardroom
+box(F, 4.2, 0.06, 1.3, 17, 0.74, 2.8, wood); box(F, 3.2, 0.7, 0.5, 17, 0.36, 2.8, frameM);
+for (let i = 0; i < 5; i++) { const x = 15.3 + i * 0.85; chair(F, x, 1.75, Math.PI, fabric2); chair(F, x, 3.85, 0, fabric2); }
+chair(F, 14.55, 2.8, -Math.PI / 2, fabric2); chair(F, 19.45, 2.8, Math.PI / 2, fabric2);
+flowers(17, 0.77, 2.8); orchid(19.5, 0, 0.4); [16, 18].forEach((x) => pendant(x, 2.8));
+box(F, 0.06, 0.75, 1.5, 14.3, 1.1, 2.8, screenM); box(F, 0.1, 0.75, 0.1, 14.3, 0.38, 2.8, frameM);
+// Suite 404: let, full
+cluster(22, 1.6, 2, all); cluster(22, 4.3, 1, all);
+// Suite 405: available
+single(21.6, 8.0, Math.PI / 2, false); single(22.9, 8.0, -Math.PI / 2, false); plant(23.5, 6.9, 0.8);
+// Phone booths, one in use
+[20.67, 22, 23.33].forEach((x, i) => { box(F, 1.0, 0.45, 0.45, x, 0.23, 9.95, fabric2); box(F, 1.0, 0.6, 0.12, x, 0.6, 9.75, fabric2); box(F, 0.55, 0.04, 0.4, x, 0.72, 10.75, oak); box(F, 0.05, 0.7, 0.05, x, 0.36, 10.75, frameM); if (i === 1) person(F, x, 9.95); });
+// Suite 406: let, 5 of 6 in
+cluster(2.5, 9.1, 3, (n) => n !== 2);
+// Meeting room, a meeting on
+box(F, 2.4, 0.06, 1.1, 2.5, 0.74, 13.1, wood); box(F, 1.6, 0.7, 0.4, 2.5, 0.36, 13.1, frameM);
+[[1.7, 12.25, Math.PI], [2.5, 12.25, Math.PI], [3.3, 12.25, Math.PI], [1.7, 13.95, 0], [2.5, 13.95, 0], [3.3, 13.95, 0]].forEach(([x, z, ry], i) => { chair(F, x, z, ry, fabric2); if (i % 2 === 0) person(F, x, z); });
+box(F, 0.06, 0.7, 1.3, 0.2, 1.1, 13.1, screenM);
+// Coworking: two benches of eight, eleven in today, plus a lounge corner
+const coBusy = [1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0];
+let co = 0; cluster(9.4, 8.6, 4, () => coBusy[co++]); cluster(15.6, 8.6, 4, () => coBusy[co++]);
+sofa(8, 11.0, 1.8, 0, fabric2); sofa(17.4, 11.0, 1.8, 0, velvet); box(F, 0.9, 0.36, 0.5, 17.4, 0.2, 10.2, wood); box(F, 0.9, 0.36, 0.5, 8, 0.2, 10.2, wood);
+plant(5.6, 7.6); plant(19.4, 7.6); plant(12.5, 11.2, 0.8);
+// Reception: desk, sofas, plants
+box(F, 2.4, 1.05, 0.7, 9, 0.53, 13.6, marble); box(F, 2.5, 0.05, 0.85, 9, 1.07, 13.6, wood); box(F, 2.42, 0.06, 0.04, 9, 0.2, 13.24, brass); orchid(8.1, 1.1, 13.6); flowers(9.9, 1.1, 13.6);
+[7.6, 10.4].forEach((x) => pendant(x, 13.0));
+person(F, 9, 14.3); chair(F, 9, 14.3);
+sofa(6.2, 14.3, 0.95, 0, fabric); sofa(7.3, 14.3, 0.95, 0, fabric); box(F, 0.8, 0.36, 0.5, 6.7, 0.2, 13.2, wood); orchid(6.7, 0.38, 13.2);
+plant(11.9, 12.4); plant(5.6, 12.4, 0.8);
+// Café: counter, island with stools, fridges
+box(F, 0.65, 0.92, 2.8, 23.6, 0.46, 13.5, navy); box(F, 0.7, 0.04, 2.85, 23.6, 0.94, 13.5, marble); box(F, 0.4, 0.4, 0.35, 23.6, 1.16, 12.6, screenM);
+box(F, 0.7, 1.9, 0.7, 23.6, 0.95, 14.55, M(0xc8ccd2, { metalness: 0.4, roughness: 0.4 }));
+box(F, 2.2, 0.95, 0.8, 21.2, 0.48, 13.4, navy); box(F, 2.3, 0.04, 0.9, 21.2, 0.97, 13.4, marble); [20.6, 21.8].forEach((x) => pendant(x, 13.4));
+[20.5, 21.2, 21.9].forEach((x, i) => { box(F, 0.32, 0.05, 0.32, x, 0.68, 14.1, chairM); box(F, 0.05, 0.66, 0.05, x, 0.33, 14.1, frameM); if (i === 0) person(F, x, 14.1); });
+furniture.children.forEach((m) => { m.userData.y = m.position.y; m.userData.d = rnd() * 0.5; });
+
+/* ---------- Outside: a classic City stone building, with this floor lit up ---------- */
+const outside = new THREE.Group(); outside.visible = false; scene.add(outside);
+{
+  const W = 26, D = 17, FL = 3.6, N = 7, portland = M(0xdcd3c1, { roughness: 0.95 }), cornice = M(0xe8e1d2, { roughness: 0.9 });
+  const glass = new THREE.MeshStandardMaterial({ color: 0x232a36, roughness: 0.15, metalness: 0.6 });
+  const lit = new THREE.MeshBasicMaterial({ color: 0xffcf80 }), dim = new THREE.MeshBasicMaterial({ color: 0x7a6440 }), black = M(0x141414, { roughness: 0.5 });
+  box(outside, W, FL * N, D, 0, FL * N / 2, 0, portland);
+  for (let y = 0.4; y < FL; y += 0.45) box(outside, W + 0.06, 0.05, D + 0.06, 0, y, 0, M(0xb8ae9a)); // rusticated ground floor
+  [FL, FL * 2, FL * (N - 1)].forEach((y) => box(outside, W + 0.5, 0.35, D + 0.5, 0, y, 0, cornice));
+  box(outside, W + 1.0, 0.6, D + 1.0, 0, FL * N + 0.3, 0, cornice); box(outside, W + 0.2, 0.9, D + 0.2, 0, FL * N + 1.05, 0, portland);
+  const windows = (face) => { // face: 1 = front (+z), 2 = side (-x)
+    const len = face === 1 ? W : D, n = Math.floor(len / 2.2);
+    for (let f = 1; f < N; f++) for (let i = 0; i < n; i++) {
+      const u = -len / 2 + (i + 0.5) * (len / n), y = f * FL + FL * 0.52, mat = f === 4 ? lit : rnd() < 0.18 ? dim : glass;
+      if (face === 1) { box(outside, 1.3, 2.1, 0.12, u, y, D / 2 + 0.02, black); box(outside, 1.1, 1.9, 0.1, u, y, D / 2 + 0.06, mat); box(outside, 1.5, 0.12, 0.3, u, y - 1.1, D / 2 + 0.1, cornice); }
+      else { box(outside, 0.12, 2.1, 1.3, -W / 2 - 0.02, y, u, black); box(outside, 0.1, 1.9, 1.1, -W / 2 - 0.06, y, u, mat); box(outside, 0.3, 0.12, 1.5, -W / 2 - 0.1, y - 1.1, u, cornice); }
+    }
+  };
+  windows(1); windows(2);
+  // entrance: black doors under a gold canopy, two lanterns
+  box(outside, 3.2, 2.9, 0.15, 0, 1.45, D / 2 + 0.05, black); box(outside, 1.3, 2.4, 0.05, -0.7, 1.25, D / 2 + 0.14, lit); box(outside, 1.3, 2.4, 0.05, 0.7, 1.25, D / 2 + 0.14, lit);
+  box(outside, 4.4, 0.18, 1.6, 0, 3.2, D / 2 + 0.8, brass);
+  [-2.3, 2.3].forEach((x) => { box(outside, 0.08, 0.6, 0.08, x, 2.6, D / 2 + 0.35, black); box(outside, 0.35, 0.5, 0.35, x, 2.2, D / 2 + 0.45, lit); box(outside, 0.45, 0.08, 0.45, x, 2.5, D / 2 + 0.45, black); });
+  box(outside, 20, 22, 18, -25, 11, -3, M(0x8d8577)); box(outside, 18, 28, 16, 24, 14, -4, M(0x3b3a40)); // neighbours
+  box(outside, 80, 0.08, 6, 0, 0.04, D / 2 + 4, M(0x3a3a40));
+  const tag = textSprite('This floor', 'Fourth floor'); tag.position.set(-W / 2 - 2, 4 * FL + 2, D / 2 + 3); tag.scale.multiplyScalar(1.6); outside.add(tag);
+  outside.traverse((m) => { if (m.isMesh) m.castShadow = m.receiveShadow = true; });
+}
+
+/* ---------- Camera: orbit with drag, fly to spaces ---------- */
+const HOME = { az: -0.5, pol: 0.9, r: 33, tx: 0, ty: 1.2, tz: 0.8 };
+const cam = { az: 0.0, pol: 0.02, r: 33, tx: 0, ty: 0, tz: 0 }, goal = { ...HOME };
+let intro = true, t0 = performance.now(), view = 'in', occ = false;
+function placeCamera() {
+  const sp = Math.sin(cam.pol);
+  camera.position.set(cam.tx + cam.r * sp * Math.sin(cam.az), cam.ty + cam.r * Math.cos(cam.pol), cam.tz + cam.r * sp * Math.cos(cam.az));
+  camera.lookAt(cam.tx, cam.ty, cam.tz);
+}
+const fitR = (r) => r * Math.max(1, 1.1 * innerHeight / innerWidth); // pull back on a phone held upright
+function resize() { // shift the picture clear of the card: right of it on a wide screen, above it on a phone
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h;
+  if (w >= 900) camera.setViewOffset(w, h, -230, 0, w, h); else camera.setViewOffset(w, h, 0, h * 0.17, w, h);
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+let drag = null, moved = 0;
+canvas.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; moved = 0; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', (e) => {
+  if (!drag || intro) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved += Math.abs(dx) + Math.abs(dy);
+  goal.az -= dx * 0.006; goal.pol = Math.min(1.35, Math.max(0.15, goal.pol - dy * 0.005)); drag = { x: e.clientX, y: e.clientY };
+});
+canvas.addEventListener('pointerup', (e) => { if (drag && moved < 8 && !intro) pick(e); drag = null; });
+canvas.addEventListener('wheel', (e) => { e.preventDefault(); goal.r = Math.min(120, Math.max(8, goal.r * (1 + e.deltaY * 0.001))); }, { passive: false });
+
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pick(e) {
+  if (view !== 'in') return;
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects([...labels.children.filter((l) => l.visible), ...floors.children])[0];
+  focusRoom(hit ? hit.object.userData.room : null);
+}
+let focused = null, toastT;
+const info = (r) => r.kind === 'office' ? `${r.desks} desks · ${r.m2.toFixed(0)} m² · ${STATUS[r.status].txt}${r.price ? ' · ' + r.price + ' pcm' : ''}` : r.kind === 'meet' ? `${r.seats} seats · bookable by the hour` : r.desks ? `${r.desks} hot desks · members` : 'Shared by everyone on the floor';
+function focusRoom(r) {
+  focused = r || null;
+  SPACES.forEach((x) => [x.label, x.occLabel].forEach((l) => l && (l.material.opacity = !r || x === r ? 1 : 0.12)));
+  if (!r) { Object.assign(goal, { tx: 0, ty: HOME.ty, tz: HOME.tz, r: fitR(HOME.r) }); $('toast').classList.remove('show'); return; }
+  const [x1, z1, x2, z2] = r.rect, d = openKey === 'spaces' ? 2.4 : 0;
+  Object.assign(goal, { tx: r.c.x - CX + Math.sin(goal.az) * d, ty: 0.4, tz: r.c.z - CZ + Math.cos(goal.az) * d, r: fitR(Math.max(11, 1.9 * Math.max(x2 - x1, z2 - z1))), pol: Math.min(goal.pol, 0.9) });
+  $('toast').innerHTML = `${r.em} ${r.name}<span>${info(r)}</span>`; $('toast').classList.add('show'); $('legend').classList.remove('show');
+  clearTimeout(toastT); toastT = setTimeout(() => { $('toast').classList.remove('show'); if (occ) $('legend').classList.add('show'); }, 3200);
+  document.querySelectorAll('.row[data-room]').forEach((b) => b.classList.toggle('on', b.dataset.room === r.id));
+}
+
+function setOcc(on) {
+  occ = on; if (on && view !== 'in') setView('in');
+  SPACES.forEach((r) => {
+    if (r.kind === 'office') { r.mat.color.setHex(on ? STATUS[r.status].col : r.floor); r.label.visible = !on; r.occLabel.visible = on; }
+    else r.mat.color.setHex(on ? 0x3e414b : r.floor);
+  });
+  $('occBtn').classList.toggle('on', on); $('legend').classList.toggle('show', on);
+}
+$('occBtn').addEventListener('click', () => setOcc(!occ));
+
+function setView(v) {
+  view = v; closeSheet(); focusRoom(null);
+  if (v === 'out' && occ) setOcc(false);
+  house.visible = v === 'in'; outside.visible = v === 'out';
+  $('outLbl').textContent = v === 'in' ? 'Building' : 'Floor';
+  $('outBtn').classList.toggle('on', v === 'out');
+  if (v === 'out') { outside.scale.setScalar(0.9); Object.assign(goal, { az: -0.5, pol: 1.2, r: fitR(62), tx: 0, ty: 12, tz: 0 }); }
+  else Object.assign(goal, { ...HOME, r: fitR(HOME.r) });
+}
+$('outBtn').addEventListener('click', () => setView(view === 'in' ? 'out' : 'in'));
+
+/* ---------- Intro timeline ---------- */
+const INTRO = 3.6;
+function runIntro(t) {
+  base.scale.set(1, Math.max(0.0001, ease(t / 0.5)), 1);
+  floors.children.forEach((m) => { const k = springE((t - 0.35 - m.userData.d) / 0.6); m.scale.setScalar(Math.max(0.0001, k)); });
+  walls.scale.set(1, Math.max(0.0001, springE((t - 1.1) / 0.9)), 1);
+  furniture.children.forEach((m) => { const k = springE((t - 1.8 - m.userData.d) / 0.8); m.position.y = m.userData.y + (1 - k) * 3; m.visible = t > 1.8 + m.userData.d; });
+  labels.visible = t > 3.0;
+  const k = ease(t / 3.4);
+  cam.pol = 0.35 + (goal.pol - 0.35) * k; cam.az = 0.5 + (goal.az - 0.5) * k; cam.r = goal.r * (1.25 - 0.25 * k); cam.ty = goal.ty * k; cam.tz = goal.tz * k;
+  if (t > INTRO) finishIntro();
+}
+function finishIntro() {
+  intro = false; labels.visible = true;
+  floors.children.forEach((m) => m.scale.set(1, 1, 1)); base.scale.set(1, 1, 1); walls.scale.set(1, 1, 1);
+  furniture.children.forEach((m) => { m.position.y = m.userData.y; m.visible = true; });
+  $('intro').classList.add('gone'); $('dock').classList.remove('hide');
+}
+function replay() {
+  setOcc(false); setView('in'); intro = true; t0 = performance.now(); labels.visible = false;
+  $('intro').classList.remove('gone'); $('dock').classList.add('hide');
+}
+$('replayBtn').addEventListener('click', replay);
+goal.r = fitR(HOME.r);
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finishIntro(); Object.assign(cam, goal); }
+
+/* ---------- Sheets ---------- */
+const sheet = $('sheet'), scrim = $('scrim');
+const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const swatch = (r) => r.kind === 'office' ? ({ occ: '#6b7180', hold: '#ff9f0a', avail: '#30d158' })[r.status] : r.kind === 'meet' ? '#d9b77e' : '#64d2ff';
+const panels = {
+  spaces: () => `<h2>Fourth floor</h2><p class="sub">Tap a space to fly to it. Sizes are from the floorplan.</p>
+    <div class="facts"><div class="fact"><b>6</b><small>Suites</small></div><div class="fact"><b>46</b><small>Desks</small></div><div class="fact"><b>3,875</b><small>Sq ft</small></div><div class="fact"><b>2</b><small>Meeting rooms</small></div></div>
+    ${SPACES.map((r) => `<button class="row" data-room="${r.id}"><div class="sw" style="background:${swatch(r)}">${r.em}</div><div><b>${r.name}</b><small>${r.sub ? r.sub + ' · ' : ''}${r.m2.toFixed(0)} m² · ${r.ft} sq ft</small></div><div class="end">${r.kind === 'office' ? `<span class="st ${r.status}">${STATUS[r.status].txt}</span>${r.price ? '<br>' + r.price + ' pcm' : ''}` : ''}</div></button>`).join('')}
+    <div class="label">On every floor</div>
+    <div class="amen">${[['24/7 access', 'Your office, whenever you need it'], ['Boardrooms', 'Meetings in style'], ['Meeting rooms', 'Free to book'], ['Phone booths', 'Private calls'], ['Lounge', 'Unwind between meetings'], ['Kitchens', 'A spot of lunch'], ['Client events', 'Meet your neighbours'], ['Onsite security', 'Peace of mind']].map(([a, b]) => `<div><i></i><span><b>${a}</b>${b}</span></div>`).join('')}</div>
+    <p class="note">Illustrative 3D model based on a floorplan. Check measurements. Total floor 360 m² (3,875 sq ft). Furniture is for scale. Made with AI-assisted tools and checked by hand.</p>`,
+  tour: () => `<div id="vBody"><h2>Book a tour</h2><p class="sub">Pick a time and how many desks you need. The sales team confirms by email.</p>
+    <div class="label">Team size</div><div class="chips" id="sizes">${['1–2', '3–5', '6–10', '10+'].map((s) => `<button class="chip">${s}</button>`).join('')}</div>
+    <div class="label">This week</div><div class="chips" id="slots">${['Mon 10:00', 'Mon 15:30', 'Tue 09:30', 'Wed 12:00', 'Thu 16:00'].map((s) => `<button class="chip">${s}</button>`).join('')}</div>
+    <button class="pill-btn" id="vSend" disabled>Request this tour</button>
+    <a class="pill-btn ghost" href="mailto:dominic.d.mayne@gmail.com?subject=OfficeWorld%20demo">Ask a question</a>
+    <p class="note">In the real version this drops straight into the operator's own CRM or booking system.</p></div>`,
+  stats: () => `<h2>What the operator sees</h2><p class="sub">Every scan of the QR on the brochure, door sign or listing, tracked for this floor.</p>
+    <div class="stats"><div class="stat"><b>67%</b><small>Private desks let</small></div><div class="stat"><b>212</b><small>Model views this week</small></div><div class="stat"><b>9</b><small>Tour requests</small></div></div>
+    <div class="label">Views per day</div>
+    <div class="bars">${[['M', 34], ['T', 29], ['W', 41], ['T', 38], ['F', 30], ['S', 12], ['S', 8]].map(([d, n], i) => `<div><i style="height:${n * 1.9}px;animation-delay:${i * 0.05}s"></i>${d}</div>`).join('')}</div>
+    <div class="label">Most looked-at spaces</div>
+    <div class="row"><div class="sw" style="background:#30d158">💼</div><div><b>Suite 402</b><small>4 desks · available</small></div><div class="end">38%</div></div>
+    <div class="row"><div class="sw" style="background:#30d158">💼</div><div><b>Suite 405</b><small>2 desks · available</small></div><div class="end">24%</div></div>
+    <div class="row"><div class="sw" style="background:#d9b77e">🗂️</div><div><b>Boardroom</b><small>12 seats</small></div><div class="end">17%</div></div>
+    <p class="note">Example numbers for the demo. Nobody viewing the model gives a name or number unless they book a tour.</p>`,
+};
+let openKey = null;
+function openSheet(key) {
+  if (openKey === key) return closeSheet();
+  if (key === 'spaces' && view !== 'in') setView('in');
+  openKey = key; sheet.innerHTML = '<div class="grab"></div><button class="icon-btn sheet-x" id="sheetX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></button>' + panels[key]();
+  sheet.classList.toggle('peek', key === 'spaces'); scrim.classList.toggle('show', key !== 'spaces');
+  $('sheetX').onclick = closeSheet; sheet.classList.add('show'); $('dock').classList.add('hide');
+  document.querySelectorAll('.tile[data-panel]').forEach((t) => t.classList.toggle('on', t.dataset.panel === key));
+  if (key === 'spaces') sheet.querySelectorAll('.row[data-room]').forEach((b) => (b.onclick = () => focusRoom(SPACES.find((r) => r.id === b.dataset.room))));
+  if (key === 'tour') {
+    const sel = { sizes: null, slots: null };
+    ['sizes', 'slots'].forEach((g) => $(g).querySelectorAll('.chip').forEach((c) => (c.onclick = () => { sel[g] = c.textContent; $(g).querySelectorAll('.chip').forEach((x) => x.classList.toggle('on', x === c)); $('vSend').disabled = !(sel.sizes && sel.slots); })));
+    $('vSend').onclick = () => { $('vBody').innerHTML = `<div class="done"><div class="tick">${check}</div><h2 style="padding:0">Tour requested</h2><p class="sub">${sel.slots}, team of ${sel.sizes}. In the real version this goes straight to the sales team.</p></div>`; };
+  }
+}
+function closeSheet() { if (!intro) $('dock').classList.remove('hide'); openKey = null; sheet.classList.remove('show'); scrim.classList.remove('show'); document.querySelectorAll('.tile[data-panel]').forEach((t) => t.classList.remove('on')); }
+document.querySelectorAll('.tile[data-panel]').forEach((t) => t.addEventListener('click', () => openSheet(t.dataset.panel)));
+$('tourBtn').addEventListener('click', () => openSheet('tour'));
+scrim.addEventListener('click', closeSheet);
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+
+/* ---------- Frame loop ---------- */
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (intro) runIntro((now - t0) / 1000);
+  else {
+    const k = 1 - Math.pow(0.002, dt);
+    for (const p of ['az', 'pol', 'r', 'tx', 'ty', 'tz']) cam[p] += (goal[p] - cam[p]) * k;
+    if (!drag && !focused && !openKey) goal.az += dt * 0.04;
+    if (outside.visible) outside.scale.setScalar(outside.scale.x + (1 - outside.scale.x) * k);
+  }
+  SPACES.forEach((r) => (r.mat.emissiveIntensity = r === focused ? 0.18 + Math.sin(now / 300) * 0.08 : occ && r.status === 'avail' ? 0.12 + Math.sin(now / 400) * 0.08 : 0));
+  placeCamera(); renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -18,6 +18,14 @@
       "destination": "/house"
     },
     {
+      "source": "/O/:id",
+      "destination": "/office"
+    },
+    {
+      "source": "/o/:id",
+      "destination": "/office"
+    },
+    {
       "source": "/H/:id",
       "destination": "/home"
     },
